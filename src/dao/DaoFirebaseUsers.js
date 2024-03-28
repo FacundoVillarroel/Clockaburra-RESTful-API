@@ -12,25 +12,44 @@ class DaoFirebaseUsers {
     return instance;
   }
 
+  async getAll() {
+    try {
+      return await this.firebaseClient.getAll();
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async save(user) {
-    return this.firebaseClient.save(user);
+    try {
+      return this.firebaseClient.save(user);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
   }
 
   async getById(id) {
-    return this.firebaseClient.getById(id);
+    try {
+      return await this.firebaseClient.getById(id);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
   }
 
-  async getAll() {
-    return await this.firebaseClient.getAll();
+  async updateUserDetails(id, payload) {
+    try {
+    } catch (error) {
+      throw Error(error);
+    }
   }
-
-  async updateUserDetails(id, payload) {}
 
   async deleteById(id) {
-    return await this.firebaseClient.deleteById(id);
+    try {
+      return await this.firebaseClient.deleteById(id);
+    } catch (error) {
+      throw Error(error.message);
+    }
   }
-
-  async deleteAll() {}
 }
 
 module.exports = DaoFirebaseUsers;

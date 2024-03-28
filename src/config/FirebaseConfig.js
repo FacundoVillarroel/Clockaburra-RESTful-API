@@ -22,8 +22,8 @@ class FirebaseConfig {
       } else {
         return users.docs.map((doc) => doc.data());
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      throw new Error(error);
     }
   }
 
@@ -33,9 +33,37 @@ class FirebaseConfig {
       await itemToAdd.create(doc);
       return { data: doc, id: doc.id };
     } catch (error) {
-      console.log(error);
-      const errorMessage = error.details.split(": ")[0];
-      return { error: errorMessage };
+      if (error.code === 6) {
+        throw new Error("Document already exists");
+      } else {
+        throw new Error(error.message);
+      }
+    }
+  }
+
+  async getById(id) {
+    try {
+      const docFound = await (await this.query.doc(`${id}`).get()).data();
+      if (!docFound) {
+        throw new Error(`there is no user with the id: ${id}`);
+      }
+      return docFound;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteById(id) {
+    try {
+      const docRef = await this.query.doc(`${id}`);
+      const docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        await docRef.delete();
+      } else {
+        throw new Error(`there is no user with the id: ${id}`);
+      }
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 }
