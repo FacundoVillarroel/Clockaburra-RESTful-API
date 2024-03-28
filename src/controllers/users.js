@@ -8,16 +8,35 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.postUsers = async (req, res, next) => {
-  const user = req.body.user;
-  const response = await service.addUser(user);
+  try {
+    const user = {
+      id: req.body.email,
+      email: req.body.email,
+      name: req.body.name,
+      surname: req.body.surname,
+      rol: req.body.rol,
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      startDate: req.body.startDate,
+    };
 
-  if (!response) {
-    res.status(400).send("Faltan propiedades al user");
-  } else {
-    res.status(201).json({
-      message: "User created successfully",
-      data: response,
-    });
+    const hasEmptyValue = Object.values(user).some((value) => !value);
+
+    if (hasEmptyValue) {
+      res.status(422).send({ message: "missing properties for this user" });
+    } else {
+      const response = await service.addUser(user);
+      if (response.error || !response) {
+        res.status(409).send({ message: response.error });
+      } else {
+        res.status(201).json({
+          message: "User created successfully",
+          ...response,
+        });
+      }
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 

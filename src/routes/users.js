@@ -4,19 +4,19 @@ const usersController = require("../controllers/users");
 
 const usersRouter = express.Router();
 
-//traer todos los empleados
+//traer todos los usuarios
 usersRouter.get("/", usersController.getUsers);
 
-//crear un empleado
+//crear un usuario
 usersRouter.post("/", usersController.postUsers);
 
-//traer un empleado
+//traer un usuario
 usersRouter.get("/:id", usersController.getUser);
 
-//modificar un empleado
+//modificar un usuario
 usersRouter.put("/:id", usersController.putUser);
 
-//eliminar un empleado
+//eliminar un usuario
 usersRouter.delete("/:id", usersController.deleteUser);
 
 module.exports = usersRouter;

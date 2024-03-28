@@ -14,18 +14,29 @@ class FirebaseConfig {
     this.query = this.db.collection(collection);
   }
 
-  async save(item) {
+  async getAll() {
     try {
-      const res = await this.query.add(item);
-      return res.id;
+      const users = await this.query.get();
+      if (!users) {
+        return null;
+      } else {
+        return users.docs.map((doc) => doc.data());
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
-  async getAll() {
-    const users = await this.query.get();
-    return users.docs.map((doc) => doc.data());
+  async save(doc) {
+    try {
+      const itemToAdd = this.query.doc(`${doc.id}`);
+      await itemToAdd.create(doc);
+      return { data: doc, id: doc.id };
+    } catch (error) {
+      console.log(error);
+      const errorMessage = error.details.split(": ")[0];
+      return { error: errorMessage };
+    }
   }
 }
 
