@@ -3,7 +3,10 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const usersRouter = require("./src/routes/users");
+const UsersRouter = require("./src/routes/users");
+const ClockRouter = require("./src/routes/clock");
+const ShiftRouter = require("./src/routes/shift");
+const TimesheetRouter = require("./src/routes/timesheet");
 
 const app = express();
 
@@ -19,6 +22,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/users", usersRouter);
+app.use("/users", UsersRouter);
+
+app.use("/clock", ClockRouter);
+
+app.use("/shift", ShiftRouter);
+
+app.use("/timesheet", TimesheetRouter);
 
 app.listen(8080);
