@@ -16,7 +16,7 @@ class DaoFirebaseUsers {
     try {
       return await this.firebaseClient.getAll();
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error.message || "Unknown error occurred");
     }
   }
 
@@ -36,10 +36,13 @@ class DaoFirebaseUsers {
     }
   }
 
-  async updateUserDetails(id, payload) {
+  async updateUserById(id, userUpdate) {
     try {
+      await this.firebaseClient.updateById(id, userUpdate);
+      const updatedUser = await this.getById(id);
+      return updatedUser;
     } catch (error) {
-      throw Error(error);
+      throw Error(error.message || "Unknown error occurred");
     }
   }
 
@@ -47,7 +50,7 @@ class DaoFirebaseUsers {
     try {
       return await this.firebaseClient.deleteById(id);
     } catch (error) {
-      throw Error(error.message);
+      throw Error(error.message || "Unknown error occurred");
     }
   }
 }

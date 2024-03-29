@@ -53,6 +53,16 @@ class FirebaseConfig {
     }
   }
 
+  async updateById(id, update) {
+    try {
+      const currentDoc = await this.query.doc(`${id}`);
+      await currentDoc.update({ ...update });
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
+    }
+  }
+
   async deleteById(id) {
     try {
       const docRef = await this.query.doc(`${id}`);

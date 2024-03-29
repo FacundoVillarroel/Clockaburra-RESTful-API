@@ -47,7 +47,26 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
-exports.putUser = (req, res, next) => {};
+exports.putUser = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const userUpdate = req.body.userUpdate;
+    if (!Object.keys(userUpdate).length)
+      res
+        .status(400)
+        .send({ message: "Missing properies for the user", updated: false });
+    else {
+      const response = await service.updateUserById(id, userUpdate);
+      res.send({
+        message: "User updated successfully",
+        updated: true,
+        updatedUser: response,
+      });
+    }
+  } catch (error) {
+    res.status(400).send({ message: error.message, updated: false });
+  }
+};
 
 exports.deleteUser = async (req, res, next) => {
   try {
