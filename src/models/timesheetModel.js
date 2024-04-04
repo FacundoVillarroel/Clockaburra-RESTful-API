@@ -5,9 +5,10 @@ class Timesheet {
     this.endDate = "";
     this.expectedHours = expectedHours;
     this.workedHours = "";
-    this.breaks = { start: [], end: [] }; //{start:[], end:[]}
+    this.breaks = { start: [], end: [] };
     this.actionHistory = [{ actionType: "checkIn", timeStamp: startDate }]; //[{actionType:"checkIn", timeStamp:15550, {actionType:"breakStart", timeStamp:22000}}]
     this.approved = false;
+    this.rejected = false;
   }
 
   updateBreak(action, date) {
@@ -37,6 +38,12 @@ class Timesheet {
 
   approveTimesheet() {
     this.approved = true;
+    this.rejected = false;
+  }
+
+  rejectTimesheet() {
+    this.rejected = true;
+    this.approved = false;
   }
 }
 

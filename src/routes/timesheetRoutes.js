@@ -1,17 +1,30 @@
 const express = require("express");
 
+const timesheetController = require("../controllers/timesheetController");
+
 const TimesheetRouter = express.Router();
 
 //get all timesheets
 
-TimesheetRouter.get("/", (req, res, next) => {});
+TimesheetRouter.get("/", timesheetController.getAllTimesheet);
+
+//get all timesheets from an single user
+
+TimesheetRouter.get("/:userId", timesheetController.getUserTimesheets);
+
+// get a single timesheet
+
+TimesheetRouter.get(
+  "/:userId/:timesheetId",
+  timesheetController.getTimesheetById
+);
 
 //approve a timesheet
 
-TimesheetRouter.put("/approve/:id", (req, res, next) => {});
+TimesheetRouter.post("/approve/:id", timesheetController.approveTimesheet);
 
 //reject a timesheet
 
-TimesheetRouter.get("/reject/:id", (req, res, next) => {});
+TimesheetRouter.post("/reject/:id", timesheetController.rejectTimesheet);
 
 module.exports = TimesheetRouter;
