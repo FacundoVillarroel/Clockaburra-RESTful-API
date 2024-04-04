@@ -1,21 +1,43 @@
 class Timesheet {
-  constructor(
-    userId,
-    startDate,
-    endDate,
-    expectedHours,
-    workedHours,
-    breaks,
-    actionHistory
-  ) {
+  constructor(userId, startDate, expectedHours) {
     this.userId = userId;
     this.startDate = startDate;
-    this.endDate = endDate;
+    this.endDate = "";
     this.expectedHours = expectedHours;
-    this.workedHours = workedHours;
-    this.breaks = breaks; //{start, end}
-    this.actionHistory = actionHistory; //[{actionType:"CheckIn", timeStamp:15550, {actionType:"breakStart", timeStamp:22000}}]
+    this.workedHours = "";
+    this.breaks = { start: [], end: [] }; //{start:[], end:[]}
+    this.actionHistory = [{ actionType: "checkIn", timeStamp: startDate }]; //[{actionType:"checkIn", timeStamp:15550, {actionType:"breakStart", timeStamp:22000}}]
     this.approved = false;
   }
+
+  updateBreak(action, date) {
+    switch (action) {
+      case "start":
+        this.breaks.start.push(date);
+        this.addNewAction("breakStart", date);
+        break;
+      case "end":
+        this.breaks.end.push(date);
+        this.addNewAction("breakEnd", date);
+        break;
+      default:
+        break;
+    }
+  }
+
+  addNewAction(actionType, timeStamp) {
+    this.actionHistory.push({ actionType, timeStamp });
+  }
+
+  save(date) {
+    //this.workedHours = logica endDate - startDate - breaks
+    this.addNewAction("clockOut", date);
+    //guardar en DB
+  }
+
+  approveTimesheet() {
+    this.approved = true;
+  }
 }
+
 export default Timesheet;

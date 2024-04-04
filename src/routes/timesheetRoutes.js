@@ -2,7 +2,7 @@ const express = require("express");
 
 const TimesheetRouter = express.Router();
 
-//get all shifts
+//get all timesheets
 
 TimesheetRouter.get("/", (req, res, next) => {});
 

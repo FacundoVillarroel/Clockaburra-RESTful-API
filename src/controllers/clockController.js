@@ -18,8 +18,9 @@ exports.postClockIn = async (req, res, next) => {
   try {
     const userId = req.body.id;
     if (userId) {
-      //traer User por id - validar que este clockOut, hacer clockIn, registrar accion en timesheet
       // traer userClockStatus usando el metodo del service
+      //validar que este clockOut - verificar si tenia turno y pasar expectedHours - hacer clockIn - registrar accion en timesheet
+      // crear nuevo Timesheet(userId, startDate, expectedHours)
       res.send(userId); // Retornar userClockStatus
     } else {
       throw new Error("Must enter a User Id");
@@ -34,8 +35,9 @@ exports.postClockOut = async (req, res, next) => {
   try {
     const userId = req.body.id;
     if (userId) {
-      //traer User por id - validar que este clockOut, hacer clockIn, registrar accion en timesheet
       // traer userClockStatus usando el metodo del service
+      //traer User por id - validar que este clockOut, hacer clockIn, registrar accion en timesheet
+      // utilizar metodo de Timesheet.save(new Date())
       res.send(userId); // Retornar userClockStatus
     } else {
       throw new Error("Must enter a User Id");
@@ -50,8 +52,9 @@ exports.postBreakStart = async (req, res, next) => {
   try {
     const userId = req.body.id;
     if (userId) {
-      //traer User por id - validar que este clockIn, cambiar estado onBreak = true, registrar accion en timesheet
       // traer userClockStatus usando el metodo del service
+      //traer User por id - validar que este clockIn, cambiar estado onBreak = true, registrar accion en timesheet
+      // utilizar metodo Timesheet.updateBreak("start", date)
       res.send(userId); // Retornar userClockStatus
     } else {
       throw new Error("Must enter a User Id");
@@ -66,8 +69,9 @@ exports.postBreakEnd = async (req, res, next) => {
   try {
     const userId = req.body.id;
     if (userId) {
-      //traer User por id - validar que este clockIn, cambiar estado onBreak = false, registrar accion en timesheet
       // traer userClockStatus usando el metodo del service
+      //traer User por id - validar que este clockIn, cambiar estado onBreak = false, registrar accion en timesheet
+      // utilizar metodo Timesheet.updateBreak("end", date)
       res.send(userId); // Retornar userClockStatus
     } else {
       throw new Error("Must enter a User Id");
