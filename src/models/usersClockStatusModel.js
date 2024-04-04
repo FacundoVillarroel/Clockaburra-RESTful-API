@@ -1,4 +1,4 @@
-class UsersStatus {
+class UsersClockStatus {
   constructor(userId) {
     this.userId = userId;
     this.clockedIn = false;
@@ -6,4 +6,4 @@ class UsersStatus {
   }
 }
 
-export default UsersStatus;
+export default UsersClockStatus;

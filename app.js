@@ -3,10 +3,10 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const UsersRouter = require("./src/routes/users");
-const ClockRouter = require("./src/routes/clock");
-const ShiftRouter = require("./src/routes/shift");
-const TimesheetRouter = require("./src/routes/timesheet");
+const UsersRouter = require("./src/routes/usersRoutes");
+const ClockRouter = require("./src/routes/clockRoutes");
+const ShiftRouter = require("./src/routes/shiftRoutes");
+const TimesheetRouter = require("./src/routes/timesheetRoutes");
 
 const app = express();
 
@@ -30,4 +30,6 @@ app.use("/shift", ShiftRouter);
 
 app.use("/timesheet", TimesheetRouter);
 
-app.listen(8080);
+app.listen(8080, () => {
+  console.log("listening on port 8080");
+});
