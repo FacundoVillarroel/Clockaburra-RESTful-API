@@ -1,3 +1,6 @@
+const ClockService = require("../service/ClockService");
+const clockService = new ClockService(process.env.DATA_BASE);
+
 // Validar el id Ingresado, devolver usuario encontrado
 exports.getUserClockStatus = async (req, res, next) => {
   try {

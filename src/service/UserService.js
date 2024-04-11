@@ -1,10 +1,10 @@
 const daoFactory = require("../daoFactory/daoFactory");
 
-const userDatabase = daoFactory.getInstance();
+const DaoFactoryInstance = daoFactory.getInstance();
 
 class UserService {
   constructor(type) {
-    this.users = userDatabase.create(type);
+    this.users = DaoFactoryInstance.create(type, "users");
   }
 
   async getAllUsers() {

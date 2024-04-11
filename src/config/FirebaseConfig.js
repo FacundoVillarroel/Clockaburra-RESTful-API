@@ -16,14 +16,14 @@ class FirebaseConfig {
 
   async getAll() {
     try {
-      const users = await this.query.get();
-      if (!users) {
+      const docs = await this.query.get();
+      if (!docs) {
         return null;
       } else {
-        return users.docs.map((doc) => doc.data());
+        return docs.docs.map((doc) => doc.data());
       }
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error.message || "Error getting documents");
     }
   }
 
@@ -36,7 +36,7 @@ class FirebaseConfig {
       if (error.code === 6) {
         throw new Error("Document already exists");
       } else {
-        throw new Error(error.message);
+        throw new Error(error.message || "Error saving document");
       }
     }
   }
@@ -45,11 +45,11 @@ class FirebaseConfig {
     try {
       const docFound = await (await this.query.doc(`${id}`).get()).data();
       if (!docFound) {
-        throw new Error(`there is no user with the id: ${id}`);
+        throw new Error(`there is no document with id: ${id}`);
       }
       return docFound;
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error.message || "Error getting document");
     }
   }
 
@@ -58,8 +58,7 @@ class FirebaseConfig {
       const currentDoc = await this.query.doc(`${id}`);
       await currentDoc.update({ ...update });
     } catch (error) {
-      console.log(error);
-      throw new Error(error.message);
+      throw new Error(error.message || "Error updating document");
     }
   }
 
@@ -70,10 +69,10 @@ class FirebaseConfig {
       if (docSnapshot.exists) {
         await docRef.delete();
       } else {
-        throw new Error(`there is no user with the id: ${id}`);
+        throw new Error(`there is no document with id: ${id}`);
       }
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error.message || "Error deleting document");
     }
   }
 }

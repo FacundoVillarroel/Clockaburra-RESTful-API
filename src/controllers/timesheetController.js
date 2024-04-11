@@ -1,3 +1,6 @@
+const TimesheetService = require("../service/TimesheetService");
+const timesheetService = new TimesheetService(process.env.DATA_BASE);
+
 //traer todos los timesheet de la DB
 exports.getAllTimesheet = async (req, res, next) => {
   try {

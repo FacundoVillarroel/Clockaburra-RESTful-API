@@ -1,5 +1,5 @@
 const UserService = require("../service/UserService");
-const service = new UserService(process.env.DATA_BASE_USERS);
+const service = new UserService(process.env.DATA_BASE);
 
 exports.getUsers = async (req, res, next) => {
   const allUsers = await service.getAllUsers();

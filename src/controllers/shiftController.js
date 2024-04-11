@@ -1,3 +1,6 @@
+const ShiftService = require("../service/ShiftService");
+const shiftService = new ShiftService(process.env.DATA_BASE);
+
 exports.getAllShift = async (req, res, next) => {
   try {
     //traer todos los Shift de la DB
