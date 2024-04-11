@@ -2,7 +2,6 @@ const UserService = require("../service/UserService");
 const service = new UserService(process.env.DATA_BASE_USERS);
 
 exports.getUsers = async (req, res, next) => {
-  console.log("UserController");
   const allUsers = await service.getAllUsers();
   res.status(200).send(allUsers);
 };
