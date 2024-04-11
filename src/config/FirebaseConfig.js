@@ -20,7 +20,11 @@ class FirebaseConfig {
       if (!docs) {
         return null;
       } else {
-        return docs.docs.map((doc) => doc.data());
+        return docs.docs.map((doc) => {
+          const data = doc.data();
+          data.id = doc.id;
+          return data;
+        });
       }
     } catch (error) {
       throw new Error(error.message || "Error getting documents");
@@ -29,9 +33,14 @@ class FirebaseConfig {
 
   async save(doc) {
     try {
-      const itemToAdd = this.query.doc(`${doc.id}`);
-      await itemToAdd.create(doc);
-      return { data: doc, id: doc.id };
+      if (doc.id) {
+        const itemToAdd = this.query.doc(`${doc.id}`);
+        await itemToAdd.create(doc);
+        return { data: doc, id: doc.id };
+      } else {
+        const response = await this.query.add(doc);
+        return { data: doc, id: response.id };
+      }
     } catch (error) {
       if (error.code === 6) {
         throw new Error("Document already exists");
@@ -43,13 +52,32 @@ class FirebaseConfig {
 
   async getById(id) {
     try {
-      const docFound = await (await this.query.doc(`${id}`).get()).data();
-      if (!docFound) {
+      const docFound = await this.query.doc(`${id}`).get();
+      const doc = { ...docFound.data(), id: docFound.id };
+      if (!doc) {
         throw new Error(`there is no document with id: ${id}`);
       }
-      return docFound;
+      return doc;
     } catch (error) {
       throw new Error(error.message || "Error getting document");
+    }
+  }
+  async filterByCondition(field, operator, value) {
+    try {
+      const snapshot = await this.query.where(field, operator, value).get();
+      //const doc = { ...docFound.data(), id: docFound.id };
+      if (snapshot.empty) {
+        throw new Error(
+          `there is no document with this condition: ${condition}`
+        );
+      }
+      let docsFound = [];
+      snapshot.forEach((doc) => {
+        docsFound.push({ id: doc.id, ...doc.data() });
+      });
+      return docsFound;
+    } catch (error) {
+      throw new Error(error.message || "Error getting documents");
     }
   }
 
