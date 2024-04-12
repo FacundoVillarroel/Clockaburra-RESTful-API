@@ -54,7 +54,7 @@ class FirebaseConfig {
     try {
       const docFound = await this.query.doc(`${id}`).get();
       const doc = { ...docFound.data(), id: docFound.id };
-      if (!doc) {
+      if (!docFound.data()) {
         throw new Error(`there is no document with id: ${id}`);
       }
       return doc;

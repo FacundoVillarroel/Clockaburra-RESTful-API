@@ -48,6 +48,14 @@ class DaoFirebaseShifts {
     }
   }
 
+  async updateById(id, update) {
+    try {
+      await this.firebaseClient.updateById(id, update);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
+  }
+
   async deleteById(id) {
     try {
       return await this.firebaseClient.deleteById(id);

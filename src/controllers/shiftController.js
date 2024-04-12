@@ -53,33 +53,28 @@ exports.postNewShift = async (req, res, next) => {
     res.status(400).send({ message: error.message });
   }
 };
+
 exports.modifyShift = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const update = req.body.update;
-    /* const currentShift = await shiftService.getById(id);
-    if (!currentShift) {
-      res.status(404).send({ message: "Could not find shift with id ", id });
-    } else {
-      if (!Object.keys(update).length)
-        res
-          .status(400)
-          .send({ message: "Missing properies for the shift", updated: false });
-      else {
-        const shiftUpdate = { ...currentShift, ...update };
-        //const response = await shiftService.updateById(id, shiftUpdate)
-        res.send({
-          message:"Shift updated successfully",
-          update:true,
-          updatedShift:response
-        })
-      }
-    } */
-    res.send({ id: id, update: update });
+    const shiftUpdate = req.body.shiftUpdate;
+    if (!Object.keys(shiftUpdate).length)
+      res
+        .status(400)
+        .send({ message: "Missing properies for the shift", updated: false });
+    else {
+      await shiftService.updateShiftById(id, shiftUpdate);
+      res.send({
+        message: "Shift updated successfully",
+        update: true,
+        updatedShift: { id: id, ...shiftUpdate },
+      });
+    }
   } catch (error) {
     res.status(400).send({ message: error.message, update: false });
   }
 };
+
 exports.deleteShift = async (req, res, next) => {
   try {
     const id = req.params.id;

@@ -39,6 +39,14 @@ class ShiftService {
     }
   }
 
+  async updateShiftById(id, update) {
+    try {
+      await this.shifts.updateById(id, update);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async deleteShiftById(id) {
     try {
       return await this.shifts.deleteById(id);
