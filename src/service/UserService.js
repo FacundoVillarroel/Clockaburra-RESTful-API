@@ -11,7 +11,7 @@ class UserService {
     try {
       return await this.users.getAll();
     } catch (error) {
-      throw Error(error);
+      throw new Error(error.message);
     }
   }
 
@@ -19,7 +19,7 @@ class UserService {
     try {
       return await this.users.save(user);
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
   }
 
@@ -53,7 +53,7 @@ class UserService {
     try {
       return await this.users.deleteById(id);
     } catch (error) {
-      throw Error(error.message);
+      throw new Error(error.message);
     }
   }
 }

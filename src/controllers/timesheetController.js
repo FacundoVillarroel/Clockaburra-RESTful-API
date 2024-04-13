@@ -4,9 +4,8 @@ const timesheetService = new TimesheetService(process.env.DATA_BASE);
 //traer todos los timesheet de la DB
 exports.getAllTimesheet = async (req, res, next) => {
   try {
-    // const timesheets = await service.getAll()
-    //res.send(timesheets)
-    res.send("all Timesheets in db");
+    const timesheets = await service.getAll();
+    res.send(timesheets);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }

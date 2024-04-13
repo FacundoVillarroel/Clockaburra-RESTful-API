@@ -65,10 +65,9 @@ class FirebaseConfig {
   async filterByCondition(field, operator, value) {
     try {
       const snapshot = await this.query.where(field, operator, value).get();
-      //const doc = { ...docFound.data(), id: docFound.id };
       if (snapshot.empty) {
         throw new Error(
-          `there is no document with this condition: ${condition}`
+          `there is no document with this condition: ${field} ${operator} ${value}`
         );
       }
       let docsFound = [];

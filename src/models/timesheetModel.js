@@ -2,9 +2,9 @@ class Timesheet {
   constructor(userId, startDate, expectedHours) {
     this.userId = userId;
     this.startDate = startDate;
-    this.endDate = "";
+    this.endDate = null;
     this.expectedHours = expectedHours;
-    this.workedHours = "";
+    this.workedHours = null;
     this.breaks = { start: [], end: [] };
     this.actionHistory = [{ actionType: "checkIn", timeStamp: startDate }]; //[{actionType:"checkIn", timeStamp:15550, {actionType:"breakStart", timeStamp:22000}}]
     this.approved = false;
