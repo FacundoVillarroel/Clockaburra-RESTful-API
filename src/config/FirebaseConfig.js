@@ -62,6 +62,7 @@ class FirebaseConfig {
       throw new Error(error.message || "Error getting document");
     }
   }
+
   async filterByCondition(field, operator, value) {
     try {
       const snapshot = await this.query.where(field, operator, value).get();
@@ -82,7 +83,7 @@ class FirebaseConfig {
 
   async updateById(id, update) {
     try {
-      const currentDoc = await this.query.doc(`${id}`);
+      const currentDoc = this.query.doc(`${id}`);
       await currentDoc.update({ ...update });
     } catch (error) {
       throw new Error(error.message || "Error updating document");
@@ -91,7 +92,7 @@ class FirebaseConfig {
 
   async deleteById(id) {
     try {
-      const docRef = await this.query.doc(`${id}`);
+      const docRef = this.query.doc(`${id}`);
       const docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         await docRef.delete();

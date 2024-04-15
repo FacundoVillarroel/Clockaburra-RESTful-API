@@ -1,5 +1,7 @@
 const ClockService = require("../service/ClockService");
 const clockService = new ClockService(process.env.DATA_BASE);
+const TimesheetService = require("../service/TimesheetService");
+const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 // Validar el id Ingresado, devolver usuario encontrado
 exports.getUserClockStatus = async (req, res, next) => {
@@ -16,88 +18,85 @@ exports.getUserClockStatus = async (req, res, next) => {
   }
 };
 
-//Unificar post en un solo export
-
 //validar si existe usuario con userId, validar si esta clockOut, almacenar en timesheet el historial de acciones
-exports.postClockIn = async (req, res, next) => {
+exports.clockStatusChange = async (req, res, next) => {
   try {
     const userId = req.body.userId;
-    if (!userId) {
-      throw new Error("Must enter userId in the body");
+    const date = req.body.date;
+    const timesheetId = req.body.timesheetId;
+    const pathSections = req.url.split("/");
+    const action = pathSections[pathSections.length - 1];
+    if (!userId || !date) {
+      throw new Error("userId and date must be provided in request body");
     }
     const userClockStatus = await clockService.getStatusByUserId(userId);
-    if (userClockStatus.clockedIn) {
-      throw new Error("This user is already clocked in");
-    }
-    //verificar si tenia turno y pasar expectedHours a timesheet
-    await clockService.postClockIn(userClockStatus);
-    //registrar accion en timesheet
-    //crear nuevo Timesheet(userId, startDate, expectedHours)
-    res.send({ message: `User ${userId} clocked In`, updated: true });
-  } catch (error) {
-    res.status(400).send({ message: error.message, updated: false });
-  }
-};
 
-//validar si existe usuario con userId, validar si esta clockIn, almacenar en timesheet el historial de acciones
-exports.postClockOut = async (req, res, next) => {
-  try {
-    const userId = req.body.userId;
-    if (!userId) {
-      throw new Error("Must enter userId in the body");
-    }
-    const userClockStatus = await clockService.getStatusByUserId(userId);
-    if (!userClockStatus.clockedIn) {
-      throw new Error("This user is not clocked in");
-    }
-    await clockService.postClockOut(userClockStatus);
-    // si esta en break, registrar tambien el fin del break
-    // registrar accion en timesheet
-    // utilizar metodo de Timesheet.save(new Date())
-    res.send({ message: `User ${userId} clocked Out`, updated: true });
-  } catch (error) {
-    res.status(400).send({ message: error.message, updated: false });
-  }
-};
+    switch (action) {
+      case "in":
+        if (userClockStatus.clockedIn) {
+          throw new Error("This user is already clocked in");
+        }
+        //verificar si tenia turno y pasar expectedHours a timesheet
+        await clockService.postClockIn(userClockStatus);
+        const newTimesheetId = await timesheetService.createTimesheet(
+          userId,
+          date
+        );
+        res.send({
+          message: `User ${userId} clocked In`,
+          updated: true,
+          data: { newTimesheetId },
+        });
+        break;
 
-//validar si existe usuario con userId, validar si esta clockIn, almacenar en timesheet el historial de acciones
-exports.postBreakStart = async (req, res, next) => {
-  try {
-    const userId = req.body.userId;
-    if (!userId) {
-      throw new Error("Must enter userId in the body");
-    }
-    const userClockStatus = await clockService.getStatusByUserId(userId);
-    if (!userClockStatus.clockedIn) {
-      throw new Error("This user is not clocked in");
-    }
-    await clockService.postBreakStart(userClockStatus);
-    //registrar accion en timesheet
-    //utilizar metodo Timesheet.updateBreak("start", date)
-    res.send({ message: `User ${userId} break started`, updated: true });
-  } catch (error) {
-    res.status(400).send({ message: error.message, updated: false });
-  }
-};
+      case "out":
+        if (!userClockStatus.clockedIn) {
+          throw new Error("This user is not clocked in");
+        }
+        if (!timesheetId) {
+          throw new Error("Must enter timesheetId in request body");
+        }
+        if (userClockStatus.onBreak) {
+          await clockService.postBreakEnd(userClockStatus);
+        }
+        await timesheetService.updateTimesheetById(timesheetId, date, action);
+        await clockService.postClockOut(userClockStatus);
+        res.send({ message: `User ${userId} clocked Out`, updated: true });
+        break;
 
-//validar si existe usuario con userId, validar si esta clockIn, almacenar en timesheet el historial de acciones
-exports.postBreakEnd = async (req, res, next) => {
-  try {
-    const userId = req.body.userId;
-    if (!userId) {
-      throw new Error("Must enter userId in the body");
+      case "breakStart":
+        if (!userClockStatus.clockedIn) {
+          throw new Error("This user is not clocked in");
+        }
+        if (!timesheetId) {
+          throw new Error("Must enter timesheetId in request body");
+        }
+        await timesheetService.updateTimesheetById(timesheetId, date, action);
+        await clockService.postBreakStart(userClockStatus);
+
+        res.send({ message: `User ${userId} break started`, updated: true });
+        break;
+
+      case "breakEnd":
+        if (!userClockStatus.clockedIn) {
+          throw new Error("This user is not clocked in");
+        }
+        if (!userClockStatus.onBreak) {
+          throw new Error("This user is not on break");
+        }
+        if (!timesheetId) {
+          throw new Error("Must enter timesheetId in request body");
+        }
+        await timesheetService.updateTimesheetById(timesheetId, date, action);
+        await clockService.postBreakEnd(userClockStatus);
+        res.send({ message: `User ${userId} break ended`, updated: true });
+        break;
+
+      default:
+        throw new Error(
+          "Invalid route for changing clock status, valid routes are: in, out, breakStart, breakEnd"
+        );
     }
-    const userClockStatus = await clockService.getStatusByUserId(userId);
-    if (!userClockStatus.clockedIn) {
-      throw new Error("This user is not clocked in");
-    }
-    if (!userClockStatus.onBreak) {
-      throw new Error("This user is not on break");
-    }
-    await clockService.postBreakEnd(userClockStatus);
-    //registrar accion en timesheet
-    // utilizar metodo Timesheet.updateBreak("end", date)
-    res.send({ message: `User ${userId} break ended`, updated: true });
   } catch (error) {
     res.status(400).send({ message: error.message, updated: false });
   }

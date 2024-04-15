@@ -10,18 +10,18 @@ ClockRouter.get("/:id", clockController.getUserClockStatus);
 
 //Hacer clock in a un usuario
 
-ClockRouter.post("/in", clockController.postClockIn);
+ClockRouter.post("/in", clockController.clockStatusChange);
 
 //Hacer clock out a un usuario
 
-ClockRouter.post("/out", clockController.postClockOut);
+ClockRouter.post("/out", clockController.clockStatusChange);
 
 //Marcar break start a un usuario
 
-ClockRouter.post("/breakStart", clockController.postBreakStart);
+ClockRouter.post("/breakStart", clockController.clockStatusChange);
 
 //Marcar break end a un usuario
 
-ClockRouter.post("/breakEnd", clockController.postBreakEnd);
+ClockRouter.post("/breakEnd", clockController.clockStatusChange);
 
 module.exports = ClockRouter;

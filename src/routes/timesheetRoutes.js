@@ -24,4 +24,8 @@ TimesheetRouter.post("/reject", timesheetController.rejectTimesheet);
 
 TimesheetRouter.get("/:timesheetId", timesheetController.getTimesheetById);
 
+//Eliminar un Timesheet
+
+TimesheetRouter.delete("/:id", timesheetController.deleteTimesheetById);
+
 module.exports = TimesheetRouter;

@@ -49,3 +49,13 @@ exports.rejectTimesheet = async (req, res, next) => {
     res.status(400).send({ message: error.message, updated: false });
   }
 };
+
+exports.deleteTimesheetById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    await timesheetService.deleteTimesheetById(id);
+    res.send({ message: "Timesheet deletede successfully", deleted: true });
+  } catch (error) {
+    res.status(400).send({ message: error.message, deleted: false });
+  }
+};

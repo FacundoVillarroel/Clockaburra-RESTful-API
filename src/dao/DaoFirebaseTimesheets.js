@@ -55,6 +55,14 @@ class DaoFirebaseTimesheets {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
+
+  async deleteById(id) {
+    try {
+      await this.firebaseClient.deleteById(id);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
+  }
 }
 
 module.exports = DaoFirebaseTimesheets;

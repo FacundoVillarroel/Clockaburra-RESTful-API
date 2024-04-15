@@ -45,9 +45,58 @@ class TimesheetService {
     }
   }
 
-  async createTimesheet(timesheet) {
+  async createTimesheet(userId, startDate, expectedHours = null) {
     try {
-      return await this.timesheets.save(timesheet);
+      const newTimesheet = {
+        userId,
+        startDate,
+        endDate: null,
+        expectedHours,
+        workedHours: null,
+        breaks: [],
+        actionHistory: [{ actionType: "checkIn", timeStamp: startDate }],
+        approved: false,
+        rejected: false,
+      };
+      return await this.timesheets.save(newTimesheet);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteTimesheetById(id) {
+    try {
+      await this.timesheets.deleteById(id);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateTimesheetById(id, date, action) {
+    try {
+      const currentTimesheet = await this.timesheets.getById(id);
+      if (action === "out") {
+        currentTimesheet.endDate = date;
+        currentTimesheet.workedHours = "someHours";
+        if (currentTimesheet.breaks.length % 2 !== 0) {
+          currentTimesheet.breaks.push({
+            actionType: "breakEnd",
+            timeStamp: date,
+          });
+          currentTimesheet.actionHistory.push({
+            actionType: "breakEnd",
+            timeStamp: date,
+          });
+        }
+        // Calcular workedHours
+      } else {
+        currentTimesheet.breaks.push({ actionType: action, timeStamp: date });
+      }
+      currentTimesheet.actionHistory.push({
+        actionType: action,
+        timeStamp: date,
+      });
+      this.timesheets.updateTimesheetById(id, currentTimesheet);
     } catch (error) {
       throw new Error(error.message);
     }
