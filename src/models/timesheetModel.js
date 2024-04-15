@@ -1,5 +1,5 @@
 class Timesheet {
-  constructor(userId, startDate, expectedHours) {
+  constructor(userId, startDate, expectedHours = null) {
     this.userId = userId;
     this.startDate = startDate;
     this.endDate = null;
