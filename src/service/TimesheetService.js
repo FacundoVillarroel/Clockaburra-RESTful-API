@@ -2,6 +2,8 @@ const daoFactory = require("../daoFactory/daoFactory");
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
+const calculateWorkedHours = require("../utils/calculateWorkedHours");
+
 class TimesheetService {
   constructor(type) {
     this.timesheets = DaoFactoryInstance.create(type, "timesheets");
@@ -77,7 +79,11 @@ class TimesheetService {
       const currentTimesheet = await this.timesheets.getById(id);
       if (action === "out") {
         currentTimesheet.endDate = date;
-        currentTimesheet.workedHours = "someHours";
+        currentTimesheet.workedHours = calculateWorkedHours(
+          currentTimesheet.startDate,
+          currentTimesheet.endDate,
+          currentTimesheet.breaks
+        );
         if (currentTimesheet.breaks.length % 2 !== 0) {
           currentTimesheet.breaks.push({
             actionType: "breakEnd",
@@ -88,7 +94,6 @@ class TimesheetService {
             timeStamp: date,
           });
         }
-        // Calcular workedHours
       } else {
         currentTimesheet.breaks.push({ actionType: action, timeStamp: date });
       }
