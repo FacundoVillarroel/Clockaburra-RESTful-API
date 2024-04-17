@@ -25,7 +25,6 @@ exports.clockStatusChange = async (req, res, next) => {
   try {
     const userId = req.body.userId;
     const dateTime = req.body.dateTime; // should come in body.dateTime
-    const timesheetId = req.body.timesheetId;
     const pathSections = req.url.split("/");
     const action = pathSections[pathSections.length - 1];
     if (!userId || !dateTime) {
@@ -39,15 +38,16 @@ exports.clockStatusChange = async (req, res, next) => {
           throw new Error("This user is already clocked in");
         }
         //verificar si tenia turno y pasar expectedHours a timesheet
-        const newTimesheetId = await timesheetService.createTimesheet(
+        const newTimesheet = await timesheetService.createTimesheet(
           userId,
           dateTime
         );
+        userClockStatus.currentTimesheetId = newTimesheet.id;
         await clockService.postClockIn(userClockStatus);
         res.send({
           message: `User ${userId} clocked In`,
           updated: true,
-          data: { newTimesheetId },
+          data: { newTimesheet },
         });
         break;
 
@@ -55,17 +55,15 @@ exports.clockStatusChange = async (req, res, next) => {
         if (!userClockStatus.clockedIn) {
           throw new Error("This user is not clocked in");
         }
-        if (!timesheetId) {
-          throw new Error("Must enter timesheetId in request body");
-        }
         await timesheetService.updateTimesheetById(
-          timesheetId,
+          userClockStatus.currentTimesheetId,
           dateTime,
           action
         );
         if (userClockStatus.onBreak) {
           await clockService.postBreakEnd(userClockStatus);
         }
+        userClockStatus.currentTimesheetId = null;
         await clockService.postClockOut(userClockStatus);
         res.send({ message: `User ${userId} clocked Out`, updated: true });
         break;
@@ -74,14 +72,11 @@ exports.clockStatusChange = async (req, res, next) => {
         if (!userClockStatus.clockedIn) {
           throw new Error("This user is not clocked in");
         }
-        if (!timesheetId) {
-          throw new Error("Must enter timesheetId in request body");
-        }
         if (userClockStatus.onBreak) {
           throw new Error("This user is currently on Break");
         }
         await timesheetService.updateTimesheetById(
-          timesheetId,
+          userClockStatus.currentTimesheetId,
           dateTime,
           action
         );
@@ -97,11 +92,8 @@ exports.clockStatusChange = async (req, res, next) => {
         if (!userClockStatus.onBreak) {
           throw new Error("This user is not on break");
         }
-        if (!timesheetId) {
-          throw new Error("Must enter timesheetId in request body");
-        }
         await timesheetService.updateTimesheetById(
-          timesheetId,
+          userClockStatus.currentTimesheetId,
           dateTime,
           action
         );
