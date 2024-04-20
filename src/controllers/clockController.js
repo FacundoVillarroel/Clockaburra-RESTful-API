@@ -3,8 +3,6 @@ const clockService = new ClockService(process.env.DATA_BASE);
 const TimesheetService = require("../service/TimesheetService");
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
-const { DateTime } = require("luxon");
-
 // Validar el id Ingresado, devolver usuario encontrado
 exports.getUserClockStatus = async (req, res, next) => {
   try {

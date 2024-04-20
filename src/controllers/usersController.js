@@ -25,7 +25,7 @@ exports.postUsers = async (req, res, next) => {
       res.status(422).send({ message: "missing properties for this user" });
     } else {
       const response = await service.addUser(user);
-      res.status(201).json({
+      res.status(201).send({
         message: "User created successfully",
         ...response,
       });
