@@ -2,7 +2,7 @@ const daoFactory = require("../daoFactory/daoFactory");
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
-const calculateWorkedHours = require("../utils/calculateWorkedHours");
+const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
 
 class TimesheetService {
   constructor(type) {

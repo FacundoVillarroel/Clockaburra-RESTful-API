@@ -23,4 +23,9 @@ const calculateWorkedHours = (start, end, breaks) => {
   return workedHours;
 };
 
-module.exports = calculateWorkedHours;
+const isValidDate = (dateString) => {
+  const dateTime = DateTime.fromISO(dateString, { zone: "utc" });
+  return dateTime.isValid;
+};
+
+module.exports = { calculateWorkedHours, isValidDate };
