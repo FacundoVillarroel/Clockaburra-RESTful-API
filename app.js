@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const express = require("express");
-const session = require("express-session");
 const passport = require("./src/config/PassportConfig");
 const bodyParser = require("body-parser");
 
@@ -25,20 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  session({
-    secret: process.env.SESION_SECRET,
-    resave: true,
-    rolling: true,
-    cookie: {
-      maxAge: 600000,
-    },
-    saveUninitialized: false,
-  })
-);
-
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use("/users", UsersRouter);
 

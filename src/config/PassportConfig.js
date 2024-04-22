@@ -92,7 +92,6 @@ passport.deserializeUser(async (id, done) => {
     const user = await userService.getUserById(id);
     user.username = user.name;
     delete user.password;
-    console.log(user);
     done(null, user);
   } catch (error) {
     throw new Error(error.message);
