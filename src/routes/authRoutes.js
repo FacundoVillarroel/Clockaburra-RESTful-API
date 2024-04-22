@@ -9,8 +9,6 @@ AuthRouter.post("/register", authController.register);
 
 AuthRouter.post("/login", authController.login);
 
-AuthRouter.post("/forgot-password", authController.forgotPassword);
-
 AuthRouter.post("/reset-password", authController.resetPassword);
 
 AuthRouter.get("/me", verifyJWT, authController.getJWT);

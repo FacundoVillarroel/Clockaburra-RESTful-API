@@ -1,5 +1,9 @@
 const passport = require("../config/PassportConfig");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+const UserService = require("../service/UserService");
+const userService = new UserService(process.env.DATA_BASE);
 
 exports.register = (req, res, next) => {
   passport.authenticate("register", (error, user, info) => {
@@ -43,12 +47,22 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.forgotPassword = async (req, res, next) => {
-  res.send({ message: "Forgot password" });
-};
-
 exports.resetPassword = async (req, res, next) => {
-  res.send({ message: "Reset password" });
+  try {
+    const userId = req.body.userId;
+    const userStored = await userService.getUserById(userId);
+    if (!userStored) {
+      throw new Error(`No user with id ${userId}`);
+    }
+    if (req.body.newPassword.length < 8) {
+      throw new Error("The password must be at least 8 characters");
+    }
+    const newPassword = await bcrypt.hash(req.body.newPassword, 10);
+    await userService.updateUserById(userId, { password: newPassword });
+    res.send({ message: "Password updated", updated: true });
+  } catch (error) {
+    res.status(400).send({ message: error.message, updated: false });
+  }
 };
 
 exports.getJWT = async (req, res, next) => {
