@@ -21,8 +21,13 @@ exports.register = (req, res, next) => {
       }
     );
     res
+      .header("Authorization", "Bearer " + token)
       .status(201)
-      .send({ message: "Register successful", user: user, token: token });
+      .send({
+        message: "Register successful",
+        userId: user.userId,
+        userName: user.name,
+      });
   })(req, res, next);
 };
 
@@ -42,8 +47,13 @@ exports.login = (req, res, next) => {
       }
     );
     res
+      .header("Authorization", "Bearer " + token)
       .status(200)
-      .send({ message: "Login successful", user: user, token: token });
+      .send({
+        message: "Login successful",
+        userId: user.userId,
+        userName: user.name,
+      });
   })(req, res, next);
 };
 

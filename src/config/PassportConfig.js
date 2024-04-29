@@ -46,8 +46,11 @@ passport.use(
       };
 
       const registeredUser = await userService.updateUserById(username, user);
-      delete registeredUser.password;
-      return done(null, registeredUser);
+
+      return done(null, {
+        userId: registeredUser.id,
+        name: registeredUser.name,
+      });
     } catch (error) {
       return done(null, false, { message: error.message });
     }
@@ -75,8 +78,7 @@ passport.use(
           message: "Incorrect password",
         });
       }
-      delete userStored.password;
-      return done(null, userStored);
+      return done(null, { userId: userStored.id, name: userStored.name });
     } catch (error) {
       return done(null, false, { message: error.message });
     }
