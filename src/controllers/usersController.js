@@ -49,6 +49,7 @@ exports.getUser = async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = await service.getUserById(id);
+    delete user.password;
     res.send({ user });
   } catch (error) {
     console.log(error);

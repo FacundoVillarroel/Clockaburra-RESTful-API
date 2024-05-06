@@ -40,7 +40,7 @@ exports.login = (req, res, next) => {
       return res.status(400).send({ message: info.message });
     }
     const token = jwt.sign(
-      { userId: user.id, userName: user.name },
+      { userId: user.userId, userName: user.name },
       process.env.JWT_SECRET,
       {
         expiresIn: "1w",
