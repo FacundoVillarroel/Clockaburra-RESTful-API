@@ -1,10 +1,12 @@
 const UserService = require("../service/UserService");
-const service = new UserService(process.env.DATA_BASE);
+const userService = new UserService(process.env.DATA_BASE);
+const ClockService = require("../service/ClockService");
+const clockService = new ClockService(process.env.DATA_BASE);
 
 const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
-  const allUsers = await service.getAllUsers();
+  const allUsers = await userService.getAllUsers();
   res.status(200).send(allUsers);
 };
 
@@ -33,8 +35,9 @@ exports.postUsers = async (req, res, next) => {
     if (hasEmptyValue) {
       res.status(422).send({ message: "missing properties for this user" });
     } else {
-      const response = await service.addUser(user);
+      const response = await userService.addUser(user);
       //send mail to user with registration link
+      await clockService.createClockForNewUser(user.id);
       res.status(201).send({
         message: "User created successfully",
         ...response,
@@ -48,7 +51,7 @@ exports.postUsers = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const user = await service.getUserById(id);
+    const user = await userService.getUserById(id);
     delete user.password;
     res.send({ user });
   } catch (error) {
@@ -66,7 +69,7 @@ exports.putUser = async (req, res, next) => {
         .status(400)
         .send({ message: "Missing properies for the user", updated: false });
     else {
-      const response = await service.updateUserById(id, userUpdate);
+      const response = await userService.updateUserById(id, userUpdate);
       res.send({
         message: "User updated successfully",
         updated: true,
@@ -81,7 +84,7 @@ exports.putUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    await service.deleteUserById(id);
+    await userService.deleteUserById(id);
     res
       .status(200)
       .send({ message: "User deleted successfully", deleted: true });

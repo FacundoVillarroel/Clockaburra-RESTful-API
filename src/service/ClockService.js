@@ -20,6 +20,20 @@ class ClockService {
     }
   }
 
+  async createClockForNewUser(userId) {
+    try {
+      const clock = {
+        clockedIn: false,
+        currentTimesheetId: null,
+        onBreak: false,
+        userId,
+      };
+      return await this.clock.addNewClock(clock);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async postClockIn(userClockStatus) {
     try {
       const userStatusUpdate = userClockStatus;

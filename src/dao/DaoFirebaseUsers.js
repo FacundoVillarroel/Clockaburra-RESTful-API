@@ -22,7 +22,7 @@ class DaoFirebaseUsers {
 
   async save(user) {
     try {
-      return this.firebaseClient.save(user);
+      return await this.firebaseClient.save(user);
     } catch (error) {
       throw new Error(error.message || "Unknown error occurred");
     }

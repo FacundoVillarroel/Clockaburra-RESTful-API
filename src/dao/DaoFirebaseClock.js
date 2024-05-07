@@ -24,6 +24,14 @@ class DaoFirebaseClock {
     }
   }
 
+  async addNewClock(clock) {
+    try {
+      return await this.firebaseClient.save(clock);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async updateStatus(id, update) {
     try {
       await this.firebaseClient.updateById(id, update);
