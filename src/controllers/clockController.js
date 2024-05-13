@@ -22,7 +22,7 @@ exports.getUserClockStatus = async (req, res, next) => {
 exports.clockStatusChange = async (req, res, next) => {
   try {
     const userId = req.body.userId;
-    const dateTime = req.body.dateTime; // should come in body.dateTime
+    const dateTime = req.body.dateTime;
     const pathSections = req.url.split("/");
     const action = pathSections[pathSections.length - 1];
     if (!userId || !dateTime) {

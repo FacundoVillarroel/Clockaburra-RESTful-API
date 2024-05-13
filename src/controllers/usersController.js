@@ -12,13 +12,17 @@ exports.getUsers = async (req, res, next) => {
 
 exports.postUsers = async (req, res, next) => {
   try {
+    if (isNaN(req.body.hourlyRate)) {
+      throw new Error("hourlyRate must be a Number");
+    }
     const user = {
       id: req.body.email,
       email: req.body.email,
       name: req.body.name,
       surname: req.body.surname,
-      rol: req.body.rol,
+      role: req.body.role,
       startDate: req.body.startDate,
+      hourlyRate: parseFloat(req.body.hourlyRate),
       isRegistered: false,
     };
     if (!isValidDate(user.startDate)) {

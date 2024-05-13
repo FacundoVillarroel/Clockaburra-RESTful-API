@@ -14,7 +14,7 @@ exports.getUserTimesheets = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const timesheets = await timesheetService.getTimesheetsByUser(userId);
-    res.send({ message: "all timesheet for user: ", data: timesheets });
+    res.send(timesheets);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }

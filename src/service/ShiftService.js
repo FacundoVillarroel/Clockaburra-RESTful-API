@@ -2,6 +2,8 @@ const daoFactory = require("../daoFactory/daoFactory");
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
+const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
+
 class ShiftService {
   constructor(type) {
     this.shifts = DaoFactoryInstance.create(type, "shifts");
@@ -33,6 +35,11 @@ class ShiftService {
 
   async addShift(shift) {
     try {
+      shift.totalHours = calculateWorkedHours(
+        shift.startDate,
+        shift.endDate,
+        shift.breaks
+      );
       return await this.shifts.save(shift);
     } catch (error) {
       throw new Error(error.message);
