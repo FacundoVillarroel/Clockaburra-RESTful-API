@@ -12,6 +12,20 @@ TimesheetRouter.get("/", timesheetController.getAllTimesheet);
 
 TimesheetRouter.get("/user/:userId", timesheetController.getUserTimesheets);
 
+// get timesheets from a single user for week selected
+
+TimesheetRouter.get(
+  "/user/:userId/week/:startDate",
+  timesheetController.getUserTimesheets
+);
+
+// get timesheets from a single user from week selected to period of time selected
+
+TimesheetRouter.get(
+  "/user/:userId/week/:startDate/:endDate",
+  timesheetController.getUserTimesheets
+);
+
 //approve a timesheet
 
 TimesheetRouter.post("/approve", timesheetController.approveTimesheet);

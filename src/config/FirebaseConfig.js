@@ -63,13 +63,21 @@ class FirebaseConfig {
     }
   }
 
-  async filterByCondition(field, operator, value) {
+  async filterByConditions(conditions) {
     try {
-      const snapshot = await this.query.where(field, operator, value).get();
-      if (snapshot.empty) {
-        throw new Error(
-          `there is no document with this condition: ${field} ${operator} ${value}`
+      let queryRef = this.query;
+
+      conditions.forEach((condition) => {
+        queryRef = queryRef.where(
+          condition.field,
+          condition.operator,
+          condition.value
         );
+      });
+
+      const snapshot = await queryRef.get();
+      if (snapshot.empty) {
+        return [];
       }
       let docsFound = [];
       snapshot.forEach((doc) => {
@@ -77,6 +85,7 @@ class FirebaseConfig {
       });
       return docsFound;
     } catch (error) {
+      console.log(error);
       throw new Error(error.message || "Error getting documents");
     }
   }

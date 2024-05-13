@@ -1,4 +1,5 @@
 const FirebaseConfig = require("../config/FirebaseConfig");
+const { DateTime } = require("luxon");
 
 let instance = null;
 
@@ -28,13 +29,32 @@ class DaoFirebaseTimesheets {
     }
   }
 
-  async filterByUserId(userId) {
+  async filterByUserId(userId, startDate, endDate) {
     try {
-      return await this.firebaseClient.filterByCondition(
-        "userId",
-        "==",
-        userId
-      );
+      let conditions = [{ field: "userId", operator: "==", value: userId }];
+
+      if (startDate) {
+        conditions.push({
+          field: "startDate",
+          operator: ">=",
+          value: startDate,
+        });
+      }
+      if (endDate) {
+        conditions.push({
+          field: "endDate",
+          operator: "<=",
+          value: endDate,
+        });
+      } else {
+        const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
+        conditions.push({
+          field: "endDate",
+          operator: "<=",
+          value: endDateTime,
+        });
+      }
+      return await this.firebaseClient.filterByConditions(conditions);
     } catch (error) {
       throw new Error(error.message || "Unknown error occurred");
     }

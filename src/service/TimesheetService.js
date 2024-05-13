@@ -25,9 +25,9 @@ class TimesheetService {
     }
   }
 
-  async getTimesheetsByUser(userId) {
+  async getTimesheetsByUser(userId, startDate = null, endDate = null) {
     try {
-      return await this.timesheets.filterByUserId(userId);
+      return await this.timesheets.filterByUserId(userId, startDate, endDate);
     } catch (error) {
       throw new Error(error.message);
     }

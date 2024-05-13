@@ -12,6 +12,20 @@ ShiftRouter.get("/", shiftController.getAllShift);
 
 ShiftRouter.get("/user/:userId", shiftController.getShiftByUser);
 
+// get shifts from a single user for week selected
+
+ShiftRouter.get(
+  "/user/:userId/week/:startDate",
+  shiftController.getShiftByUser
+);
+
+// get shifts from a single user from week selected to period of time selected
+
+ShiftRouter.get(
+  "/user/:userId/week/:startDate/:endDate",
+  shiftController.getShiftByUser
+);
+
 // get a specific shift
 
 ShiftRouter.get("/:id", shiftController.getShiftById);

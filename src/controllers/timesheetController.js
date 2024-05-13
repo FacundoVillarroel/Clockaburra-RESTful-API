@@ -13,7 +13,13 @@ exports.getAllTimesheet = async (req, res, next) => {
 exports.getUserTimesheets = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const timesheets = await timesheetService.getTimesheetsByUser(userId);
+    const startDate = req.params.startDate;
+    const endDate = req.params.endDate;
+    const timesheets = await timesheetService.getTimesheetsByUser(
+      userId,
+      startDate,
+      endDate
+    );
     res.send(timesheets);
   } catch (error) {
     res.status(400).send({ message: error.message });

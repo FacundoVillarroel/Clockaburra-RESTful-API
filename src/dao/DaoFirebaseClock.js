@@ -14,11 +14,9 @@ class DaoFirebaseClock {
 
   async getByUserId(userId) {
     try {
-      return await this.firebaseClient.filterByCondition(
-        "userId",
-        "==",
-        userId
-      );
+      return await this.firebaseClient.filterByConditions([
+        { field: "userId", operator: "==", value: userId },
+      ]);
     } catch (error) {
       throw new Error(error.message);
     }

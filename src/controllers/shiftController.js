@@ -13,7 +13,9 @@ exports.getAllShift = async (req, res, next) => {
 exports.getShiftByUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const response = await shiftService.getByUserId(userId);
+    const startDate = req.params.startDate;
+    const endDate = req.params.endDate;
+    const response = await shiftService.getByUserId(userId, startDate, endDate);
     res.send(response);
   } catch (error) {
     res.status(400).send({ message: error.message });
