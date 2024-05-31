@@ -46,14 +46,12 @@ exports.login = (req, res, next) => {
         expiresIn: "1w",
       }
     );
-    res
-      .header("Authorization", "Bearer " + token)
-      .status(200)
-      .send({
-        message: "Login successful",
-        userId: user.userId,
-        userName: user.name,
-      });
+    res.header("Authorization", "Bearer " + token);
+    res.send({
+      message: "Login successful",
+      userId: user.userId,
+      userName: user.name,
+    });
   })(req, res, next);
 };
 
