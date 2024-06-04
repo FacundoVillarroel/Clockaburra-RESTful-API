@@ -9,6 +9,7 @@ const ClockRouter = require("./src/routes/clockRoutes");
 const ShiftRouter = require("./src/routes/shiftRoutes");
 const TimesheetRouter = require("./src/routes/timesheetRoutes");
 const AuthRouter = require("./src/routes/authRoutes");
+const verifyJWT = require("./src/middlewares/verifyJWT");
 
 const app = express();
 
@@ -26,13 +27,13 @@ app.use((req, res, next) => {
 
 app.use(passport.initialize());
 
-app.use("/users", UsersRouter);
+app.use("/users", verifyJWT, UsersRouter);
 
-app.use("/clock", ClockRouter);
+app.use("/clock", verifyJWT, ClockRouter);
 
-app.use("/shift", ShiftRouter);
+app.use("/shift", verifyJWT, ShiftRouter);
 
-app.use("/timesheet", TimesheetRouter);
+app.use("/timesheet", verifyJWT, TimesheetRouter);
 
 app.use("/auth", AuthRouter);
 
