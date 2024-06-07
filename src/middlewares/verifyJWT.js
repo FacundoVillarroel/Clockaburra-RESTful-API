@@ -12,7 +12,11 @@ const verifyJWT = (req, res, next) => {
       return res.status(403).json({ message: "Failed to authenticate token" });
     }
     const newToken = jwt.sign(
-      { userId: decoded.userId, userName: decoded.userName },
+      {
+        userId: decoded.userId,
+        userName: decoded.userName,
+        role: decoded.role,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1w" }
     );
@@ -21,6 +25,7 @@ const verifyJWT = (req, res, next) => {
 
     req.userId = decoded.userId;
     req.userName = decoded.userName;
+    req.role = decoded.role;
     next();
   });
 };

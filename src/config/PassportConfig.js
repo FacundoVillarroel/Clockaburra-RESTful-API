@@ -50,6 +50,7 @@ passport.use(
       return done(null, {
         userId: registeredUser.id,
         name: registeredUser.name,
+        role: userStored.role,
       });
     } catch (error) {
       return done(null, false, { message: error.message });
@@ -78,7 +79,11 @@ passport.use(
           message: "Incorrect password",
         });
       }
-      return done(null, { userId: userStored.id, name: userStored.name });
+      return done(null, {
+        userId: userStored.id,
+        name: userStored.name,
+        role: userStored.role,
+      });
     } catch (error) {
       return done(null, false, { message: error.message });
     }

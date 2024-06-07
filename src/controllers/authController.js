@@ -14,7 +14,7 @@ exports.register = (req, res, next) => {
       return res.status(400).send({ message: info.message });
     }
     const token = jwt.sign(
-      { userId: user.id, userName: user.name },
+      { userId: user.id, userName: user.name, role: user.role },
       process.env.JWT_SECRET,
       {
         expiresIn: "1w",
@@ -27,6 +27,7 @@ exports.register = (req, res, next) => {
         message: "Register successful",
         userId: user.userId,
         userName: user.name,
+        role: user.role,
       });
   })(req, res, next);
 };
@@ -40,7 +41,7 @@ exports.login = (req, res, next) => {
       return res.status(400).send({ message: info.message });
     }
     const token = jwt.sign(
-      { userId: user.userId, userName: user.name },
+      { userId: user.userId, userName: user.name, role: user.role },
       process.env.JWT_SECRET,
       {
         expiresIn: "1w",
@@ -51,6 +52,7 @@ exports.login = (req, res, next) => {
       message: "Login successful",
       userId: user.userId,
       userName: user.name,
+      role: user.role,
     });
   })(req, res, next);
 };
@@ -78,5 +80,6 @@ exports.getJWT = async (req, res, next) => {
     message: "Token information",
     userName: req.userName,
     userId: req.userId,
+    role: req.role,
   });
 };
