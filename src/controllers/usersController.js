@@ -3,6 +3,8 @@ const userService = new UserService(process.env.DATA_BASE);
 const ClockService = require("../service/ClockService");
 const clockService = new ClockService(process.env.DATA_BASE);
 
+const { sendRegistrationEmail } = require("../utils/emailHelperFunctions");
+
 const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
@@ -12,7 +14,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.postUsers = async (req, res, next) => {
   try {
-    if (isNaN(req.body.hourlyRate)) {
+    if (isNaN(parseFloat(req.body.hourlyRate))) {
       throw new Error("hourlyRate must be a Number");
     }
     const user = {
@@ -40,8 +42,10 @@ exports.postUsers = async (req, res, next) => {
       res.status(422).send({ message: "missing properties for this user" });
     } else {
       const response = await userService.addUser(user);
-      //send mail to user with registration link
       await clockService.createClockForNewUser(user.id);
+
+      const emailResponse = await sendRegistrationEmail(user.email, user.name);
+      console.log("EMAIL", emailResponse.body);
       res.status(201).send({
         message: "User created successfully",
         ...response,
@@ -89,6 +93,8 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const id = req.params.id;
     await userService.deleteUserById(id);
+    const clock = await clockService.getStatusByUserId(id);
+    await clockService.deleteClockByUserId(clock.id);
     res
       .status(200)
       .send({ message: "User deleted successfully", deleted: true });

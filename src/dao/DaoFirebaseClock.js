@@ -37,6 +37,14 @@ class DaoFirebaseClock {
       throw new Error(error.message);
     }
   }
+
+  async deleteById(id) {
+    try {
+      return await this.firebaseClient.deleteById(id);
+    } catch (error) {
+      throw Error(error.message || "Unknown error occurred");
+    }
+  }
 }
 
 module.exports = DaoFirebaseClock;

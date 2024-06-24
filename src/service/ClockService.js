@@ -74,6 +74,14 @@ class ClockService {
       throw new Error(error.message);
     }
   }
+
+  async deleteClockByUserId(id) {
+    try {
+      return await this.clock.deleteById(id);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 module.exports = ClockService;
