@@ -24,7 +24,7 @@ exports.register = (req, res, next) => {
       .header("Authorization", "Bearer " + token)
       .status(201)
       .send({
-        message: "Register successful",
+        message: "Successful registration",
         userId: user.userId,
         userName: user.name,
         role: user.role,
@@ -89,15 +89,13 @@ exports.validateUser = async (req, res, next) => {
     const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
     const { token } = req.query;
     const decoded = jwt.verify(token, secretKey);
-    const { email } = decoded;
-    const userUpdate = { isRegistered: true };
-    const response = await userService.updateUserById(email, userUpdate);
+    const { userId, userName, role } = decoded;
     res.send({
-      message: "User updated successfully",
-      updated: true,
-      updatedUser: response,
+      message: "Valid Token",
+      ok: true,
+      user: { userId, userName, role },
     });
   } catch (error) {
-    res.status(400).send({ message: error.message, updated: false });
+    res.status(400).send({ message: error.message, ok: false });
   }
 };

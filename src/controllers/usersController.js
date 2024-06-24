@@ -48,8 +48,12 @@ exports.postUsers = async (req, res, next) => {
       const response = await userService.addUser(user);
       await clockService.createClockForNewUser(user.id);
 
-      const emailResponse = await sendRegistrationEmail(user.email, user.name);
-      console.log("EMAIL", emailResponse.body); //emailResponse.status === "success"
+      const emailResponse = await sendRegistrationEmail(
+        user.email,
+        user.name,
+        user.role
+      );
+      console.log("EMAIL", emailResponse.status); //emailResponse.status === "success"
       res.status(201).send({
         message: "User created successfully",
         ...response,
