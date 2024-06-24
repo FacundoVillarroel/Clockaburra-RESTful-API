@@ -83,3 +83,21 @@ exports.getJWT = async (req, res, next) => {
     role: req.role,
   });
 };
+
+exports.validateUser = async (req, res, next) => {
+  try {
+    const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
+    const { token } = req.query;
+    const decoded = jwt.verify(token, secretKey);
+    const { email } = decoded;
+    const userUpdate = { isRegistered: true };
+    const response = await userService.updateUserById(email, userUpdate);
+    res.send({
+      message: "User updated successfully",
+      updated: true,
+      updatedUser: response,
+    });
+  } catch (error) {
+    res.status(400).send({ message: error.message, updated: false });
+  }
+};

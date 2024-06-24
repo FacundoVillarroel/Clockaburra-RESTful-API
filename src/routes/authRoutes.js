@@ -13,4 +13,6 @@ AuthRouter.post("/reset-password", authController.resetPassword);
 
 AuthRouter.get("/me", verifyJWT, authController.getJWT);
 
+AuthRouter.get("/validation", authController.validateUser);
+
 module.exports = AuthRouter;
