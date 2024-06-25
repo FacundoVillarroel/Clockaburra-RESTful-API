@@ -12,6 +12,11 @@ UsersRouter.get("/:id", usersController.getUser);
 
 UsersRouter.put("/:id", usersController.putUser);
 
+UsersRouter.put(
+  "/resend-validation-link/:id",
+  usersController.resendValidationLink
+);
+
 UsersRouter.delete("/:id", usersController.deleteUser);
 
 module.exports = UsersRouter;

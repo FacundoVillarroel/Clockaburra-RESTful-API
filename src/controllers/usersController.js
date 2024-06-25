@@ -91,7 +91,7 @@ exports.getUser = async (req, res, next) => {
 exports.putUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const userUpdate = req.body.userUpdate;
+    const userUpdate = req.body;
     if (!Object.keys(userUpdate).length)
       res
         .status(400)
@@ -122,5 +122,30 @@ exports.deleteUser = async (req, res, next) => {
   } catch (error) {
     console.error("UserController", error);
     res.status(404).send({ message: error.message, deleted: false });
+  }
+};
+
+exports.resendValidationLink = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const newToken = jwt.sign(
+      { userName: req.body.name, userId: id, role: req.body.role },
+      secretKey,
+      {
+        expiresIn: "3d",
+      }
+    );
+    const response = await userService.updateUserById(id, {
+      validationToken: newToken,
+    });
+    await sendRegistrationEmail(id, req.body.name, newToken);
+    res.send({
+      message: "New validation link sent successfully.",
+      ok: true,
+      updatedUser: response,
+    });
+  } catch (error) {
+    console.error("UserController", error);
+    res.status(404).send({ message: error.message, ok: false });
   }
 };

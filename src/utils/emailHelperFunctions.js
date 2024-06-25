@@ -27,7 +27,6 @@ const sendRegistrationEmail = async (email, name, token) => {
         },
       ],
     });
-    console.log(`http://localhost:8080/auth/validation?token=${token}`);
     const emailResponse = await request;
     return emailResponse;
   } catch (error) {
