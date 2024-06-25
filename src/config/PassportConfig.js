@@ -43,6 +43,7 @@ passport.use(
         address,
         password: await bcrypt.hash(password, 10),
         isRegistered: true,
+        validationToken: null,
       };
 
       const registeredUser = await userService.updateUserById(username, user);

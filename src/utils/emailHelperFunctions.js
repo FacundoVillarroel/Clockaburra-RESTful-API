@@ -1,16 +1,12 @@
-const jwt = require("jsonwebtoken");
 const mailjet = require("node-mailjet").apiConnect(
   process.env.MAILJET_API_KEY,
   process.env.MAILJET_SECRET
 );
 
-const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
+const websiteDomain = "http://localhost:3000";
 
-const sendRegistrationEmail = async (email, name, role) => {
+const sendRegistrationEmail = async (email, name, token) => {
   try {
-    const token = jwt.sign({ userName: name, userId: email, role }, secretKey, {
-      expiresIn: "3d",
-    });
     const request = mailjet.post("send", { version: "v3.1" }).request({
       Messages: [
         {
@@ -25,8 +21,8 @@ const sendRegistrationEmail = async (email, name, role) => {
             },
           ],
           Subject: "Welcome to Our Platform",
-          TextPart: `Hi ${name},\n\nWelcome to our platform. Please click the following link to complete your registration.\n\nhttp://192.168.100.6:3030/validation?token=${token}`,
-          HTMLPart: `<h3>Hi ${name}</h3><br />Welcome to our platform. Please click the following link to complete your registration.<br /><a href="http://192.168.100.6:3030/validation?token=${token}">Complete Your Registration</a>`,
+          TextPart: `Hi ${name},\n\nWelcome to our platform. Please click the following link to complete your registration.\n\n${websiteDomain}/validation?token=${token}`,
+          HTMLPart: `<h3>Hi ${name}</h3><br />Welcome to our platform. Please click the following link to complete your registration.<br /><a href="${websiteDomain}/validation?token=${token}">Complete Your Registration</a>`,
           CustomID: "UserRegistration",
         },
       ],

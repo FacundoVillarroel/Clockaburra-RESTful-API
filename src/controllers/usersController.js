@@ -1,10 +1,13 @@
+const jwt = require("jsonwebtoken");
+
 const UserService = require("../service/UserService");
 const userService = new UserService(process.env.DATA_BASE);
 const ClockService = require("../service/ClockService");
 const clockService = new ClockService(process.env.DATA_BASE);
 
-const { sendRegistrationEmail } = require("../utils/emailHelperFunctions");
+const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
 
+const { sendRegistrationEmail } = require("../utils/emailHelperFunctions");
 const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
@@ -21,6 +24,13 @@ exports.postUsers = async (req, res, next) => {
     if (isNaN(parseFloat(req.body.hourlyRate))) {
       throw new Error("hourlyRate must be a Number");
     }
+    const token = jwt.sign(
+      { userName: req.body.name, userId: req.body.email, role: req.body.role },
+      secretKey,
+      {
+        expiresIn: "3d",
+      }
+    );
     const user = {
       id: req.body.email,
       email: req.body.email,
@@ -30,6 +40,7 @@ exports.postUsers = async (req, res, next) => {
       startDate: req.body.startDate,
       hourlyRate: parseFloat(req.body.hourlyRate),
       isRegistered: false,
+      validationToken: token,
     };
     if (!isValidDate(user.startDate)) {
       throw new Error("Date entered is invalid");
@@ -51,7 +62,7 @@ exports.postUsers = async (req, res, next) => {
       const emailResponse = await sendRegistrationEmail(
         user.email,
         user.name,
-        user.role
+        token
       );
       console.log("EMAIL", emailResponse.status); //emailResponse.status === "success"
       res.status(201).send({

@@ -86,16 +86,59 @@ exports.getJWT = async (req, res, next) => {
 
 exports.validateUser = async (req, res, next) => {
   try {
+    let decoded;
     const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
     const { token } = req.query;
-    const decoded = jwt.verify(token, secretKey);
+    // Handling errors jwt specific
+    try {
+      decoded = jwt.verify(token, secretKey);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(400).send({
+          message: "Token has expired. Please request a new activation link.",
+          ok: false,
+        });
+      } else if (error.name === "JsonWebTokenError") {
+        return res.status(400).send({
+          message:
+            "Invalid token. Please check the activation link or request a new one.",
+          ok: false,
+        });
+      } else {
+        return res.status(400).send({
+          message:
+            "An error occurred during token validation. Please try again later.",
+          ok: false,
+        });
+      }
+    }
+    // At this point Token was validated by JWT, now needs to be validated with token stored in user in the DB
     const { userId, userName, role } = decoded;
-    res.send({
-      message: "Valid Token",
-      ok: true,
-      user: { userId, userName, role },
-    });
+    const user = await userService.getUserById(userId);
+    if (user.isRegistered) {
+      res.status(400).send({
+        message: `This email is already registered and validated`,
+        ok: false,
+      });
+    } else {
+      if (user.validationToken === token) {
+        res.send({
+          message: "Valid Token",
+          ok: true,
+          user: { userId, userName, role },
+        });
+      } else {
+        res.status(400).send({
+          message:
+            "Invalid token. Please check the activation link or request a new one.",
+          ok: false,
+        });
+      }
+    }
   } catch (error) {
-    res.status(400).send({ message: error.message, ok: false });
+    res.status(500).send({
+      message: "Internal server error",
+      ok: false,
+    });
   }
 };
