@@ -11,7 +11,20 @@ const TimesheetRouter = require("./src/routes/timesheetRoutes");
 const AuthRouter = require("./src/routes/authRoutes");
 const verifyJWT = require("./src/middlewares/verifyJWT");
 
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
+const path = require("path");
+
 const app = express();
+
+// Lee el archivo de configuración de Swagger
+const swaggerSpec = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "swagger.json"))
+);
+
+// Configura Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.json());
 

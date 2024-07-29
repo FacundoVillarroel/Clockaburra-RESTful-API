@@ -36,6 +36,7 @@ exports.postUsers = async (req, res, next) => {
       email: req.body.email,
       name: req.body.name,
       surname: req.body.surname,
+      username: req.body.email,
       role: req.body.role,
       startDate: req.body.startDate,
       hourlyRate: parseFloat(req.body.hourlyRate),
@@ -64,7 +65,7 @@ exports.postUsers = async (req, res, next) => {
         user.name,
         token
       );
-      console.log("EMAIL", emailResponse.status); //emailResponse.status === "success"
+      console.log("'userController' Email sent status:", emailResponse.status); //emailResponse.status === "success" ? "user created sucessfully : "error sending registration email"
       res.status(201).send({
         message: "User created successfully",
         ...response,
