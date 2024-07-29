@@ -57,14 +57,14 @@
         "summary": "Create a new user",
         "description": "Add a new user to the system.",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Users"
+                "$ref": "#/components/schemas/NewUsers"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -72,7 +72,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Users"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Message 'User created successfully'"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/NewUsersResponse"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "Id of the user."
+                    }
+                  }
                 }
               }
             }
@@ -152,7 +165,7 @@
           },
           "role": {
             "type": "string",
-            "description": "The job position of the user."
+            "description": "The job role of the user."
           },
           "hourlyRate": {
             "type": "number",
@@ -183,7 +196,82 @@
             "description": "The complete registration status of the user."
           }
         }
-      }
+      },
+      "NewUsers": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email of the user."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the user."
+          },
+          "surname": {
+            "type": "string",
+            "description": "Surname of the user."
+          },
+          "role": {
+            "type": "string",
+            "description": "The job role of the user."
+          },
+          "startDate": {
+            "type": "string",
+            "description": "The start date of the user in ISO format."
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "The hourly rate of the user."
+          }
+        }
+      },
+      "NewUsersResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the user."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the user."
+          },
+          "surname": {
+            "type": "string",
+            "description": "The surname of the user."
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user."
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address of the user."
+          },
+          "role": {
+            "type": "string",
+            "description": "The job role of the user."
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "The hourly rate of the user."
+          },
+          "startDate": {
+            "type": "string",
+            "description": "The start date of the user in ISO format."
+          },
+          "validationToken": {
+            "oneOf": [{ "type": "string" }, { "type": "null" }],
+            "description": "The validation token of the user."
+          },
+          "isRegistered": {
+            "type": "boolean",
+            "description": "The complete registration status of the user."
+          }
+        }
+      },
+      "UnregisteredUsers": {}
     }
   }
 }
