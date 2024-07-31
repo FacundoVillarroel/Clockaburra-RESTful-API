@@ -1,0 +1,27 @@
+type: object
+properties:
+  email:
+    type: string
+    description: Email of the user.
+  name:
+    type: string
+    description: Name of the user.
+  surname:
+    type: string
+    description: Surname of the user.
+  role:
+    type: string
+    description: The job role of the user.
+  startDate:
+    type: string
+    description: The start date of the user in ISO format.
+  hourlyRate:
+    type: number
+    description: The hourly rate of the user.
+required:
+  - name
+  - surname
+  - email
+  - role
+  - hourlyRate
+  - startDate

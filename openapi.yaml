@@ -1,0 +1,24 @@
+openapi: 3.0.3
+info:
+  title: Clockaburra Timesheet API
+  version: 1.0.0
+  description: API for managing timesheets, schedules, and employee data for Clockaburra Timesheet App.
+servers:
+  - url: http://localhost:8080/
+    description: Production server
+paths:
+  /users:
+    $ref: "http://localhost:8080/openapi/paths/users.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Users:
+      $ref: "http://localhost:8080/openapi/components/schemas/users.yaml"
+    NewUsers:
+      $ref: "http://localhost:8080/openapi/components/schemas/newUsers.yaml"
+    NewUsersResponse:
+      $ref: "http://localhost:8080/openapi/components/schemas/newUsersResponse.yaml"

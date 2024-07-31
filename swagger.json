@@ -224,7 +224,15 @@
             "type": "number",
             "description": "The hourly rate of the user."
           }
-        }
+        },
+        "required": [
+          "name",
+          "surname",
+          "email",
+          "role",
+          "hourlyRate",
+          "startDate"
+        ]
       },
       "NewUsersResponse": {
         "type": "object",

@@ -1,0 +1,72 @@
+get:
+  summary: Get all users
+  description: Retrieve a list of all users.
+  responses:
+    "200":
+      description: A list of users.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/schemas/users.yaml"
+    "401":
+      description: Unauthorized, no token provided or token invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message
+  security:
+    - bearerAuth: []
+
+post:
+  summary: Create a new user
+  description: Add a new user to the system.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/newUsers.yaml"
+  responses:
+    "201":
+      description: User created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Message 'User created successfully'
+              data:
+                $ref: "../components/schemas/newUsersResponse.yaml"
+              id:
+                type: string
+                description: Id of the user.
+    "401":
+      description: Unauthorized, no token provided or token invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+    "409":
+      description: Invalid data entered.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+  security:
+    - bearerAuth: []
