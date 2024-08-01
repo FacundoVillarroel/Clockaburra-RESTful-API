@@ -68,5 +68,14 @@ post:
               message:
                 type: string
                 description: Error message.
+    "422":
+      description: Missing properties for this new user.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
   security:
     - bearerAuth: []

@@ -9,6 +9,8 @@ servers:
 paths:
   /users:
     $ref: "http://localhost:8080/openapi/paths/users.yaml"
+  /users/{id}:
+    $ref: "http://localhost:8080/openapi/paths/usersById.yaml"
 components:
   securitySchemes:
     bearerAuth:

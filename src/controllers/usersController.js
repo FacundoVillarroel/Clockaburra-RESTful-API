@@ -7,7 +7,10 @@ const clockService = new ClockService(process.env.DATA_BASE);
 
 const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
 
-const { sendRegistrationEmail } = require("../utils/emailHelperFunctions");
+const {
+  sendRegistrationEmail,
+  isValidEmail,
+} = require("../utils/emailHelperFunctions");
 const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
@@ -23,6 +26,9 @@ exports.postUsers = async (req, res, next) => {
   try {
     if (isNaN(parseFloat(req.body.hourlyRate))) {
       throw new Error("hourlyRate must be a Number");
+    }
+    if (!isValidEmail(req.body.email)) {
+      throw new Error("The Email is invalid");
     }
     const token = jwt.sign(
       { userName: req.body.name, userId: req.body.email, role: req.body.role },
@@ -48,7 +54,14 @@ exports.postUsers = async (req, res, next) => {
     }
 
     const hasEmptyValue = Object.entries(user).some(([key, value]) => {
-      if (key === "isRegistered" || typeof value === "boolean") {
+      if (
+        key === "isRegistered" ||
+        typeof value === "boolean" ||
+        key === "validationToken"
+      ) {
+        return false;
+      }
+      if (key === "hourlyRate" && value === 0) {
         return false;
       }
       return !value;
@@ -107,7 +120,11 @@ exports.putUser = async (req, res, next) => {
     }
   } catch (error) {
     console.error("UserController", error);
-    res.status(400).send({ message: error.message, updated: false });
+    if (error.message === `there is no document with id: ${req.params.id}`) {
+      res.status(404).send({ message: error.message, updated: false });
+    } else {
+      res.status(400).send({ message: error.message, updated: false });
+    }
   }
 };
 

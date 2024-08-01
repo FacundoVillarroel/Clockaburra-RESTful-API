@@ -1,0 +1,15 @@
+description: Bad request, json in wrong format.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message.
+        error:
+          type: string
+          description: The description of the error.
+        ok:
+          type: boolean
+          default: false

@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const passport = require("./src/config/PassportConfig");
-const bodyParser = require("body-parser");
+const jsonErrorHandler = require("./src/middlewares/jsonErrorHandler");
 
 const UsersRouter = require("./src/routes/usersRoutes");
 const ClockRouter = require("./src/routes/clockRoutes");
@@ -33,7 +33,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
 
-app.use(bodyParser.json());
+// bodyParser is used in the next middleware.
+app.use(jsonErrorHandler);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

@@ -1,0 +1,9 @@
+description: Unauthorized, no token provided or token invalid.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message.

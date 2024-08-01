@@ -1,0 +1,129 @@
+get:
+  summary: Get user a single user.
+  description: Retrieve the user an existing user by their ID.
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the user to retrieve.
+      schema:
+        type: string
+
+  responses:
+    "200":
+      description: retrieved user by their ID succesfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                allOf:
+                  - $ref: "../components/schemas/users.yaml"
+                  - type: object
+                    properties:
+                      validationToken: ~
+                      password: ~
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      description: No user found with introduced id.
+      content:
+        application/json:
+          schema:
+            type: string
+            description: message of error not found.
+  security:
+    - bearerAuth: []
+
+put:
+  summary: Edit a single user.
+  description: Edit an user by their ID.
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the user to edit.
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/newUsers.yaml"
+
+  responses:
+    "200":
+      description: User edited by their ID successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              updated:
+                type: boolean
+                default: true
+              updatedUser:
+                $ref: "../components/schemas/users.yaml"
+    "400":
+      $ref: "../components/responses/badRequest.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      description: No user found with introduced id.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              updated:
+                type: boolean
+                default: false
+  security:
+    - bearerAuth: []
+
+delete:
+  summary: Delete a single user.
+  description: Delete an user by their ID.
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the user to delete.
+      schema:
+        type: string
+
+  responses:
+    "200":
+      description: User deleted by ID successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              deleted:
+                type: boolean
+                default: true
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      description: No user found with introduced id.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              deleted:
+                type: boolean
+                default: false
+  security:
+    - bearerAuth: []
