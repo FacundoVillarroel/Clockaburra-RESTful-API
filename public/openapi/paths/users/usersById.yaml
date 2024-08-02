@@ -19,15 +19,15 @@ get:
             properties:
               user:
                 allOf:
-                  - $ref: "../components/schemas/users.yaml"
+                  - $ref: "../../components/schemas/users.yaml"
                   - type: object
                     properties:
                       validationToken: ~
                       password: ~
     "401":
-      $ref: "../components/responses/unauthorized.yaml"
+      $ref: "../../components/responses/unauthorized.yaml"
     "404":
-      description: No user found with introduced id.
+      description: No user found with introduced ID.
       content:
         application/json:
           schema:
@@ -51,7 +51,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: "../components/schemas/newUsers.yaml"
+          $ref: "../../components/schemas/newUsers.yaml"
 
   responses:
     "200":
@@ -67,11 +67,11 @@ put:
                 type: boolean
                 default: true
               updatedUser:
-                $ref: "../components/schemas/users.yaml"
+                $ref: "../../components/schemas/users.yaml"
     "400":
-      $ref: "../components/responses/badRequest.yaml"
+      $ref: "../../components/responses/badRequest.yaml"
     "401":
-      $ref: "../components/responses/unauthorized.yaml"
+      $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced id.
       content:
@@ -112,7 +112,7 @@ delete:
                 type: boolean
                 default: true
     "401":
-      $ref: "../components/responses/unauthorized.yaml"
+      $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced id.
       content:

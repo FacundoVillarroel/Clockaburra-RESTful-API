@@ -1,0 +1,56 @@
+put:
+  summary: Resend validation link.
+  description: Resend validation link to user email.
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the user to resend link.
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            role:
+              type: string
+
+  responses:
+    "200":
+      description: Validation link resent successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              ok:
+                type: boolean
+                default: true
+              updatedUser:
+                $ref: "../../components/schemas/users.yaml"
+    "400":
+      $ref: "../../components/responses/badRequest.yaml"
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "404":
+      description: No user found with introduced ID.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              ok:
+                type: boolean
+                default: false
+
+  security:
+    - bearerAuth: []

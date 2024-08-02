@@ -8,9 +8,12 @@ servers:
     description: Production server
 paths:
   /users:
-    $ref: "http://localhost:8080/openapi/paths/users.yaml"
+    $ref: "http://localhost:8080/openapi/paths/users/users.yaml"
   /users/{id}:
-    $ref: "http://localhost:8080/openapi/paths/usersById.yaml"
+    $ref: "http://localhost:8080/openapi/paths/users/usersById.yaml"
+  /users/resend-validation-link/{id}:
+    $ref: "http://localhost:8080/openapi/paths/users/resendLink.yaml"
+
 components:
   securitySchemes:
     bearerAuth:

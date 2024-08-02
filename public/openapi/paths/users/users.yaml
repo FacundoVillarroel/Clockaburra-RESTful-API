@@ -9,7 +9,7 @@ get:
           schema:
             type: array
             items:
-              $ref: "../components/schemas/users.yaml"
+              $ref: "../../components/schemas/users.yaml"
     "401":
       description: Unauthorized, no token provided or token invalid.
       content:
@@ -31,7 +31,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../components/schemas/newUsers.yaml"
+          $ref: "../../components/schemas/newUsers.yaml"
   responses:
     "201":
       description: User created successfully.
@@ -44,7 +44,7 @@ post:
                 type: string
                 description: Message 'User created successfully'
               data:
-                $ref: "../components/schemas/newUsersResponse.yaml"
+                $ref: "../../components/schemas/newUsersResponse.yaml"
               id:
                 type: string
                 description: Id of the user.
