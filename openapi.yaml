@@ -14,6 +14,17 @@ paths:
   /users/resend-validation-link/{id}:
     $ref: "http://localhost:8080/openapi/paths/users/resendLink.yaml"
 
+  /auth/register:
+    $ref: "http://localhost:8080/openapi/paths/auth/register.yaml"
+  /auth/login:
+    $ref: "http://localhost:8080/openapi/paths/auth/login.yaml"
+  /auth/reset-password:
+    $ref: "http://localhost:8080/openapi/paths/auth/resetPassword.yaml"
+  /auth/me:
+    $ref: "http://localhost:8080/openapi/paths/auth/me.yaml"
+  /auth/validation:
+    $ref: "http://localhost:8080/openapi/paths/auth/validation.yaml"
+
 components:
   securitySchemes:
     bearerAuth:

@@ -1,0 +1,53 @@
+get:
+  summary: Validate email of a new user.
+  description: Validate email of a new user with the unique token valid for that user.
+  responses:
+    "200":
+      description: Validation link is valid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Valid Token
+              ok:
+                type: boolean
+                default: true
+              user:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  userName:
+                    type: string
+                  role:
+                    type: string
+    "400":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              ok:
+                type: boolean
+                default: false
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "500":
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Internal server error
+              ok:
+                type: boolean
+                default: false

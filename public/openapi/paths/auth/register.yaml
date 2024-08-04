@@ -1,0 +1,55 @@
+post:
+  summary: Register an user.
+  description: Complete registration of an user.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+            name:
+              type: string
+            surname:
+              type: string
+            phoneNumber:
+              type: number
+            address:
+              type: string
+          required:
+            - email
+            - password
+            - name
+            - surname
+            - phoneNumber
+            - address
+
+  responses:
+    "201":
+      description: Registration complete successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              userId:
+                type: string
+              userName:
+                type: string
+              role:
+                type: string
+    "400":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string

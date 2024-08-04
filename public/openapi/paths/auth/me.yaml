@@ -1,0 +1,27 @@
+get:
+  summary: Retrieve Json Web Token information.
+  description: Get info about active JWT sent on headers.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: JWT information retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Token Information
+              userName:
+                type: string
+                default: userName
+              userId:
+                type: string
+                default: example@gmail.com
+              role:
+                type: string
+                default: employee
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
