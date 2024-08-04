@@ -6,6 +6,11 @@ info:
 servers:
   - url: http://localhost:8080/
     description: Production server
+tags:
+  - name: Users
+    description: Operations related to users
+  - name: Authentication
+    description: Operations related to authentication
 paths:
   /users:
     $ref: "http://localhost:8080/openapi/paths/users/users.yaml"

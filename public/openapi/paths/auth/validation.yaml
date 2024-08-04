@@ -1,6 +1,15 @@
 get:
   summary: Validate email of a new user.
   description: Validate email of a new user with the unique token valid for that user.
+  tags:
+    - Authentication
+  parameters:
+    - in: query
+      name: token
+      required: true
+      schema:
+        type: string
+      description: The unique token for validating the user's email.
   responses:
     "200":
       description: Validation link is valid.

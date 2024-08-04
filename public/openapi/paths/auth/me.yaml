@@ -1,11 +1,15 @@
 get:
   summary: Retrieve Json Web Token information.
   description: Get info about active JWT sent on headers.
+  tags:
+    - Authentication
   security:
     - bearerAuth: []
   responses:
     "200":
       description: JWT information retrieved successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -25,3 +29,14 @@ get:
                 default: employee
     "401":
       $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      description: Failed to authenticate token
+      content:
+        application/json:
+          schema:
+            type:
+            object:
+              properties:
+                message:
+                  type: string
+                  default: Failed to authenticate token

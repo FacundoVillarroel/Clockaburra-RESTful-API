@@ -1,6 +1,8 @@
 put:
   summary: Resend validation link.
   description: Resend validation link to user email.
+  tags:
+    - Users
   parameters:
     - name: id
       in: path
@@ -23,6 +25,8 @@ put:
   responses:
     "200":
       description: Validation link resent successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -41,6 +45,8 @@ put:
       $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced ID.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:

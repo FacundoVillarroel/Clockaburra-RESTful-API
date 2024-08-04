@@ -1,6 +1,8 @@
 post:
   summary: Login an user.
   description: Login an user with their credentials.
+  tags:
+    - Authentication
   requestBody:
     required: true
     content:
@@ -10,26 +12,36 @@ post:
           properties:
             email:
               type: string
+              default: example@email.com
             password:
               type: string
+              default: "12345678"
           required:
             - email
             - password
 
   responses:
-    "201":
+    "200":
       description: Login successful.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
             type: object
             properties:
+              message:
+                type: string
+                default: Login successful
               userId:
                 type: string
+                default: example@email.com
               name:
                 type: string
+                default: Name
               role:
                 type: string
+                default: employee
     "400":
       description: Information of error.
       content:

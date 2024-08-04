@@ -1,6 +1,8 @@
 get:
   summary: Get user a single user.
   description: Retrieve the user an existing user by their ID.
+  tags:
+    - Users
   parameters:
     - name: id
       in: path
@@ -12,6 +14,8 @@ get:
   responses:
     "200":
       description: retrieved user by their ID succesfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -28,6 +32,8 @@ get:
       $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced ID.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -39,6 +45,8 @@ get:
 put:
   summary: Edit a single user.
   description: Edit an user by their ID.
+  tags:
+    - Users
   parameters:
     - name: id
       in: path
@@ -56,6 +64,8 @@ put:
   responses:
     "200":
       description: User edited by their ID successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -74,6 +84,8 @@ put:
       $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced id.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -90,6 +102,8 @@ put:
 delete:
   summary: Delete a single user.
   description: Delete an user by their ID.
+  tags:
+    - Users
   parameters:
     - name: id
       in: path
@@ -101,6 +115,8 @@ delete:
   responses:
     "200":
       description: User deleted by ID successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -115,6 +131,8 @@ delete:
       $ref: "../../components/responses/unauthorized.yaml"
     "404":
       description: No user found with introduced id.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:

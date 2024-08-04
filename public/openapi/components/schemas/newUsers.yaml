@@ -3,15 +3,19 @@ properties:
   email:
     type: string
     description: Email of the user.
+    default: example@email.com
   name:
     type: string
     description: Name of the user.
+    default: Name
   surname:
     type: string
     description: Surname of the user.
+    default: Surname
   role:
     type: string
     description: The job role of the user.
+    default: employee
   startDate:
     type: string
     description: The start date of the user in ISO format.
@@ -19,6 +23,7 @@ properties:
   hourlyRate:
     type: number
     description: The hourly rate of the user.
+    default: 30
 required:
   - name
   - surname

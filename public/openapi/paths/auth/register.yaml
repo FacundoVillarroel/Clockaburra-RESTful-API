@@ -1,6 +1,8 @@
 post:
   summary: Register an user.
   description: Complete registration of an user.
+  tags:
+    - Authentication
   requestBody:
     required: true
     content:
@@ -10,16 +12,22 @@ post:
           properties:
             email:
               type: string
+              default: example@email.com
             password:
               type: string
+              default: "12345678"
             name:
               type: string
+              default: Name
             surname:
               type: string
+              default: Surname
             phoneNumber:
-              type: number
+              type: string
+              default: "+610492156825"
             address:
               type: string
+              default: Fake 123
           required:
             - email
             - password
@@ -38,12 +46,16 @@ post:
             properties:
               message:
                 type: string
+                default: Successful registration
               userId:
                 type: string
+                default: example@email.com
               userName:
                 type: string
+                default: Name
               role:
                 type: string
+                default: employee
     "400":
       description: Information of error.
       content:

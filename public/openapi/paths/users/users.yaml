@@ -1,9 +1,13 @@
 get:
   summary: Get all users
   description: Retrieve a list of all users.
+  tags:
+    - Users
   responses:
     "200":
       description: A list of users.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:
@@ -26,6 +30,8 @@ get:
 post:
   summary: Create a new user
   description: Add a new user to the system.
+  tags:
+    - Users
   requestBody:
     required: true
     content:
@@ -35,6 +41,8 @@ post:
   responses:
     "201":
       description: User created successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
       content:
         application/json:
           schema:

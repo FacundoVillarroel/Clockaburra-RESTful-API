@@ -1,0 +1,5 @@
+Authorization:
+  description: The Bearer token with updated expiration date.
+  schema:
+    type: string
+    example: Bearer <newly-updated-token>
