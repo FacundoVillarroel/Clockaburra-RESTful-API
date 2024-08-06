@@ -1,0 +1,65 @@
+get:
+  summary: Get a clock status.
+  description: Get a clock status of an user by its ID.
+  tags:
+    - Clock
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The Id of the user's Clock status.
+      schema:
+        type: string
+
+  responses:
+    "200":
+      description: Clock retrieved successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              userId:
+                type: string
+                default: example@email.com
+              onBreak:
+                type: boolean
+                default: false
+              clockedIn:
+                type: boolean
+                default: false
+              currentTimesheetId:
+                type:
+                  oneOf:
+                    - null
+                    - string
+                default: null
+    "400":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "404":
+      description: No clock found with ID provided.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  security:
+    - bearerAuth: []

@@ -1,0 +1,47 @@
+type: object
+properties:
+  data:
+    type: object
+    properties:
+      userId:
+        type: string
+        default: example@email.com
+      startDate:
+        type: string
+        format: date-time
+        example: "2024-04-21T00:00:00.000-05:00"
+      endDate:
+        type: string
+        format: date-time
+        example: null
+      expectedHours:
+        type: number
+        example: null
+      workedHours:
+        type: number
+        example: null
+      breaks:
+        type: array
+        items:
+          type: object
+      actionHistory:
+        type: array
+        items:
+          type: object
+          properties:
+            actionType:
+              type: string
+              example: checkIn
+            timeStamp:
+              type: string
+              format: date-time
+              example: "2024-04-21T00:00:00.000-05:00"
+      approved:
+        type: boolean
+        default: false
+      rejected:
+        type: boolean
+        default: false
+  id:
+    type: string
+    default: 8CCcleukURtq0b5qeu1U

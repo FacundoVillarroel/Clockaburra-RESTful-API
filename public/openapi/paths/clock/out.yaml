@@ -1,0 +1,56 @@
+post:
+  summary: Clock-out an user.
+  description: Clock out an user with its ID.
+  tags:
+    - Clock
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            userId:
+              type: string
+              default: example@email.com
+            dateTime:
+              type: string
+              default: "2024-04-21T00:00:00.000-05:00"
+          required:
+            - userId
+            - dateTime
+
+  responses:
+    "200":
+      description: Clock-out successfully.
+      headers:
+        $ref: "../../components/headers/authorization.yaml"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: User example@email.com clocked Out
+              updated:
+                type: boolean
+                default: true
+
+    "400":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              updated:
+                type: boolean
+                default: false
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+  security:
+    - bearerAuth: []

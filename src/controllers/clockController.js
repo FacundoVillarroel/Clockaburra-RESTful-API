@@ -1,6 +1,7 @@
 const ClockService = require("../service/ClockService");
 const clockService = new ClockService(process.env.DATA_BASE);
 const TimesheetService = require("../service/TimesheetService");
+const { isValidDate } = require("../utils/dateHelperFunctions");
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 // Validar el id Ingresado, devolver usuario encontrado
@@ -14,7 +15,13 @@ exports.getUserClockStatus = async (req, res, next) => {
       throw new Error("Must enter a User Id");
     }
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    if (
+      error.message === `User clock status not found with id: ${req.params.id}`
+    ) {
+      res.status(404).send({ message: error.message });
+    } else {
+      res.status(400).send({ message: error.message });
+    }
   }
 };
 
@@ -25,8 +32,11 @@ exports.clockStatusChange = async (req, res, next) => {
     const dateTime = req.body.dateTime;
     const pathSections = req.url.split("/");
     const action = pathSections[pathSections.length - 1];
-    if (!userId || !dateTime) {
+    if (!userId) {
       throw new Error("userId and date must be provided in request body");
+    }
+    if (!isValidDate(dateTime)) {
+      throw new Error("there must enter a valid date in ISO format");
     }
     const userClockStatus = await clockService.getStatusByUserId(userId);
 
