@@ -17,7 +17,7 @@ class ShiftService {
     }
   }
 
-  async getByUserId(userId, startDate = null, endDate = null) {
+  async getByUserId(userId, startDate, endDate) {
     try {
       return await this.shifts.filterByUserId(userId, startDate, endDate);
     } catch (error) {

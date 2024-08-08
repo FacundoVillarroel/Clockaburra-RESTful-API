@@ -33,27 +33,26 @@ class DaoFirebaseShifts {
   async filterByUserId(userId, startDate, endDate) {
     try {
       let conditions = [{ field: "userId", operator: "==", value: userId }];
-
       if (startDate) {
         conditions.push({
           field: "startDate",
           operator: ">=",
           value: startDate,
         });
-      }
-      if (endDate) {
-        conditions.push({
-          field: "endDate",
-          operator: "<=",
-          value: endDate,
-        });
-      } else {
-        const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
-        conditions.push({
-          field: "endDate",
-          operator: "<=",
-          value: endDateTime,
-        });
+        if (endDate) {
+          conditions.push({
+            field: "endDate",
+            operator: "<=",
+            value: endDate,
+          });
+        } else {
+          const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
+          conditions.push({
+            field: "endDate",
+            operator: "<=",
+            value: endDateTime,
+          });
+        }
       }
       return await this.firebaseClient.filterByConditions(conditions);
     } catch (error) {

@@ -11,7 +11,7 @@ exports.register = (req, res, next) => {
       return next(error);
     }
     if (!user) {
-      return res.status(400).send({ message: info.message });
+      return res.status(info.code || 400).send({ message: info.message });
     }
     const token = jwt.sign(
       { userId: user.id, userName: user.name, role: user.role },
@@ -38,7 +38,7 @@ exports.login = (req, res, next) => {
       return next(error);
     }
     if (!user) {
-      return res.status(400).send({ message: info.message });
+      return res.status(info.code || 400).send({ message: info.message });
     }
     const token = jwt.sign(
       { userId: user.userId, userName: user.name, role: user.role },

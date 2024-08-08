@@ -20,16 +20,19 @@ passport.use(
       const userStored = await userService.getUserById(username);
       if (!userStored) {
         return done(null, false, {
+          code: 404,
           message: "Email not found for pending registration",
         });
       }
       if (userStored.isRegistered) {
         return done(null, false, {
+          code: 409,
           message: "This email is already registrated",
         });
       }
       if (password.length < 8) {
         return done(null, false, {
+          code: 400,
           message: "The password must be at least 8 characters",
         });
       }
@@ -54,7 +57,11 @@ passport.use(
         role: userStored.role,
       });
     } catch (error) {
-      return done(null, false, { message: error.message });
+      let codeStatus = 400;
+      if (error.message === `there is no document with id: ${username}`) {
+        codeStatus = 404;
+      }
+      return done(null, false, { code: codeStatus, message: error.message });
     }
   })
 );
@@ -66,17 +73,20 @@ passport.use(
       const userStored = await userService.getUserById(username);
       if (!userStored) {
         return done(null, false, {
+          code: 404,
           message: "User not found",
         });
       }
       if (!userStored.isRegistered) {
         return done(null, false, {
-          message: "User did not complete email validation.",
+          code: 409,
+          message: "User did not complete email validation",
         });
       }
       const passwordMatch = await bcrypt.compare(password, userStored.password);
       if (!passwordMatch) {
         return done(null, false, {
+          code: 400,
           message: "Incorrect password",
         });
       }
@@ -86,7 +96,12 @@ passport.use(
         role: userStored.role,
       });
     } catch (error) {
-      return done(null, false, { message: error.message });
+      let codeStatus = 400;
+      if (error.message === `there is no document with id: ${username}`) {
+        codeStatus = 404;
+        error.message = "User not found";
+      }
+      return done(null, false, { code: codeStatus, message: error.message });
     }
   })
 );

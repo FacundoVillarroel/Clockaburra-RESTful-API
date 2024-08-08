@@ -65,3 +65,24 @@ post:
             properties:
               message:
                 type: string
+                default: The password must be at least 8 characters
+    "404":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Email not found for pending registration
+    "409":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: This email is already registrated

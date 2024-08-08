@@ -13,8 +13,8 @@ exports.getAllTimesheet = async (req, res, next) => {
 exports.getUserTimesheets = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const startDate = req.params.startDate;
-    const endDate = req.params.endDate;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
     const timesheets = await timesheetService.getTimesheetsByUser(
       userId,
       startDate,

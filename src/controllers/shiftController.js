@@ -10,11 +10,21 @@ exports.getAllShift = async (req, res, next) => {
   }
 };
 
+exports.filterBy = async (req, res, next) => {
+  try {
+    const userIds = req.quer.userIds?.split(",");
+    console.log("userS ", userIds);
+    res.send(userIds);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
 exports.getShiftByUser = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
-    const startDate = req.params.startDate;
-    const endDate = req.params.endDate;
+    const userId = req.params.userIds;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
     const response = await shiftService.getByUserId(userId, startDate, endDate);
     res.send(response);
   } catch (error) {

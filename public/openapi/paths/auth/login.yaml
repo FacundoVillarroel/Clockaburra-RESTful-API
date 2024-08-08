@@ -51,3 +51,24 @@ post:
             properties:
               message:
                 type: string
+                default: Incorrect password
+    "404":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: User not found
+    "409":
+      description: Information of error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: User did not complete email validation

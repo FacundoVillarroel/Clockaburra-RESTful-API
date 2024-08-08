@@ -4,35 +4,25 @@ const shiftController = require("../controllers/shiftController");
 
 const ShiftRouter = express.Router();
 
-//get all shifts
+//get all shifts - get shifts based in filters
 
 ShiftRouter.get("/", shiftController.getAllShift);
-
-// get all shifts for an user
-
-ShiftRouter.get("/user/:userId", shiftController.getShiftByUser);
-
-// get shifts from a single user for week selected
-
-ShiftRouter.get(
-  "/user/:userId/week/:startDate",
-  shiftController.getShiftByUser
-);
-
-// get shifts from a single user from week selected to period of time selected
-
-ShiftRouter.get(
-  "/user/:userId/week/:startDate/:endDate",
-  shiftController.getShiftByUser
-);
-
-// get a specific shift
-
-ShiftRouter.get("/:id", shiftController.getShiftById);
 
 //create un nuevo shift
 
 ShiftRouter.post("/", shiftController.postNewShift);
+
+// get shift based in query parameters as filter
+
+ShiftRouter.get("/filterBy", shiftController.filterBy);
+
+// get all shifts for an user - get shifts for an user based in filters
+
+ShiftRouter.get("/user/:userId", shiftController.getShiftByUser);
+
+// get a specific shift
+
+ShiftRouter.get("/:id", shiftController.getShiftById);
 
 //update a shift
 
