@@ -12,7 +12,7 @@ class ShiftService {
   async getShifts(filters) {
     try {
       if (
-        !filters.usersIds.lenght > 0 &&
+        !filters.userIds.lenght > 0 &&
         !filters.startDate &&
         !filters.endDate
       ) {
