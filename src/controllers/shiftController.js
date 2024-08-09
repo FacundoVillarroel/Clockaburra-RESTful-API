@@ -1,20 +1,14 @@
 const ShiftService = require("../service/ShiftService");
 const shiftService = new ShiftService(process.env.DATA_BASE);
 
-exports.getAllShift = async (req, res, next) => {
+exports.getShifts = async (req, res, next) => {
   try {
-    const allShifts = await shiftService.getAllShifts();
-    res.send(allShifts);
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
-
-exports.filterBy = async (req, res, next) => {
-  try {
-    const userIds = req.quer.userIds?.split(",");
-    console.log("userS ", userIds);
-    res.send(userIds);
+    const userIds = req.query.userIds?.split(",") || []; //may be undefined or []
+    const startDate = req.query.startDate; // shouldn't be undefined
+    const endDate = req.query.endDate; // shouldn't be undefined
+    filters = { userIds, startDate, endDate };
+    const shifts = await shiftService.getShifts(filters);
+    res.send(shifts);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
@@ -22,7 +16,7 @@ exports.filterBy = async (req, res, next) => {
 
 exports.getShiftByUser = async (req, res, next) => {
   try {
-    const userId = req.params.userIds;
+    const userId = req.params.userId;
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const response = await shiftService.getByUserId(userId, startDate, endDate);

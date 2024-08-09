@@ -20,6 +20,32 @@ class DaoFirebaseUsers {
     }
   }
 
+  async getByFilters(filters) {
+    try {
+      let conditions = [];
+      // Iterate over each filter and push it to the conditions array
+      if (filters.roles.length > 0) {
+        conditions.push({
+          field: "role",
+          operator: "in",
+          value: filters.roles,
+        });
+      }
+
+      if (filters.departments.length > 0) {
+        conditions.push({
+          field: "department",
+          operator: "in",
+          value: filters.departments,
+        });
+      }
+
+      return await this.firebaseClient.filterByConditions(conditions);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
+  }
+
   async save(user) {
     try {
       return await this.firebaseClient.save(user);

@@ -4,19 +4,15 @@ const shiftController = require("../controllers/shiftController");
 
 const ShiftRouter = express.Router();
 
-//get all shifts - get shifts based in filters
+//get all shifts or get shifts by conditions on query
 
-ShiftRouter.get("/", shiftController.getAllShift);
+ShiftRouter.get("/", shiftController.getShifts);
 
 //create un nuevo shift
 
 ShiftRouter.post("/", shiftController.postNewShift);
 
-// get shift based in query parameters as filter
-
-ShiftRouter.get("/filterBy", shiftController.filterBy);
-
-// get all shifts for an user - get shifts for an user based in filters
+// get shifts based in query parameters as filter
 
 ShiftRouter.get("/user/:userId", shiftController.getShiftByUser);
 

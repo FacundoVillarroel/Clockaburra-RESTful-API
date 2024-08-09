@@ -30,6 +30,40 @@ class DaoFirebaseShifts {
     }
   }
 
+  async getByFilters(filters) {
+    try {
+      let conditions = [];
+      // Iterate over each filter and push it to the conditions array
+      if (filters.userIds.length > 0) {
+        conditions.push({
+          field: "userId",
+          operator: "in",
+          value: filters.userIds,
+        });
+      }
+
+      if (filters.startDate) {
+        conditions.push({
+          field: "startDate",
+          operator: ">=",
+          value: filters.startDate,
+        });
+      }
+
+      if (filters.endDate) {
+        conditions.push({
+          field: "endDate",
+          operator: "<=",
+          value: filters.endDate,
+        });
+      }
+
+      return await this.firebaseClient.filterByConditions(conditions);
+    } catch (error) {
+      throw new Error(error.message || "Unknown error occurred");
+    }
+  }
+
   async filterByUserId(userId, startDate, endDate) {
     try {
       let conditions = [{ field: "userId", operator: "==", value: userId }];

@@ -15,8 +15,11 @@ const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const allUsers = await userService.getAllUsers();
-    res.status(200).send(allUsers);
+    const roles = req.query.roles?.split(",") || []; //must be an array
+    const departments = req.query.departments?.split(",") || []; //must be an array
+    const filters = { roles, departments };
+    const users = await userService.getUsers(filters);
+    res.status(200).send(users);
   } catch (error) {
     console.error("UserController", error);
   }

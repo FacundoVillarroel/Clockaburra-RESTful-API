@@ -7,9 +7,13 @@ class UserService {
     this.users = DaoFactoryInstance.create(type, "users");
   }
 
-  async getAllUsers() {
+  async getUsers(filters) {
     try {
-      return await this.users.getAll();
+      if (filters.roles.length || filters.departments.length > 0) {
+        return await this.users.getByFilters(filters);
+      } else {
+        return await this.users.getAll();
+      }
     } catch (error) {
       throw new Error(error.message);
     }

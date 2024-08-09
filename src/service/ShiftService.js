@@ -9,9 +9,17 @@ class ShiftService {
     this.shifts = DaoFactoryInstance.create(type, "shifts");
   }
 
-  async getAllShifts() {
+  async getShifts(filters) {
     try {
-      return await this.shifts.getAllShifts();
+      if (
+        !filters.usersIds.lenght > 0 &&
+        !filters.startDate &&
+        !filters.endDate
+      ) {
+        return await this.shifts.getAllShifts();
+      } else {
+        return await this.shifts.getByFilters(filters);
+      }
     } catch (error) {
       throw Error(error.message);
     }
