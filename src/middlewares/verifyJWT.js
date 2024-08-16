@@ -16,6 +16,7 @@ const verifyJWT = (req, res, next) => {
         userId: decoded.userId,
         userName: decoded.userName,
         role: decoded.role,
+        permissions: decoded.permissions,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1w" }
@@ -26,6 +27,7 @@ const verifyJWT = (req, res, next) => {
     req.userId = decoded.userId;
     req.userName = decoded.userName;
     req.role = decoded.role;
+    req.permissions = decoded.permissions;
     next();
   });
 };

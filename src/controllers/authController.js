@@ -14,7 +14,12 @@ exports.register = (req, res, next) => {
       return res.status(info.code || 400).send({ message: info.message });
     }
     const token = jwt.sign(
-      { userId: user.id, userName: user.name, role: user.role },
+      {
+        userId: user.id,
+        userName: user.name,
+        role: user.role,
+        permissions: user.permissions,
+      },
       process.env.JWT_SECRET,
       {
         expiresIn: "1w",
@@ -28,6 +33,7 @@ exports.register = (req, res, next) => {
         userId: user.userId,
         userName: user.name,
         role: user.role,
+        permissions: user.permissions,
       });
   })(req, res, next);
 };
@@ -41,7 +47,12 @@ exports.login = (req, res, next) => {
       return res.status(info.code || 400).send({ message: info.message });
     }
     const token = jwt.sign(
-      { userId: user.userId, userName: user.name, role: user.role },
+      {
+        userId: user.userId,
+        userName: user.name,
+        role: user.role,
+        permissions: user.permissions,
+      },
       process.env.JWT_SECRET,
       {
         expiresIn: "1w",
@@ -53,6 +64,7 @@ exports.login = (req, res, next) => {
       userId: user.userId,
       userName: user.name,
       role: user.role,
+      permissions: user.permissions,
     });
   })(req, res, next);
 };
@@ -81,6 +93,7 @@ exports.getJWT = async (req, res, next) => {
     userName: req.userName,
     userId: req.userId,
     role: req.role,
+    permissions: req.permissions,
   });
 };
 
@@ -113,7 +126,7 @@ exports.validateUser = async (req, res, next) => {
       }
     }
     // At this point Token was validated by JWT, now needs to be validated with token stored in user in the DB
-    const { userId, userName, role } = decoded;
+    const { userId, userName, role, permissions } = decoded;
     const user = await userService.getUserById(userId);
     if (user.isRegistered) {
       res.status(400).send({
@@ -125,7 +138,7 @@ exports.validateUser = async (req, res, next) => {
         res.send({
           message: "Valid Token",
           ok: true,
-          user: { userId, userName, role },
+          user: { userId, userName, role, permissions },
         });
       } else {
         res.status(400).send({

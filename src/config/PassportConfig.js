@@ -55,6 +55,7 @@ passport.use(
         userId: registeredUser.id,
         name: registeredUser.name,
         role: userStored.role,
+        permissions: userStored.permissions,
       });
     } catch (error) {
       let codeStatus = 400;
@@ -94,6 +95,7 @@ passport.use(
         userId: userStored.id,
         name: userStored.name,
         role: userStored.role,
+        permissions: userStored.permissions,
       });
     } catch (error) {
       let codeStatus = 400;
