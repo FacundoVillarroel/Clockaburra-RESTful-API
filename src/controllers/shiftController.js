@@ -63,7 +63,7 @@ exports.postNewShift = async (req, res, next) => {
 exports.modifyShift = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const shiftUpdate = req.body.shiftUpdate;
+    const shiftUpdate = req.body;
     if (!Object.keys(shiftUpdate).length)
       res
         .status(400)

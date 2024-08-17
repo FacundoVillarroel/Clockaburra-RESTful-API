@@ -34,7 +34,12 @@ exports.postUsers = async (req, res, next) => {
       throw new Error("The Email is invalid");
     }
     const token = jwt.sign(
-      { userName: req.body.name, userId: req.body.email, role: req.body.role },
+      {
+        userName: req.body.name,
+        userId: req.body.email,
+        role: req.body.role,
+        permissions: req.body.permissions,
+      },
       secretKey,
       {
         expiresIn: "3d",
@@ -49,6 +54,7 @@ exports.postUsers = async (req, res, next) => {
       role: req.body.role,
       startDate: req.body.startDate,
       hourlyRate: parseFloat(req.body.hourlyRate),
+      permissions: req.body.permissions,
       isRegistered: false,
       validationToken: token,
     };
@@ -150,7 +156,12 @@ exports.resendValidationLink = async (req, res, next) => {
   try {
     const id = req.params.id;
     const newToken = jwt.sign(
-      { userName: req.body.name, userId: id, role: req.body.role },
+      {
+        userName: req.body.name,
+        userId: id,
+        role: req.body.role,
+        permissions: req.body.permissions,
+      },
       secretKey,
       {
         expiresIn: "3d",

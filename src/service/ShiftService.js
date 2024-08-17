@@ -56,6 +56,11 @@ class ShiftService {
 
   async updateShiftById(id, update) {
     try {
+      update.totalHours = calculateWorkedHours(
+        update.startDate,
+        update.endDate,
+        update.breaks
+      );
       await this.shifts.updateById(id, update);
     } catch (error) {
       throw new Error(error.message);
