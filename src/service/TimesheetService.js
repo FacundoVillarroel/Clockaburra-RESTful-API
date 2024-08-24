@@ -77,30 +77,34 @@ class TimesheetService {
   async updateTimesheetById(id, date, action) {
     try {
       const currentTimesheet = await this.timesheets.getById(id);
+      const breaks = currentTimesheet.breaks;
+      const lastBreakIndex = breaks.length - 1;
       if (action === "out") {
         currentTimesheet.endDate = date;
-        currentTimesheet.workedHours = calculateWorkedHours(
-          currentTimesheet.startDate,
-          currentTimesheet.endDate,
-          currentTimesheet.breaks
-        );
-        if (currentTimesheet.breaks.length % 2 !== 0) {
-          currentTimesheet.breaks.push({
-            actionType: "breakEnd",
-            timeStamp: date,
-          });
+        if (breaks.length && breaks[lastBreakIndex].breakEnd === null) {
+          breaks[lastBreakIndex]["breakEnd"] = date;
           currentTimesheet.actionHistory.push({
             actionType: "breakEnd",
             timeStamp: date,
           });
         }
+        currentTimesheet.workedHours = calculateWorkedHours(
+          currentTimesheet.startDate,
+          currentTimesheet.endDate,
+          breaks
+        );
       } else {
-        currentTimesheet.breaks.push({ actionType: action, timeStamp: date });
+        if (action === "breakStart") {
+          breaks.push({ breakStart: date, breakEnd: null });
+        } else {
+          breaks[lastBreakIndex]["breakEnd"] = date;
+        }
       }
       currentTimesheet.actionHistory.push({
         actionType: action,
         timeStamp: date,
       });
+      currentTimesheet.breaks = breaks;
       this.timesheets.updateTimesheetById(id, currentTimesheet);
     } catch (error) {
       throw new Error(error.message);
