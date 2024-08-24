@@ -4,13 +4,9 @@ const timesheetController = require("../controllers/timesheetController");
 
 const TimesheetRouter = express.Router();
 
-//get all timesheets - get timesheets based in filters
+//get all timesheets - get timesheets by conditions on query
 
-TimesheetRouter.get("/", timesheetController.getAllTimesheet);
-
-//get all timesheets from an single user - get timesheets for an user based in filters
-
-TimesheetRouter.get("/user/:userId", timesheetController.getUserTimesheets);
+TimesheetRouter.get("/", timesheetController.getTimesheets);
 
 //approve a timesheet
 

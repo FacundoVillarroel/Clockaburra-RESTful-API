@@ -9,9 +9,17 @@ class TimesheetService {
     this.timesheets = DaoFactoryInstance.create(type, "timesheets");
   }
 
-  async getAllTimesheets() {
+  async getTimesheets() {
     try {
-      return await this.timesheets.getAll();
+      if (
+        !filters.userIds.lenght > 0 &&
+        !filters.startDate &&
+        !filters.endDate
+      ) {
+        return await this.timesheets.getAll();
+      } else {
+        return await this.timesheets.getByFilters(filters);
+      }
     } catch (error) {
       throw new Error(error.message);
     }

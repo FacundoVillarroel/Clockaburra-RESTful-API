@@ -1,10 +1,14 @@
 const TimesheetService = require("../service/TimesheetService");
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
-exports.getAllTimesheet = async (req, res, next) => {
+exports.getTimesheets = async (req, res, next) => {
   try {
-    const timesheets = await timesheetService.getAllTimesheets();
-    res.send(timesheets);
+    const userIds = req.query.userIds?.split(",") || []; //may be undefined or []
+    const startDate = req.query.startDate; // shouldn't be undefined
+    const endDate = req.query.endDate; // shouldn't be undefined
+    filters = { userIds, startDate, endDate };
+    const timesheet = await timesheetService.getTimesheets(filters);
+    res.send(timesheet);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }

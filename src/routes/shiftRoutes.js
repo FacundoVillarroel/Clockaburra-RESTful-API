@@ -12,10 +12,6 @@ ShiftRouter.get("/", shiftController.getShifts);
 
 ShiftRouter.post("/", shiftController.postNewShift);
 
-// get shifts based in query parameters as filter
-
-ShiftRouter.get("/user/:userId", shiftController.getShiftByUser);
-
 // get a specific shift
 
 ShiftRouter.get("/:id", shiftController.getShiftById);
