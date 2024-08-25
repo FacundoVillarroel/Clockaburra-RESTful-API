@@ -55,16 +55,26 @@ class TimesheetService {
     }
   }
 
-  async createTimesheet(userId, startDate, expectedHours = null) {
+  async createTimesheet(
+    userId,
+    startDate,
+    expectedHours = null,
+    endDate = null,
+    breaks = [],
+    actionHistory = null,
+    workedHours = null
+  ) {
     try {
       const newTimesheet = {
         userId,
         startDate,
-        endDate: null,
+        endDate,
         expectedHours,
-        workedHours: null,
-        breaks: [],
-        actionHistory: [{ actionType: "checkIn", timeStamp: startDate }],
+        workedHours,
+        breaks,
+        actionHistory: actionHistory || [
+          { actionType: "checkIn", timeStamp: startDate },
+        ],
         approved: false,
         rejected: false,
       };

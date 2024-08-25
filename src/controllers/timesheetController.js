@@ -1,4 +1,8 @@
 const TimesheetService = require("../service/TimesheetService");
+const {
+  createTimesheetActionHistory,
+} = require("../utils/createTimesheetActionHistory");
+const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 exports.getTimesheets = async (req, res, next) => {
@@ -35,6 +39,36 @@ exports.getTimesheetById = async (req, res, next) => {
     const timesheetId = req.params.timesheetId;
     const timesheet = await timesheetService.getTimesheetById(timesheetId);
     res.send(timesheet);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
+exports.postNewTimesheet = async (req, res, next) => {
+  try {
+    const userId = req.body.userId;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    const breaks = req.body.breaks; //[{start, end}] || []
+    const actionHistory = createTimesheetActionHistory(
+      startDate,
+      breaks,
+      endDate
+    );
+    const workedHours = calculateWorkedHours(startDate, endDate, breaks);
+    const response = await timesheetService.createTimesheet(
+      userId,
+      startDate,
+      null,
+      endDate,
+      breaks,
+      actionHistory,
+      workedHours
+    );
+    res.status(201).json({
+      message: "timesheet created successfully",
+      ...response,
+    });
   } catch (error) {
     res.status(400).send({ message: error.message });
   }

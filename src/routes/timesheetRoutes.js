@@ -8,6 +8,10 @@ const TimesheetRouter = express.Router();
 
 TimesheetRouter.get("/", timesheetController.getTimesheets);
 
+//post a new timesheet
+
+TimesheetRouter.post("/", timesheetController.postNewTimesheet);
+
 //approve a timesheet
 
 TimesheetRouter.post("/approve", timesheetController.approveTimesheet);
