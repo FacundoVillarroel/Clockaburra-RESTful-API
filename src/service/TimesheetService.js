@@ -92,6 +92,21 @@ class TimesheetService {
     }
   }
 
+  async updateAndApproveById(timesheet, id) {
+    try {
+      const timesheetUpdate = {
+        ...timesheet,
+        expectedHours: null,
+        approved: true,
+        rejected: false,
+        id,
+      };
+      await this.timesheets.updateTimesheetById(id, timesheetUpdate);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async updateTimesheetById(id, date, action) {
     try {
       const currentTimesheet = await this.timesheets.getById(id);
@@ -123,7 +138,7 @@ class TimesheetService {
         timeStamp: date,
       });
       currentTimesheet.breaks = breaks;
-      this.timesheets.updateTimesheetById(id, currentTimesheet);
+      await this.timesheets.updateTimesheetById(id, currentTimesheet);
     } catch (error) {
       throw new Error(error.message);
     }

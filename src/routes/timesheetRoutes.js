@@ -8,23 +8,27 @@ const TimesheetRouter = express.Router();
 
 TimesheetRouter.get("/", timesheetController.getTimesheets);
 
-//post a new timesheet
+//post to new timesheet
 
 TimesheetRouter.post("/", timesheetController.postNewTimesheet);
 
-//approve a timesheet
+//update and approve timesheet by ID
+
+TimesheetRouter.put("/:timesheetId", timesheetController.updateTimesheet);
+
+//approve to timesheet
 
 TimesheetRouter.post("/approve", timesheetController.approveTimesheet);
 
-//reject a timesheet
+//reject to timesheet
 
 TimesheetRouter.post("/reject", timesheetController.rejectTimesheet);
 
-// get a single timesheet
+// get to single timesheet
 
 TimesheetRouter.get("/:timesheetId", timesheetController.getTimesheetById);
 
-//Eliminar un Timesheet
+//Delete a Timesheet
 
 TimesheetRouter.delete("/:id", timesheetController.deleteTimesheetById);
 

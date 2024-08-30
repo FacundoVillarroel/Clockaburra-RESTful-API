@@ -74,11 +74,39 @@ exports.postNewTimesheet = async (req, res, next) => {
   }
 };
 
+exports.updateTimesheet = async (req, res, next) => {
+  try {
+    const timesheetId = req.params.timesheetId;
+    const timesheetUpdate = req.body;
+    const { startDate, breaks, endDate } = timesheetUpdate;
+    timesheetUpdate.actionHistory = createTimesheetActionHistory(
+      startDate,
+      breaks,
+      endDate
+    );
+    timesheetUpdate.workedHours = calculateWorkedHours(
+      startDate,
+      endDate,
+      breaks
+    );
+    const response = await timesheetService.updateAndApproveById(
+      timesheetUpdate,
+      timesheetId
+    );
+    res.status(201).json({
+      message: "Timesheet updated & approved successfully",
+      ...response,
+    });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
 exports.approveTimesheet = async (req, res, next) => {
   try {
     const id = req.body.id;
     await timesheetService.changeTimesheetStatus(id, "approve");
-    res.send({ message: "timesheet approved:", updated: true });
+    res.send({ message: "timesheet approved successfully", updated: true });
   } catch (error) {
     res.status(400).send({ message: error.message, updated: false });
   }
@@ -88,7 +116,7 @@ exports.rejectTimesheet = async (req, res, next) => {
   try {
     const id = req.body.id;
     await timesheetService.changeTimesheetStatus(id, "reject");
-    res.send({ message: "timesheet rejected:", updated: true });
+    res.send({ message: "timesheet rejected succesfully", updated: true });
   } catch (error) {
     res.status(400).send({ message: error.message, updated: false });
   }
