@@ -50,7 +50,7 @@ exports.postNewShift = async (req, res, next) => {
       res.status(422).send({ message: "missing properties for this shift" });
     } else {
       const response = await shiftService.addShift(shift);
-      res.status(201).json({
+      res.status(201).send({
         message: "shift created successfully",
         ...response,
       });

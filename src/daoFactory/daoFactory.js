@@ -2,6 +2,7 @@ const DaoFirebaseUsers = require("../dao/DaoFirebaseUsers");
 const DaoFirebaseClock = require("../dao/DaoFirebaseClock");
 const DaoFirebaseShifts = require("../dao/DaoFirebaseShifts");
 const DaoFirebaseTimesheets = require("../dao/DaoFirebaseTimesheets");
+const DaoFirebaseDepartments = require("../dao/DaoFirebaseDepartments");
 
 let instance = null;
 
@@ -28,6 +29,8 @@ class DaoFactory {
         return DaoFirebaseShifts.getInstance();
       case "timesheets":
         return DaoFirebaseTimesheets.getInstance();
+      case "departments":
+        return DaoFirebaseDepartments.getInstance();
       default:
         throw new Error("Invalid collection name");
     }

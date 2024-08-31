@@ -10,6 +10,7 @@ const ClockRouter = require("./src/routes/clockRoutes");
 const ShiftRouter = require("./src/routes/shiftRoutes");
 const TimesheetRouter = require("./src/routes/timesheetRoutes");
 const AuthRouter = require("./src/routes/authRoutes");
+const DepartmentsRouter = require("./src/routes/departmentsRoutes");
 const verifyJWT = require("./src/middlewares/verifyJWT");
 
 /* const swaggerJsdoc = require("swagger-jsdoc");
@@ -57,6 +58,8 @@ app.use("/shift", verifyJWT, ShiftRouter);
 app.use("/timesheet", verifyJWT, TimesheetRouter);
 
 app.use("/auth", AuthRouter);
+
+app.use("/department", verifyJWT, DepartmentsRouter);
 
 app.listen(8080, () => {
   console.log("listening on port 8080");
