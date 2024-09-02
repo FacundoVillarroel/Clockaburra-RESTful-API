@@ -28,12 +28,13 @@ exports.postNewRole = async (req, res, next) => {
     };
     if (!role.name) {
       res.status(422).send({ message: "Role Name can not be empty" });
+    } else {
+      const response = await rolesService.addRole(role);
+      res.status(201).send({
+        message: "role created successfully",
+        ...response,
+      });
     }
-    const response = await rolesService.addRole(role);
-    res.status(201).send({
-      message: "role created successfully",
-      ...response,
-    });
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
