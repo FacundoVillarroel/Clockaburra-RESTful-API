@@ -38,7 +38,6 @@ exports.postUsers = async (req, res, next) => {
         userName: req.body.name,
         userId: req.body.email,
         role: req.body.role,
-        permissions: req.body.permissions,
       },
       secretKey,
       {
@@ -52,16 +51,15 @@ exports.postUsers = async (req, res, next) => {
       surname: req.body.surname,
       username: req.body.email,
       role: req.body.role,
+      department: req.body.department,
       startDate: req.body.startDate,
       hourlyRate: parseFloat(req.body.hourlyRate),
-      permissions: req.body.permissions,
       isRegistered: false,
       validationToken: token,
     };
     if (!isValidDate(user.startDate)) {
       throw new Error("Date entered is invalid");
     }
-
     const hasEmptyValue = Object.entries(user).some(([key, value]) => {
       if (
         key === "isRegistered" ||
@@ -160,7 +158,6 @@ exports.resendValidationLink = async (req, res, next) => {
         userName: req.body.name,
         userId: id,
         role: req.body.role,
-        permissions: req.body.permissions,
       },
       secretKey,
       {
