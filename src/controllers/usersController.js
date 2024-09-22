@@ -38,6 +38,7 @@ exports.postUsers = async (req, res, next) => {
         userName: req.body.name,
         userId: req.body.email,
         role: req.body.role,
+        permissions: req.body.permissions,
       },
       secretKey,
       {
@@ -54,6 +55,7 @@ exports.postUsers = async (req, res, next) => {
       department: req.body.department,
       startDate: req.body.startDate,
       hourlyRate: parseFloat(req.body.hourlyRate),
+      permissions: req.body.permissions,
       isRegistered: false,
       validationToken: token,
     };
@@ -158,6 +160,7 @@ exports.resendValidationLink = async (req, res, next) => {
         userName: req.body.name,
         userId: id,
         role: req.body.role,
+        permissions: req.body.permissions,
       },
       secretKey,
       {
