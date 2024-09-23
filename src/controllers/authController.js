@@ -6,7 +6,8 @@ const UserService = require("../service/UserService");
 const userService = new UserService(process.env.DATA_BASE);
 
 const { sendResetPasswordEmail } = require("../utils/emailHelperFunctions");
-const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
+const secretKey = process.env.JWT_SECRET;
+const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
 
 exports.register = (req, res, next) => {
   passport.authenticate("register", (error, user, info) => {
@@ -72,24 +73,6 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.resetPassword = async (req, res, next) => {
-  try {
-    const userId = req.body.userId;
-    const userStored = await userService.getUserById(userId);
-    if (!userStored) {
-      throw new Error(`No user with id ${userId}`);
-    }
-    if (req.body.newPassword.length < 8) {
-      throw new Error("The password must be at least 8 characters");
-    }
-    const newPassword = await bcrypt.hash(req.body.newPassword, 10);
-    await userService.updateUserById(userId, { password: newPassword });
-    res.send({ message: "Password updated", updated: true });
-  } catch (error) {
-    res.status(400).send({ message: error.message, updated: false });
-  }
-};
-
 exports.getJWT = async (req, res, next) => {
   res.send({
     message: "Token information",
@@ -103,11 +86,11 @@ exports.getJWT = async (req, res, next) => {
 exports.validateUser = async (req, res, next) => {
   try {
     let decoded;
-    const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
+    const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
     const { token } = req.query;
     // Handling errors jwt specific
     try {
-      decoded = jwt.verify(token, secretKey);
+      decoded = jwt.verify(token, secretKeyValidation);
     } catch (error) {
       if (error.name === "TokenExpiredError") {
         return res.status(400).send({

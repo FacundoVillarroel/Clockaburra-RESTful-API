@@ -10,12 +10,14 @@ UsersRouter.post("/", usersController.postUsers);
 
 UsersRouter.get("/:id", usersController.getUser);
 
-UsersRouter.put("/:id", usersController.putUser);
-
 UsersRouter.put(
   "/resend-validation-link/:id",
   usersController.resendValidationLink
 );
+
+UsersRouter.put("/reset-password", usersController.resetPassword);
+
+UsersRouter.put("/:id", usersController.putUser);
 
 UsersRouter.delete("/:id", usersController.deleteUser);
 

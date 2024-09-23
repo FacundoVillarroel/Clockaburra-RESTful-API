@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const UserService = require("../service/UserService");
 const userService = new UserService(process.env.DATA_BASE);
@@ -179,5 +180,59 @@ exports.resendValidationLink = async (req, res, next) => {
   } catch (error) {
     console.error("UserController", error);
     res.status(404).send({ message: error.message, ok: false });
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    let decoded;
+    const secretKey = process.env.JWT_SECRET;
+    const token = req.body.token;
+    // Handling errors jwt specific
+    try {
+      decoded = jwt.verify(token, secretKey);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(400).send({
+          message: "Token has expired. Please request a new activation link.",
+          updated: false,
+        });
+      } else if (error.name === "JsonWebTokenError") {
+        return res.status(400).send({
+          message:
+            "Invalid token. Please check the activation link or request a new one.",
+          updated: false,
+        });
+      } else {
+        return res.status(400).send({
+          message:
+            "An error occurred during token validation. Please try again later.",
+          updated: false,
+        });
+      }
+    }
+    // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
+    const userStored = await userService.getUserById(decoded.userId);
+    if (!userStored) {
+      throw new Error(`No user with id ${decoded.userId}`);
+    }
+    if (userStored.resetPasswordToken !== token) {
+      throw new Error(
+        "The link is either expired or wrong, please ask for a new link."
+      );
+    }
+    if (req.body.password.length < 8) {
+      throw new Error("The password must be at least 8 characters");
+    }
+    const newPassword = await bcrypt.hash(req.body.password, 10);
+    await userService.updateUserById(decoded.userId, {
+      password: newPassword,
+      resetPasswordToken: null,
+      isRegistered: true,
+    });
+    res.send({ message: "Password updated", updated: true });
+  } catch (error) {
+    console.error("UserController", error);
+    res.status(400).send({ message: error.message, updated: false });
   }
 };
