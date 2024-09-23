@@ -15,4 +15,9 @@ AuthRouter.get("/me", verifyJWT, authController.getJWT);
 
 AuthRouter.get("/validation", authController.validateUser);
 
+AuthRouter.get(
+  "/send-link-reset-password",
+  authController.sendLinkResetPassword
+);
+
 module.exports = AuthRouter;

@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt");
 const UserService = require("../service/UserService");
 const userService = new UserService(process.env.DATA_BASE);
 
+const { sendResetPasswordEmail } = require("../utils/emailHelperFunctions");
+const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
+
 exports.register = (req, res, next) => {
   passport.authenticate("register", (error, user, info) => {
     if (error) {
@@ -125,7 +128,7 @@ exports.validateUser = async (req, res, next) => {
         });
       }
     }
-    // At this point Token was validated by JWT, now needs to be validated with token stored in user in the DB
+    // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
     const { userId, userName, role, permissions } = decoded;
     const user = await userService.getUserById(userId);
     if (user.isRegistered) {
@@ -153,5 +156,47 @@ exports.validateUser = async (req, res, next) => {
       message: "Internal server error",
       ok: false,
     });
+  }
+};
+
+exports.sendLinkResetPassword = async (req, res, next) => {
+  const { email } = req.query;
+  try {
+    const user = await userService.getUserById(email);
+    const newToken = jwt.sign(
+      {
+        userName: user.name,
+        userId: email,
+        role: user.role,
+        permissions: user.permissions,
+      },
+      secretKey,
+      {
+        expiresIn: "3d",
+      }
+    );
+    const response = await userService.updateUserById(email, {
+      resetPasswordToken: newToken,
+    });
+    console.log(response);
+    await sendResetPasswordEmail(email, user.name, newToken);
+    res.send({
+      message: "Password reset link sent successfully to email.",
+      ok: true,
+      user: response,
+    });
+  } catch (error) {
+    if (error.message === `there is no document with id: ${email}`) {
+      res.status(404).send({
+        message: "Email not registered in db",
+        ok: false,
+      });
+    } else {
+      console.error("AuthController: ", error.message);
+      res.status(500).send({
+        message: "Internal server error",
+        ok: false,
+      });
+    }
   }
 };
