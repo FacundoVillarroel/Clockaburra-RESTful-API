@@ -1,13 +1,12 @@
 const passport = require("../config/PassportConfig");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const axios = require("axios");
 
 const UserService = require("../service/UserService");
 const userService = new UserService(process.env.DATA_BASE);
 
 const { sendResetPasswordEmail } = require("../utils/emailHelperFunctions");
 const secretKey = process.env.JWT_SECRET;
-const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
 
 exports.register = (req, res, next) => {
   passport.authenticate("register", (error, user, info) => {
@@ -81,6 +80,47 @@ exports.getJWT = async (req, res, next) => {
     role: req.role,
     permissions: req.permissions,
   });
+};
+
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { accessToken } = req.body;
+    const response = await axios.get(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${accessToken}`
+    );
+    if (response.data.email_verified) {
+      const email = response.data.email;
+      const user = await userService.getUserById(email);
+
+      const token = jwt.sign(
+        {
+          userId: user.email,
+          userName: user.name,
+          role: user.role,
+          permissions: user.permissions,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1w",
+        }
+      );
+      res.header("Authorization", "Bearer " + token);
+      res.send({
+        message: "Login successful",
+        userId: user.email,
+        userName: user.name,
+        role: user.role,
+        permissions: user.permissions,
+      });
+    } else {
+      res
+        .status(400)
+        .send({ message: "Could not authenticate Google account." });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(400).send({ message: "Could not authenticate Google account." });
+  }
 };
 
 exports.validateUser = async (req, res, next) => {
