@@ -15,7 +15,7 @@ const bucket = storage.bucket(`gs://${bucketURL}`);
 
 class ImagesService {
   static async uploadImageToFirebase(file) {
-    return new Promise((resolve, reject) => {
+    try {
       // Define the file name with a unique timestamp to avoid conflicts
       const blob = bucket.file(
         `profile-images/${Date.now()}_${file.originalname}`
@@ -27,20 +27,26 @@ class ImagesService {
         contentType: file.mimetype,
       });
 
-      blobStream.on("error", (err) => {
-        reject(err);
-      });
+      return new Promise((resolve, reject) => {
+        blobStream.on("error", (err) => {
+          reject(err);
+        });
 
-      // When the upload is complete, we get the public URL of the file
-      blobStream.on("finish", () => {
-        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
-          bucket.name
-        }/o/${encodeURIComponent(blob.name)}?alt=media`;
-        resolve(publicUrl);
-      });
+        // When the upload is complete, we get the public URL of the file
+        blobStream.on("finish", () => {
+          const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+            bucket.name
+          }/o/${encodeURIComponent(blob.name)}?alt=media`;
+          resolve(publicUrl);
+        });
 
-      blobStream.end(file.buffer);
-    });
+        // Finalize the write stream with the file buffer
+        blobStream.end(file.buffer);
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
   }
 
   static async deleteImage(filePath) {
