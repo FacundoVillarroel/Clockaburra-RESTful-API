@@ -42,6 +42,15 @@ class ImagesService {
       blobStream.end(file.buffer);
     });
   }
+
+  static async deleteImage(filePath) {
+    try {
+      await bucket.file(filePath).delete();
+    } catch (error) {
+      console.error("Error al eliminar la imagen:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ImagesService;
