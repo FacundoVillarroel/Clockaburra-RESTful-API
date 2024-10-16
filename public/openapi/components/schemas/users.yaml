@@ -53,3 +53,7 @@ properties:
     type: boolean
     description: The complete registration status of the user.
     default: true
+  permissions:
+    type: string
+    description: The type of permission this user have
+    default: employee

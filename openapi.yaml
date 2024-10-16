@@ -24,6 +24,8 @@ paths:
     $ref: "http://localhost:8080/openapi/paths/users/usersById.yaml"
   /users/resend-validation-link/{id}:
     $ref: "http://localhost:8080/openapi/paths/users/resendLink.yaml"
+  /users/reset-password:
+    $ref: "http://localhost:8080/openapi/paths/users/reset-password.yaml"
 
   /auth/register:
     $ref: "http://localhost:8080/openapi/paths/auth/register.yaml"

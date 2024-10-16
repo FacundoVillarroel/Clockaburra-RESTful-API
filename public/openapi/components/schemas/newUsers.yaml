@@ -24,6 +24,10 @@ properties:
     type: number
     description: The hourly rate of the user.
     default: 30
+  permissions:
+    type: string
+    description: The type of permission this user will have
+    default: employee
 required:
   - name
   - surname
@@ -31,3 +35,4 @@ required:
   - role
   - hourlyRate
   - startDate
+  - permissions

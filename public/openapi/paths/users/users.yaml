@@ -3,6 +3,21 @@ get:
   description: Retrieve a list of all users.
   tags:
     - Users
+  parameters:
+    - in: query
+      name: roles
+      description: Filter users by roles, separated by commas
+      required: false
+      schema:
+        type: string
+        example: "Chef,Manager"
+    - in: query
+      name: departments
+      description: Filter users by departments, separated by commas
+      required: false
+      schema:
+        type: string
+        example: "BOH,Management"
   responses:
     "200":
       description: A list of users.
