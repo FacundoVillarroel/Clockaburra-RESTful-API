@@ -1,0 +1,10 @@
+description: Forbidden. Failed to authenticate token.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message.
+          example: Failed to authenticate token

@@ -16,7 +16,6 @@ const { isValidDate } = require("../utils/dateHelperFunctions");
 
 exports.getUsers = async (req, res, next) => {
   try {
-    console.log(typeof req.query.roles);
     const roles = req.query.roles?.split(",") || []; //must be an array
     const departments = req.query.departments?.split(",") || []; //must be an array
     const filters = { roles, departments };

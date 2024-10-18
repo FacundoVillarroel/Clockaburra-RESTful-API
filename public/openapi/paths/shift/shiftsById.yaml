@@ -1,0 +1,236 @@
+get:
+  summary: Get a shift by ID
+  description: Retrieves a specific shift based on the provided shift ID.
+  tags:
+    - Shifts
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the shift to retrieve.
+      schema:
+        type: string
+        example: "shift_12345"
+  responses:
+    "200":
+      description: Shift retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              shift:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "shift_12345"
+                  userId:
+                    type: string
+                    example: "example@gmail.com"
+                  startDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T09:00:00.000+08:00"
+                  endDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T17:00:00.000+08:00"
+                  breaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        breakStart:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:00:00.000+08:00"
+                        breakEnd:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:30:00.000+08:00"
+
+    "400":
+      description: Bad request due to invalid ID.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: invalid shift ID."
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+put:
+  summary: Update a shift by ID
+  description: Updates a specific shift based on the provided shift ID. The request body should ideally match the structure of the shift schema but is not mandatory.
+  tags:
+    - Shifts
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the shift to update.
+      schema:
+        type: string
+        example: "shift_12345"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            userId:
+              type: string
+              example: "example@gmail.com"
+            startDate:
+              type: string
+              format: date-time
+              example: "2024-10-14T09:00:00.000+08:00"
+            endDate:
+              type: string
+              format: date-time
+              example: "2024-10-14T17:00:00.000+08:00"
+            breaks:
+              type: array
+              items:
+                type: object
+                properties:
+                  breakStart:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:00:00.000+08:00"
+                  breakEnd:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:30:00.000+08:00"
+          description: The shift details to update. The structure can be similar to the shift schema but is not mandatory.
+
+  responses:
+    "200":
+      description: Shift updated successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Shift updated successfully"
+              update:
+                type: boolean
+                example: true
+              updatedShift:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "shift_12345"
+                  userId:
+                    type: string
+                    example: "example@gmail.com"
+                  startDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T09:00:00.000+08:00"
+                  endDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T17:00:00.000+08:00"
+                  breaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        breakStart:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:00:00.000+08:00"
+                        breakEnd:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:30:00.000+08:00"
+
+    "400":
+      description: Bad request due to missing properties or invalid input.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Missing properties for the shift"
+              update:
+                type: boolean
+                example: false
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+delete:
+  summary: Delete a shift by ID
+  description: Deletes a specific shift based on the provided shift ID.
+  tags:
+    - Shifts
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the shift to delete.
+      schema:
+        type: string
+        example: "shift_12345"
+  responses:
+    "200":
+      description: Shift deleted successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Shift deleted successfully"
+              deleted:
+                type: boolean
+                example: true
+
+    "400":
+      description: Bad request due to an error while deleting the shift.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to delete the shift."
+              deleted:
+                type: boolean
+                example: false
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

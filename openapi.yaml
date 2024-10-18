@@ -13,9 +13,9 @@ tags:
     description: Operations related to authentication.
   - name: Clock
     description: Operation related to clock status of an user.
-  - name: shift
+  - name: Shifts
     description: Operation related to the shifts of an user.
-  - name: timesheet
+  - name: Timesheets
     description: Operation related to the timesheets of an user.
 paths:
   /users:
@@ -52,8 +52,9 @@ paths:
     $ref: "http://localhost:8080/openapi/paths/clock/breakEnd.yaml"
 
   /shift:
+    $ref: "http://localhost:8080/openapi/paths/shift/shifts.yaml"
   /shift/{id}:
-  /shift/user/{userId}:
+    $ref: "http://localhost:8080/openapi/paths/shift/shiftsById.yaml"
 
 components:
   securitySchemes:

@@ -3,10 +3,11 @@ const shiftService = new ShiftService(process.env.DATA_BASE);
 
 exports.getShifts = async (req, res, next) => {
   try {
-    const userIds = req.query.userIds?.split(",") || []; //may be undefined or []
-    const startDate = req.query.startDate; // shouldn't be undefined
-    const endDate = req.query.endDate; // shouldn't be undefined
+    const userIds = req.query.userIds?.split(",") || [];
+    const startDate = req.query.startDate || "";
+    const endDate = req.query.endDate || "";
     filters = { userIds, startDate, endDate };
+    console.log(filters);
     const shifts = await shiftService.getShifts(filters);
     res.send(shifts);
   } catch (error) {
@@ -42,7 +43,7 @@ exports.postNewShift = async (req, res, next) => {
       userId: req.body.userId,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      breaks: req.body.breaks, //[{start, end}]
+      breaks: req.body.breaks, //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}]
     };
     //Validate shift values
     const hasEmptyValue = Object.values(shift).some((value) => !value);
