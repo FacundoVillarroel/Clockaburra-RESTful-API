@@ -1,0 +1,55 @@
+post:
+  summary: Authenticate user with token.
+  description: Authenticates the user using a JWT token and retrieves user details.
+  tags:
+    - Authentication
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              type: string
+              description: The JWT token.
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          required:
+            - token
+  responses:
+    "200":
+      description: Authentication successful.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Login successful
+              userId:
+                type: string
+                description: User's email.
+                example: user@example.com
+              userName:
+                type: string
+                description: User's name.
+                example: John Doe
+              role:
+                type: string
+                description: User's role.
+                example: admin
+              permissions:
+                type: string
+                description: User's permissions.
+                example: read,write
+    "400":
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                default: Could not authenticate Google account.

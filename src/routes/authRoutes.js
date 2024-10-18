@@ -9,7 +9,7 @@ AuthRouter.post("/register", authController.register);
 
 AuthRouter.post("/login", authController.login);
 
-AuthRouter.post("/googleLogin", authController.googleLogin);
+AuthRouter.post("/googleLogin", authController.googleLogin); //
 
 AuthRouter.get("/me", verifyJWT, authController.getJWT);
 

@@ -31,6 +31,8 @@ paths:
     $ref: "http://localhost:8080/openapi/paths/auth/register.yaml"
   /auth/login:
     $ref: "http://localhost:8080/openapi/paths/auth/login.yaml"
+  /auth/googleLogin:
+    $ref: "http://localhost:8080/openapi/paths/auth/googleLogin.yaml"
   /auth/reset-password:
     $ref: "http://localhost:8080/openapi/paths/auth/resetPassword.yaml"
   /auth/me:
