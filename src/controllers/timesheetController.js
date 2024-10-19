@@ -49,7 +49,7 @@ exports.postNewTimesheet = async (req, res, next) => {
     const userId = req.body.userId;
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
-    const breaks = req.body.breaks; //[{start, end}] || []
+    const breaks = req.body.breaks; //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}] || []
     const actionHistory = createTimesheetActionHistory(
       startDate,
       breaks,

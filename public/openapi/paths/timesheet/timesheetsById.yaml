@@ -1,0 +1,235 @@
+get:
+  summary: Get a timesheet by ID
+  description: Retrieves a specific timesheet based on the provided timesheet ID.
+  tags:
+    - Timesheets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the timesheet to retrieve.
+      schema:
+        type: string
+        example: "timesheet_12345"
+  responses:
+    "200":
+      description: Timesheet retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timesheet:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "timesheet_12345"
+                  userId:
+                    type: string
+                    example: "example@gmail.com"
+                  startDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T09:00:00.000+08:00"
+                  endDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T17:00:00.000+08:00"
+                  breaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        breakStart:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:00:00.000+08:00"
+                        breakEnd:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:30:00.000+08:00"
+
+    "400":
+      description: Bad request due to invalid ID.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: invalid timesheet ID."
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+put:
+  summary: Update a timesheet by ID
+  description: Updates a specific timesheet based on the provided timesheet ID. The request body should contain the `startDate`, `endDate`, and an optional array of `breaks` (which can be empty or include break times).
+  tags:
+    - Timesheets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the timesheet to update.
+      schema:
+        type: string
+        example: "timesheet_12345"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date-time
+              example: "2024-09-05T00:00:00.000+08:00"
+            endDate:
+              type: string
+              format: date-time
+              example: "2024-09-05T02:30:00.000+08:00"
+            breaks:
+              type: array
+              items:
+                type: object
+                properties:
+                  breakStart:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:00:00.000+08:00"
+                  breakEnd:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:30:00.000+08:00"
+              description: An optional array of breaks. This can either be an empty array `[]` or an array with break details.
+          example:
+            startDate: "2024-09-05T00:00:00.000+08:00"
+            endDate: "2024-09-05T02:30:00.000+08:00"
+            breaks: []
+          description: The timesheet details to update.
+
+  responses:
+    "201":
+      description: Timesheet updated successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Timesheet updated successfully"
+              update:
+                type: boolean
+                example: true
+              updatedTimesheet:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "timesheet_12345"
+                  startDate:
+                    type: string
+                    format: date-time
+                    example: "2024-09-05T00:00:00.000+08:00"
+                  endDate:
+                    type: string
+                    format: date-time
+                    example: "2024-09-05T02:30:00.000+08:00"
+                  breaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        breakStart:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:00:00.000+08:00"
+                        breakEnd:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:30:00.000+08:00"
+
+    "400":
+      description: Bad request due to missing properties or invalid input.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Missing properties for the timesheet"
+              update:
+                type: boolean
+                example: false
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+delete:
+  summary: Delete a timesheet by ID
+  description: Deletes a specific timesheet based on the provided timesheet ID.
+  tags:
+    - Timesheets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the timesheet to delete.
+      schema:
+        type: string
+        example: "timesheet_12345"
+  responses:
+    "200":
+      description: Timesheet deleted successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Timesheet deleted successfully"
+              deleted:
+                type: boolean
+                example: true
+
+    "400":
+      description: Bad request due to an error while deleting the timesheet.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to delete the timesheet."
+              deleted:
+                type: boolean
+                example: false
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

@@ -1,0 +1,188 @@
+get:
+  summary: Get user timesheets
+  description: Retrieves an array of timesheets for the selected users. If no userIds are provided, all available timesheets within the specified date range will be returned.
+  tags:
+    - Timesheets
+  parameters:
+    - name: startDate
+      in: query
+      required: false
+      description: Start date of the search range.
+      schema:
+        type: string
+        format: date-time
+        example: "2024-10-14T00:00:00.000+08:00"
+    - name: endDate
+      in: query
+      required: false
+      description: End date of the search range.
+      schema:
+        type: string
+        format: date-time
+        example: "2024-10-20T23:59:59.999+08:00"
+    - name: userIds
+      in: query
+      required: false
+      description: Comma-separated list of user email addresses to filter the timesheets.
+      schema:
+        type: string
+        example: "example@gmail.com,admin@admin.com"
+
+  responses:
+    "200":
+      description: Timesheets retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                timesheetId:
+                  type: string
+                  example: "timesheet_12345"
+                userId:
+                  type: string
+                  example: "example@gmail.com"
+                startTime:
+                  type: string
+                  format: date-time
+                  example: "2024-10-15T08:00:00.000+08:00"
+                endTime:
+                  type: string
+                  format: date-time
+                  example: "2024-10-15T16:00:00.000+08:00"
+                status:
+                  type: string
+                  example: "submitted"
+    "400":
+      description: Bad request error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Bad request: invalid parameters."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+  security:
+    - bearerAuth: []
+
+post:
+  summary: Create a new timesheet
+  description: Creates a new timesheet for a user with specified start and end times. Breaks are optional and the timesheets can be an empty array.
+  tags:
+    - Timesheets
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            userId:
+              type: string
+              example: "example@gmail.com"
+            startDate:
+              type: string
+              format: date-time
+              example: "2024-10-14T09:00:00.000+08:00"
+            endDate:
+              type: string
+              format: date-time
+              example: "2024-10-14T17:00:00.000+08:00"
+            breaks:
+              type: array
+              items:
+                type: object
+                properties:
+                  breakStart:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:00:00.000+08:00"
+                  breakEnd:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T13:30:00.000+08:00"
+              description: An optional array of breaks for the timesheet.
+          required:
+            - userId
+            - startDate
+            - endDate
+
+  responses:
+    "201":
+      description: Timesheet created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Timesheet created successfully"
+              timesheet:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "timesheet_12345"
+                  userId:
+                    type: string
+                    example: "example@gmail.com"
+                  startDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T09:00:00.000+08:00"
+                  endDate:
+                    type: string
+                    format: date-time
+                    example: "2024-10-14T17:00:00.000+08:00"
+                  breaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        breakStart:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:00:00.000+08:00"
+                        breakEnd:
+                          type: string
+                          format: date-time
+                          example: "2024-10-14T13:30:00.000+08:00"
+
+    "400":
+      description: Bad request due to invalid input.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: invalid input parameters."
+
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+    "422":
+      description: Unprocessable Entity due to missing properties.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Missing properties for this timesheet."
+
+  security:
+    - bearerAuth: []

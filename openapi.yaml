@@ -56,6 +56,15 @@ paths:
   /shift/{id}:
     $ref: "http://localhost:8080/openapi/paths/shift/shiftsById.yaml"
 
+  /timesheet:
+    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheets.yaml"
+  /timesheet/{id}:
+    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetsById.yaml"
+  /timesheet/approve:
+    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetApprove.yaml"
+  /timesheet/reject:
+    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetReject.yaml"
+
 components:
   securitySchemes:
     bearerAuth:

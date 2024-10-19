@@ -1,0 +1,52 @@
+post:
+  summary: Reject a timesheet
+  description: Rejects a timesheet based on the provided timesheet ID.
+  tags:
+    - Timesheets
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The ID of the timesheet to reject.
+              example: "timesheet_12345"
+          required:
+            - id
+  responses:
+    "200":
+      description: Timesheet rejected successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Timesheet rejected successfully"
+              updated:
+                type: boolean
+                example: true
+    "400":
+      description: Bad request due to an error while rejecting the timesheet.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to reject the timesheet."
+              updated:
+                type: boolean
+                example: false
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

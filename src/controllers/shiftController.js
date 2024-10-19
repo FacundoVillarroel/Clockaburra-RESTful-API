@@ -43,7 +43,7 @@ exports.postNewShift = async (req, res, next) => {
       userId: req.body.userId,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      breaks: req.body.breaks, //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}]
+      breaks: req.body.breaks, //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}] || []
     };
     //Validate shift values
     const hasEmptyValue = Object.values(shift).some((value) => !value);
