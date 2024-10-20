@@ -21,6 +21,8 @@ tags:
     description: Operation related to the possible roles for the users.
   - name: Departments
     description: Operation related to the possible departments for the users.
+  - name: Images
+    description: Operation related to images storage.
 paths:
   /users:
     $ref: "http://localhost:8080/openapi/paths/users/users.yaml"
@@ -78,6 +80,11 @@ paths:
     $ref: "http://localhost:8080/openapi/paths/department/departments.yaml"
   /department/{id}:
     $ref: "http://localhost:8080/openapi/paths/department/departmentsById.yaml"
+
+  /images/profile-images:
+    $ref: "http://localhost:8080/openapi/paths/images/images.yaml"
+  /images/profile-images/{filePath}:
+    $ref: "http://localhost:8080/openapi/paths/images/deleteImage.yaml"
 
 components:
   securitySchemes:

@@ -15,28 +15,17 @@ const RolesRouter = require("./src/routes/rolesRoutes");
 const ImagesRouter = require("./src/routes/imagesRoutes");
 const verifyJWT = require("./src/middlewares/verifyJWT");
 
-/* const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
-const path = require("path"); */
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./openapi.yaml");
 
 const app = express();
 
-// Lee el archivo de configuración de Swagger
-/* const swaggerSpec = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "swagger.json"))
-); */
-
-// Configura Swagger UI
-/* app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec)); */
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
 
-// bodyParser is used in the next middleware.
+// bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);
 
 app.use((req, res, next) => {

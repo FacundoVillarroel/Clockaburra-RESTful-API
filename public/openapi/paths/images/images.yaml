@@ -1,0 +1,57 @@
+put:
+  summary: Update profile image
+  description: Updates a profile image. The request body must include the image in JPEG or PNG format. Optionally, a filePath can be provided to indicate the previous image to be replaced for the new one.
+  tags:
+    - Images
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            image:
+              type: string
+              format: binary
+              description: The image file in JPEG or PNG format. This field is required.
+            filePath:
+              type: string
+              description: Optional path to the previous image. If not included, a new image will be added.
+              example: "profile-images/old-image.jpeg"
+
+  responses:
+    "201":
+      description: Image updated successfully. Returns the new URL of the uploaded image.
+      content:
+        application/json:
+          schema:
+            type: string
+            example: "https://your-domain.com/images/profile-images/new-image.jpeg"
+    "400":
+      description: Bad request if no file is uploaded.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "No file uploaded"
+    "500":
+      description: Internal server error if there is an error uploading the image.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Error uploading image"
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

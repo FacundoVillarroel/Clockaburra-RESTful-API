@@ -13,7 +13,7 @@ exports.uploadImage = async (req, res, next) => {
     // Call the service to upload the image and get the URL
     const imageUrl = await ImagesService.uploadImageToFirebase(req.file);
 
-    res.status(200).json(imageUrl);
+    res.status(201).json(imageUrl);
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: "Error uploading image" });

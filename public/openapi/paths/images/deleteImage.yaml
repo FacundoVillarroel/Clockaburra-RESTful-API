@@ -1,0 +1,56 @@
+delete:
+  summary: Delete profile image
+  description: Deletes a profile image by its file path. The file path must be provided as a parameter.
+  tags:
+    - Images
+  parameters:
+    - name: filePath
+      in: path
+      required: true
+      description: The file path of the image to be deleted.
+      Example: "profile-images/1728486219241_68cbe5aa-c179-4ae3-b3e0-422bd7a17a73.jpeg"
+      schema:
+        type: string
+        example: "profile-images/1728486219241_68cbe5aa-c179-4ae3-b3e0-422bd7a17a73.jpeg"
+
+  responses:
+    "200":
+      description: Image deleted successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Image deleted successfully"
+              deleted:
+                type: boolean
+                example: true
+    "400":
+      description: Bad request if the file path is invalid or not provided.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "invalid filePath"
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+    "500":
+      description: Internal server error if there is an error during the deletion process.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Error deleting image"
+
+  security:
+    - bearerAuth: []
