@@ -1,0 +1,110 @@
+get:
+  summary: Get roles
+  description: Retrieves an array of roles, where each role contains a description, ID, and name.
+  tags:
+    - Roles
+  responses:
+    "200":
+      description: Roles retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: "6fiVcScwCwMXgMXYd5Td"
+                name:
+                  type: string
+                  example: "Assistant manager"
+                description:
+                  type: string
+                  example: "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+    "400":
+      description: Bad request due to an error while retrieving the roles.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to retrieve roles."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+post:
+  summary: Create a new role
+  description: Creates a new role. The name is required, and the description is optional.
+  tags:
+    - Roles
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Assistant manager"
+            description:
+              type: string
+              example: "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+          required:
+            - name
+
+  responses:
+    "201":
+      description: Role created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "role created successfully"
+              id:
+                type: string
+                example: "6fiVcScwCwMXgMXYd5Td"
+              name:
+                type: string
+                example: "Assistant manager"
+              description:
+                type: string
+                example: "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+    "400":
+      description: Bad request due to an error during role creation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to create role."
+    "422":
+      description: Role name is missing.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Role Name can not be empty"
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

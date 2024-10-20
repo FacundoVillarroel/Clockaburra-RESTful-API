@@ -1,0 +1,170 @@
+get:
+  summary: Get role by ID
+  description: Retrieves a role by its unique ID.
+  tags:
+    - Roles
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the role to retrieve.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  responses:
+    "200":
+      description: Role retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "6fiVcScwCwMXgMXYd5Td"
+              name:
+                type: string
+                example: "Assistant manager"
+              description:
+                type: string
+                example: "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+    "400":
+      description: Error retrieving role.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to retrieve role."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+put:
+  summary: Update role by ID
+  description: Updates a role by its unique ID. The request body should include the updated values.
+  tags:
+    - Roles
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the role to update.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Manager"
+            description:
+              type: string
+              example: "Handles all management tasks and reports to upper management."
+          description: Role details to update.
+
+  responses:
+    "200":
+      description: Role updated successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Role updated successfully"
+              updated:
+                type: boolean
+                example: true
+              updatedRole:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "6fiVcScwCwMXgMXYd5Td"
+                  name:
+                    type: string
+                    example: "Manager"
+                  description:
+                    type: string
+                    example: "Handles all management tasks and reports to upper management."
+    "400":
+      description: Invalid role update request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "role update can not be empty"
+              updated:
+                type: boolean
+                example: false
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+delete:
+  summary: Delete role by ID
+  description: Deletes a role by its unique ID.
+  tags:
+    - Roles
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the role to delete.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  responses:
+    "200":
+      description: Role deleted successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Role deleted successfully"
+              deleted:
+                type: boolean
+                example: true
+    "400":
+      description: Error deleting role.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to delete role."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

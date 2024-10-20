@@ -1,0 +1,110 @@
+get:
+  summary: Get departments
+  description: Retrieves an array of departments, where each department contains a description, ID, and name.
+  tags:
+    - Departments
+  responses:
+    "200":
+      description: Departments retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: "6fiVcScwCwMXgMXYd5Td"
+                name:
+                  type: string
+                  example: "Marketing"
+                description:
+                  type: string
+                  example: "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+    "400":
+      description: Bad request due to an error while retrieving the departments.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to retrieve departments."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+post:
+  summary: Create a new department
+  description: Creates a new department. The name is required, and the description is optional.
+  tags:
+    - Departments
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Marketing"
+            description:
+              type: string
+              example: "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+          required:
+            - name
+
+  responses:
+    "201":
+      description: Department created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Department created successfully"
+              id:
+                type: string
+                example: "6fiVcScwCwMXgMXYd5Td"
+              name:
+                type: string
+                example: "Marketing"
+              description:
+                type: string
+                example: "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+    "400":
+      description: Bad request due to an error during department creation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to create department."
+    "422":
+      description: Department name is missing.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Department Name can not be empty"
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []

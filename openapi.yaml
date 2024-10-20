@@ -17,6 +17,10 @@ tags:
     description: Operation related to the shifts of an user.
   - name: Timesheets
     description: Operation related to the timesheets of an user.
+  - name: Roles
+    description: Operation related to the possible roles for the users.
+  - name: Departments
+    description: Operation related to the possible departments for the users.
 paths:
   /users:
     $ref: "http://localhost:8080/openapi/paths/users/users.yaml"
@@ -64,6 +68,16 @@ paths:
     $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetApprove.yaml"
   /timesheet/reject:
     $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetReject.yaml"
+
+  /role:
+    $ref: "http://localhost:8080/openapi/paths/role/roles.yaml"
+  /role/{id}:
+    $ref: "http://localhost:8080/openapi/paths/role/rolesById.yaml"
+
+  /department:
+    $ref: "http://localhost:8080/openapi/paths/department/departments.yaml"
+  /department/{id}:
+    $ref: "http://localhost:8080/openapi/paths/department/departmentsById.yaml"
 
 components:
   securitySchemes:

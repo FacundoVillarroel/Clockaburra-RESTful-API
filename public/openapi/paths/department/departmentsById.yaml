@@ -1,0 +1,170 @@
+get:
+  summary: Get department by ID
+  description: Retrieves a department by its unique ID.
+  tags:
+    - Departments
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the department to retrieve.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  responses:
+    "200":
+      description: Department retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "6fiVcScwCwMXgMXYd5Td"
+              name:
+                type: string
+                example: "Marketing"
+              description:
+                type: string
+                example: "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+    "400":
+      description: Error retrieving department.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to retrieve department."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+put:
+  summary: Update department by ID
+  description: Updates a department by its unique ID. The request body should include the updated values.
+  tags:
+    - Departments
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the department to update.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Sales"
+            description:
+              type: string
+              example: "Responsible for overseeing and driving the sales activities of the organization."
+          description: Department details to update.
+
+  responses:
+    "200":
+      description: Department updated successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Department updated successfully"
+              updated:
+                type: boolean
+                example: true
+              updatedDepartment:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "6fiVcScwCwMXgMXYd5Td"
+                  name:
+                    type: string
+                    example: "Sales"
+                  description:
+                    type: string
+                    example: "Responsible for overseeing and driving the sales activities of the organization."
+    "400":
+      description: Invalid department update request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Department update cannot be empty"
+              updated:
+                type: boolean
+                example: false
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
+
+delete:
+  summary: Delete department by ID
+  description: Deletes a department by its unique ID.
+  tags:
+    - Departments
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: The ID of the department to delete.
+      schema:
+        type: string
+        example: "6fiVcScwCwMXgMXYd5Td"
+
+  responses:
+    "200":
+      description: Department deleted successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Department deleted successfully"
+              deleted:
+                type: boolean
+                example: true
+    "400":
+      description: Error deleting department.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: Unable to delete department."
+    "401":
+      $ref: "../../components/responses/unauthorized.yaml"
+    "403":
+      $ref: "../../components/responses/failedToAuthenticate.yaml"
+
+  security:
+    - bearerAuth: []
