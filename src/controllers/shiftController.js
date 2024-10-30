@@ -7,7 +7,6 @@ exports.getShifts = async (req, res, next) => {
     const startDate = req.query.startDate || "";
     const endDate = req.query.endDate || "";
     filters = { userIds, startDate, endDate };
-    console.log(filters);
     const shifts = await shiftService.getShifts(filters);
     res.send(shifts);
   } catch (error) {
