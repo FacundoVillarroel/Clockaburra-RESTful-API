@@ -21,13 +21,7 @@ const swaggerDocument = YAML.load("./openapi.yaml");
 
 const app = express();
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
-
-// bodyParser is used in the following middleware.
-app.use(jsonErrorHandler);
-
+// Middleware for CORS handling
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -37,6 +31,15 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+// Middleware for Swagger documentation serving
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Middleware for static files serving
+app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
+
+// bodyParser is used in the following middleware.
+app.use(jsonErrorHandler);
 
 app.use(passport.initialize());
 
