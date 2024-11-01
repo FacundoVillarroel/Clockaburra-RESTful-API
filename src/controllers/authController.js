@@ -28,16 +28,15 @@ exports.register = (req, res, next) => {
         expiresIn: "1w",
       }
     );
-    res
-      .header("Authorization", "Bearer " + token)
-      .status(201)
-      .send({
-        message: "Successful registration",
-        userId: user.userId,
-        userName: user.name,
-        role: user.role,
-        permissions: user.permissions,
-      });
+    res.header("Authorization", "Bearer " + token);
+    res.setHeader("Access-Control-Expose-Headers", "Authorization");
+    res.status(201).send({
+      message: "Successful registration",
+      userId: user.userId,
+      userName: user.name,
+      role: user.role,
+      permissions: user.permissions,
+    });
   })(req, res, next);
 };
 
@@ -62,6 +61,7 @@ exports.login = (req, res, next) => {
       }
     );
     res.header("Authorization", "Bearer " + token);
+    res.setHeader("Access-Control-Expose-Headers", "Authorization");
     res.send({
       message: "Login successful",
       userId: user.userId,
@@ -105,6 +105,7 @@ exports.googleLogin = async (req, res, next) => {
         }
       );
       res.header("Authorization", "Bearer " + token);
+      res.setHeader("Access-Control-Expose-Headers", "Authorization");
       res.send({
         message: "Login successful",
         userId: user.email,

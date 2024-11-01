@@ -23,6 +23,7 @@ const verifyJWT = (req, res, next) => {
     );
 
     res.setHeader("Authorization", "Bearer " + newToken);
+    res.setHeader("Access-Control-Expose-Headers", "Authorization");
 
     req.userId = decoded.userId;
     req.userName = decoded.userName;
