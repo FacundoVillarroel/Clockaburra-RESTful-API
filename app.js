@@ -38,7 +38,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware for Swagger documentation serving
+// Middleware for Swagger documentation serving base in enviroment variable
+const env = process.env.NODE_ENV || "development";
+const baseUrl =
+  env === "production"
+    ? "https://clockaburra-restful-api-production.up.railway.app/"
+    : "http://localhost:8080";
+swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Middleware for static files serving

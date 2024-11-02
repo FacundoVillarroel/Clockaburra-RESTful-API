@@ -4,7 +4,9 @@ info:
   version: 1.0.0
   description: API for managing timesheets, schedules, and employee data for Clockaburra Timesheet App.
 servers:
-  - url: http://localhost:8080/
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://clockaburra-restful-api-production.up.railway.app
     description: Production server
 tags:
   - name: Users
@@ -25,66 +27,66 @@ tags:
     description: Operation related to images storage.
 paths:
   /users:
-    $ref: "http://localhost:8080/openapi/paths/users/users.yaml"
+    $ref: "/openapi/paths/users/users.yaml"
   /users/{id}:
-    $ref: "http://localhost:8080/openapi/paths/users/usersById.yaml"
+    $ref: "/openapi/paths/users/usersById.yaml"
   /users/resend-validation-link/{id}:
-    $ref: "http://localhost:8080/openapi/paths/users/resendLink.yaml"
+    $ref: "/openapi/paths/users/resendLink.yaml"
   /users/reset-password:
-    $ref: "http://localhost:8080/openapi/paths/users/reset-password.yaml"
+    $ref: "/openapi/paths/users/reset-password.yaml"
 
   /auth/register:
-    $ref: "http://localhost:8080/openapi/paths/auth/register.yaml"
+    $ref: "/openapi/paths/auth/register.yaml"
   /auth/login:
-    $ref: "http://localhost:8080/openapi/paths/auth/login.yaml"
+    $ref: "/openapi/paths/auth/login.yaml"
   /auth/googleLogin:
-    $ref: "http://localhost:8080/openapi/paths/auth/googleLogin.yaml"
+    $ref: "/openapi/paths/auth/googleLogin.yaml"
   /auth/reset-password:
-    $ref: "http://localhost:8080/openapi/paths/auth/resetPassword.yaml"
+    $ref: "/openapi/paths/auth/resetPassword.yaml"
   /auth/me:
-    $ref: "http://localhost:8080/openapi/paths/auth/me.yaml"
+    $ref: "/openapi/paths/auth/me.yaml"
   /auth/validation:
-    $ref: "http://localhost:8080/openapi/paths/auth/validation.yaml"
+    $ref: "/openapi/paths/auth/validation.yaml"
 
   /clock/{id}:
-    $ref: "http://localhost:8080/openapi/paths/clock/getClock.yaml"
+    $ref: "/openapi/paths/clock/getClock.yaml"
   /clock/in:
-    $ref: "http://localhost:8080/openapi/paths/clock/in.yaml"
+    $ref: "/openapi/paths/clock/in.yaml"
   /clock/out:
-    $ref: "http://localhost:8080/openapi/paths/clock/out.yaml"
+    $ref: "/openapi/paths/clock/out.yaml"
   /clock/breakStart:
-    $ref: "http://localhost:8080/openapi/paths/clock/breakStart.yaml"
+    $ref: "/openapi/paths/clock/breakStart.yaml"
   /clock/breakEnd:
-    $ref: "http://localhost:8080/openapi/paths/clock/breakEnd.yaml"
+    $ref: "/openapi/paths/clock/breakEnd.yaml"
 
   /shift:
-    $ref: "http://localhost:8080/openapi/paths/shift/shifts.yaml"
+    $ref: "/openapi/paths/shift/shifts.yaml"
   /shift/{id}:
-    $ref: "http://localhost:8080/openapi/paths/shift/shiftsById.yaml"
+    $ref: "/openapi/paths/shift/shiftsById.yaml"
 
   /timesheet:
-    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheets.yaml"
+    $ref: "/openapi/paths/timesheet/timesheets.yaml"
   /timesheet/{id}:
-    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetsById.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetsById.yaml"
   /timesheet/approve:
-    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetApprove.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetApprove.yaml"
   /timesheet/reject:
-    $ref: "http://localhost:8080/openapi/paths/timesheet/timesheetReject.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetReject.yaml"
 
   /role:
-    $ref: "http://localhost:8080/openapi/paths/role/roles.yaml"
+    $ref: "/openapi/paths/role/roles.yaml"
   /role/{id}:
-    $ref: "http://localhost:8080/openapi/paths/role/rolesById.yaml"
+    $ref: "/openapi/paths/role/rolesById.yaml"
 
   /department:
-    $ref: "http://localhost:8080/openapi/paths/department/departments.yaml"
+    $ref: "/openapi/paths/department/departments.yaml"
   /department/{id}:
-    $ref: "http://localhost:8080/openapi/paths/department/departmentsById.yaml"
+    $ref: "/openapi/paths/department/departmentsById.yaml"
 
   /images/profile-images:
-    $ref: "http://localhost:8080/openapi/paths/images/images.yaml"
+    $ref: "/openapi/paths/images/images.yaml"
   /images/profile-images/{filePath}:
-    $ref: "http://localhost:8080/openapi/paths/images/deleteImage.yaml"
+    $ref: "/openapi/paths/images/deleteImage.yaml"
 
 components:
   securitySchemes:
@@ -94,8 +96,8 @@ components:
       bearerFormat: JWT
   schemas:
     Users:
-      $ref: "http://localhost:8080/openapi/components/schemas/users.yaml"
+      $ref: "/openapi/components/schemas/users.yaml"
     NewUsers:
-      $ref: "http://localhost:8080/openapi/components/schemas/newUsers.yaml"
+      $ref: "/openapi/components/schemas/newUsers.yaml"
     NewUsersResponse:
-      $ref: "http://localhost:8080/openapi/components/schemas/newUsersResponse.yaml"
+      $ref: "/openapi/components/schemas/newUsersResponse.yaml"
