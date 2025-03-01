@@ -3,6 +3,11 @@ const rolesService = new RolesService(process.env.DATA_BASE);
 
 exports.getRoles = async (req, res, next) => {
   try {
+    /** 
+     * method description: get all the roles from db, 
+     * input variables: none
+     * return: array with role objects
+    */
     const roles = await rolesService.getRoles();
     res.send(roles);
   } catch (error) {
