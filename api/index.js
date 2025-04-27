@@ -17,7 +17,7 @@ const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
-const swaggerDocument = YAML.load("./openapi.yaml");
+const swaggerDocument = YAML.load("../openapi.yaml");
 
 const app = express();
 
