@@ -17,7 +17,9 @@ const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
-const swaggerDocument = YAML.load("../openapi.yaml");
+const swaggerDocument = YAML.load(
+  path.join(__dirname, "../public/openapi/openapi.yaml")
+);
 
 const app = express();
 
@@ -48,7 +50,7 @@ swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Middleware for static files serving
-app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
+app.use("/openapi", express.static(path.join(__dirname, "../public/openapi")));
 
 // bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);

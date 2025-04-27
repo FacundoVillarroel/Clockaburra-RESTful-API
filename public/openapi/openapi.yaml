@@ -27,66 +27,66 @@ tags:
     description: Operation related to images storage.
 paths:
   /users:
-    $ref: "/openapi/paths/users/users.yaml"
+    $ref: "./paths/users/users.yaml"
   /users/{id}:
-    $ref: "/openapi/paths/users/usersById.yaml"
+    $ref: "./paths/users/usersById.yaml"
   /users/resend-validation-link/{id}:
-    $ref: "/openapi/paths/users/resendLink.yaml"
+    $ref: "./paths/users/resendLink.yaml"
   /users/reset-password:
-    $ref: "/openapi/paths/users/reset-password.yaml"
+    $ref: "./paths/users/reset-password.yaml"
 
   /auth/register:
-    $ref: "/openapi/paths/auth/register.yaml"
+    $ref: "./paths/auth/register.yaml"
   /auth/login:
-    $ref: "/openapi/paths/auth/login.yaml"
+    $ref: "./paths/auth/login.yaml"
   /auth/googleLogin:
-    $ref: "/openapi/paths/auth/googleLogin.yaml"
+    $ref: "./paths/auth/googleLogin.yaml"
   /auth/reset-password:
-    $ref: "/openapi/paths/auth/resetPassword.yaml"
+    $ref: "./paths/auth/resetPassword.yaml"
   /auth/me:
-    $ref: "/openapi/paths/auth/me.yaml"
+    $ref: "./paths/auth/me.yaml"
   /auth/validation:
-    $ref: "/openapi/paths/auth/validation.yaml"
+    $ref: "./paths/auth/validation.yaml"
 
   /clock/{id}:
-    $ref: "/openapi/paths/clock/getClock.yaml"
+    $ref: "./paths/clock/getClock.yaml"
   /clock/in:
-    $ref: "/openapi/paths/clock/in.yaml"
+    $ref: "./paths/clock/in.yaml"
   /clock/out:
-    $ref: "/openapi/paths/clock/out.yaml"
+    $ref: "./paths/clock/out.yaml"
   /clock/breakStart:
-    $ref: "/openapi/paths/clock/breakStart.yaml"
+    $ref: "./paths/clock/breakStart.yaml"
   /clock/breakEnd:
-    $ref: "/openapi/paths/clock/breakEnd.yaml"
+    $ref: "./paths/clock/breakEnd.yaml"
 
   /shift:
-    $ref: "/openapi/paths/shift/shifts.yaml"
+    $ref: "./paths/shift/shifts.yaml"
   /shift/{id}:
-    $ref: "/openapi/paths/shift/shiftsById.yaml"
+    $ref: "./paths/shift/shiftsById.yaml"
 
   /timesheet:
-    $ref: "/openapi/paths/timesheet/timesheets.yaml"
+    $ref: "./paths/timesheet/timesheets.yaml"
   /timesheet/{id}:
-    $ref: "/openapi/paths/timesheet/timesheetsById.yaml"
+    $ref: "./paths/timesheet/timesheetsById.yaml"
   /timesheet/approve:
-    $ref: "/openapi/paths/timesheet/timesheetApprove.yaml"
+    $ref: "./paths/timesheet/timesheetApprove.yaml"
   /timesheet/reject:
-    $ref: "/openapi/paths/timesheet/timesheetReject.yaml"
+    $ref: "./paths/timesheet/timesheetReject.yaml"
 
   /role:
-    $ref: "/openapi/paths/role/roles.yaml"
+    $ref: "./paths/role/roles.yaml"
   /role/{id}:
-    $ref: "/openapi/paths/role/rolesById.yaml"
+    $ref: "./paths/role/rolesById.yaml"
 
   /department:
-    $ref: "/openapi/paths/department/departments.yaml"
+    $ref: "./paths/department/departments.yaml"
   /department/{id}:
-    $ref: "/openapi/paths/department/departmentsById.yaml"
+    $ref: "./paths/department/departmentsById.yaml"
 
   /images/profile-images:
-    $ref: "/openapi/paths/images/images.yaml"
+    $ref: "./paths/images/images.yaml"
   /images/profile-images/{filePath}:
-    $ref: "/openapi/paths/images/deleteImage.yaml"
+    $ref: "./paths/images/deleteImage.yaml"
 
 components:
   securitySchemes:
@@ -96,8 +96,8 @@ components:
       bearerFormat: JWT
   schemas:
     Users:
-      $ref: "/openapi/components/schemas/users.yaml"
+      $ref: "./components/schemas/users.yaml"
     NewUsers:
-      $ref: "/openapi/components/schemas/newUsers.yaml"
+      $ref: "./components/schemas/newUsers.yaml"
     NewUsersResponse:
-      $ref: "/openapi/components/schemas/newUsersResponse.yaml"
+      $ref: "./components/schemas/newUsersResponse.yaml"
