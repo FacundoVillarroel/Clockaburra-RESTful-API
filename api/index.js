@@ -2,18 +2,18 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
-const passport = require("./src/config/PassportConfig");
-const jsonErrorHandler = require("./src/middlewares/jsonErrorHandler");
+const passport = require("../src/config/PassportConfig");
+const jsonErrorHandler = require("../src/middlewares/jsonErrorHandler");
 
-const UsersRouter = require("./src/routes/usersRoutes");
-const ClockRouter = require("./src/routes/clockRoutes");
-const ShiftRouter = require("./src/routes/shiftRoutes");
-const TimesheetRouter = require("./src/routes/timesheetRoutes");
-const AuthRouter = require("./src/routes/authRoutes");
-const DepartmentsRouter = require("./src/routes/departmentsRoutes");
-const RolesRouter = require("./src/routes/rolesRoutes");
-const ImagesRouter = require("./src/routes/imagesRoutes");
-const verifyJWT = require("./src/middlewares/verifyJWT");
+const UsersRouter = require("../src/routes/usersRoutes");
+const ClockRouter = require("../src/routes/clockRoutes");
+const ShiftRouter = require("../src/routes/shiftRoutes");
+const TimesheetRouter = require("../src/routes/timesheetRoutes");
+const AuthRouter = require("../src/routes/authRoutes");
+const DepartmentsRouter = require("../src/routes/departmentsRoutes");
+const RolesRouter = require("../src/routes/rolesRoutes");
+const ImagesRouter = require("../src/routes/imagesRoutes");
+const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 const env = process.env.NODE_ENV || "development";
 const baseUrl =
   env === "production"
-    ? "https://clockaburra-restful-api-production.up.railway.app/"
+    ? "https://clockaburra-restful-api.vercel.app/"
     : "http://localhost:8080";
 swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -71,6 +71,4 @@ app.use("/role", verifyJWT, RolesRouter);
 
 app.use("/images", verifyJWT, ImagesRouter);
 
-app.listen(8080, () => {
-  console.log("listening on port 8080");
-});
+module.exports = app;
