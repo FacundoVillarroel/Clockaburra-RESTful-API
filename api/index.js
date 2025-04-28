@@ -15,12 +15,7 @@ const DepartmentsRouter = require("../src/routes/departmentsRoutes");
 const RolesRouter = require("../src/routes/rolesRoutes");
 const ImagesRouter = require("../src/routes/imagesRoutes");
 const verifyJWT = require("../src/middlewares/verifyJWT");
-
 const swaggerUi = require("swagger-ui-express");
-const YAML = require("yamljs");
-
-// Cargar el swagger.json generado (ya no cargamos el YAML)
-const swaggerDocument = require("../public/openapi/swagger.json");
 
 const app = express();
 
@@ -41,20 +36,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware for static files serving
-if (isProduction) {
-  app.use(
-    "/openapi",
-    express.static(path.join(__dirname, "public", "openapi"))
-  );
-} else {
-  app.use(
-    "/openapi",
-    express.static(path.join(__dirname, "..", "public", "openapi"))
-  );
-}
+// Static files
+const staticPath = isProduction
+  ? path.join(__dirname, "public")
+  : path.join(__dirname, "..", "public");
+console.log("Static path: ", staticPath);
+app.use("/public", express.static(staticPath));
 
-// Middleware for Swagger documentation serving based in environment variable
+// load swagger.json generated
+const swaggerDocument = require(path.join(
+  staticPath,
+  "openapi",
+  "swagger.json"
+));
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // bodyParser is used in the following middleware.
@@ -63,12 +58,19 @@ app.use(jsonErrorHandler);
 app.use(passport.initialize());
 
 app.use("/users", verifyJWT, UsersRouter);
+
 app.use("/clock", verifyJWT, ClockRouter);
+
 app.use("/shift", verifyJWT, ShiftRouter);
+
 app.use("/timesheet", verifyJWT, TimesheetRouter);
+
 app.use("/auth", AuthRouter);
+
 app.use("/department", verifyJWT, DepartmentsRouter);
+
 app.use("/role", verifyJWT, RolesRouter);
+
 app.use("/images", verifyJWT, ImagesRouter);
 
 module.exports = app;
