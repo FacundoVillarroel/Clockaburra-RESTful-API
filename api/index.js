@@ -41,6 +41,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware for static files serving
+console.log("Path to public, openapi:", path.join(__dirname,"..", "public", "openapi"))
+app.use("/openapi", express.static(path.join(__dirname,"..", "public", "openapi")));
+
 // Middleware for Swagger documentation serving base in enviroment variable
 const baseUrl =
 isProduction 
@@ -48,9 +52,6 @@ isProduction
     : "http://localhost:8080";
 swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-// Middleware for static files serving
-app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
 
 // bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);
