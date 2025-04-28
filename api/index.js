@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 
 const express = require("express");
 const path = require("path");
@@ -17,9 +18,11 @@ const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
-const swaggerDocument = YAML.load(
-  path.join(__dirname, "../public/openapi/openapi.yaml")
+const file = fs.readFileSync(
+  path.join(__dirname, "../public/openapi/openapi.yaml"),
+  "utf8"
 );
+const swaggerDocument = YAML.parse(file);
 
 const app = express();
 

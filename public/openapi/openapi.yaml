@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:8080
     description: Development server
-  - url: https://clockaburra-restful-api-production.up.railway.app
+  - url: https://clockaburra-restful-api.vercel.app/
     description: Production server
 tags:
   - name: Users
@@ -27,66 +27,66 @@ tags:
     description: Operation related to images storage.
 paths:
   /users:
-    $ref: "./paths/users/users.yaml"
+    $ref: "/openapi/paths/users/users.yaml"
   /users/{id}:
-    $ref: "./paths/users/usersById.yaml"
+    $ref: "/openapi/paths/users/usersById.yaml"
   /users/resend-validation-link/{id}:
-    $ref: "./paths/users/resendLink.yaml"
+    $ref: "/openapi/paths/users/resendLink.yaml"
   /users/reset-password:
-    $ref: "./paths/users/reset-password.yaml"
+    $ref: "/openapi/paths/users/reset-password.yaml"
 
   /auth/register:
-    $ref: "./paths/auth/register.yaml"
+    $ref: "/openapi/paths/auth/register.yaml"
   /auth/login:
-    $ref: "./paths/auth/login.yaml"
+    $ref: "/openapi/paths/auth/login.yaml"
   /auth/googleLogin:
-    $ref: "./paths/auth/googleLogin.yaml"
+    $ref: "/openapi/paths/auth/googleLogin.yaml"
   /auth/reset-password:
-    $ref: "./paths/auth/resetPassword.yaml"
+    $ref: "/openapi/paths/auth/resetPassword.yaml"
   /auth/me:
-    $ref: "./paths/auth/me.yaml"
+    $ref: "/openapi/paths/auth/me.yaml"
   /auth/validation:
-    $ref: "./paths/auth/validation.yaml"
+    $ref: "/openapi/paths/auth/validation.yaml"
 
   /clock/{id}:
-    $ref: "./paths/clock/getClock.yaml"
+    $ref: "/openapi/paths/clock/getClock.yaml"
   /clock/in:
-    $ref: "./paths/clock/in.yaml"
+    $ref: "/openapi/paths/clock/in.yaml"
   /clock/out:
-    $ref: "./paths/clock/out.yaml"
+    $ref: "/openapi/paths/clock/out.yaml"
   /clock/breakStart:
-    $ref: "./paths/clock/breakStart.yaml"
+    $ref: "/openapi/paths/clock/breakStart.yaml"
   /clock/breakEnd:
-    $ref: "./paths/clock/breakEnd.yaml"
+    $ref: "/openapi/paths/clock/breakEnd.yaml"
 
   /shift:
-    $ref: "./paths/shift/shifts.yaml"
+    $ref: "/openapi/paths/shift/shifts.yaml"
   /shift/{id}:
-    $ref: "./paths/shift/shiftsById.yaml"
+    $ref: "/openapi/paths/shift/shiftsById.yaml"
 
   /timesheet:
-    $ref: "./paths/timesheet/timesheets.yaml"
+    $ref: "/openapi/paths/timesheet/timesheets.yaml"
   /timesheet/{id}:
-    $ref: "./paths/timesheet/timesheetsById.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetsById.yaml"
   /timesheet/approve:
-    $ref: "./paths/timesheet/timesheetApprove.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetApprove.yaml"
   /timesheet/reject:
-    $ref: "./paths/timesheet/timesheetReject.yaml"
+    $ref: "/openapi/paths/timesheet/timesheetReject.yaml"
 
   /role:
-    $ref: "./paths/role/roles.yaml"
+    $ref: "/openapi/paths/role/roles.yaml"
   /role/{id}:
-    $ref: "./paths/role/rolesById.yaml"
+    $ref: "/openapi/paths/role/rolesById.yaml"
 
   /department:
-    $ref: "./paths/department/departments.yaml"
+    $ref: "/openapi/paths/department/departments.yaml"
   /department/{id}:
-    $ref: "./paths/department/departmentsById.yaml"
+    $ref: "/openapi/paths/department/departmentsById.yaml"
 
   /images/profile-images:
-    $ref: "./paths/images/images.yaml"
+    $ref: "/openapi/paths/images/images.yaml"
   /images/profile-images/{filePath}:
-    $ref: "./paths/images/deleteImage.yaml"
+    $ref: "/openapi/paths/images/deleteImage.yaml"
 
 components:
   securitySchemes:
@@ -96,8 +96,8 @@ components:
       bearerFormat: JWT
   schemas:
     Users:
-      $ref: "./components/schemas/users.yaml"
+      $ref: "/openapi/components/schemas/users.yaml"
     NewUsers:
-      $ref: "./components/schemas/newUsers.yaml"
+      $ref: "/openapi/components/schemas/newUsers.yaml"
     NewUsersResponse:
-      $ref: "./components/schemas/newUsersResponse.yaml"
+      $ref: "/openapi/components/schemas/newUsersResponse.yaml"
