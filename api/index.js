@@ -1,5 +1,4 @@
 require("dotenv").config();
-const fs = require("fs");
 
 const express = require("express");
 const path = require("path");
@@ -18,11 +17,14 @@ const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
-const file = fs.readFileSync(
-  path.join(__dirname, "../public/openapi/openapi.yaml"),
-  "utf8"
-);
-const swaggerDocument = YAML.parse(file);
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const swaggerDocumentPath = isProduction
+  ? path.join(__dirname, "public", "openapi", "openapi.yaml") // in production
+  : path.join(__dirname, "..", "public", "openapi", "openapi.yaml"); // in develpoment
+
+const swaggerDocument = YAML.load(swaggerDocumentPath);
 
 const app = express();
 
@@ -44,11 +46,9 @@ app.use((req, res, next) => {
 });
 
 // Middleware for Swagger documentation serving base in enviroment variable
-const env = process.env.NODE_ENV || "development";
-const baseUrl =
-  env === "production"
-    ? "https://clockaburra-restful-api.vercel.app/"
-    : "http://localhost:8080";
+const baseUrl = isProduction
+  ? "https://clockaburra-restful-api.vercel.app/"
+  : "http://localhost:8080";
 swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
