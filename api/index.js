@@ -1,5 +1,4 @@
 require("dotenv").config();
-const isProduction = process.env.NODE_ENV === "production";
 
 const express = require("express");
 const path = require("path");
@@ -15,7 +14,6 @@ const DepartmentsRouter = require("../src/routes/departmentsRoutes");
 const RolesRouter = require("../src/routes/rolesRoutes");
 const ImagesRouter = require("../src/routes/imagesRoutes");
 const verifyJWT = require("../src/middlewares/verifyJWT");
-const swaggerUi = require("swagger-ui-express");
 
 const app = express();
 
@@ -41,19 +39,18 @@ const staticPath = path.join(__dirname, "..", "public");
 console.log("Static path: ", staticPath);
 app.use("/public", express.static(staticPath));
 
-// load swagger.json generated
-const swaggerDocument = require(path.join(
-  staticPath,
-  "openapi",
-  "swagger.json"
-));
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 // bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);
 
 app.use(passport.initialize());
+
+app.get("/", (req, res) => {
+  res.redirect("/api-docs");
+});
+
+app.get("/api-docs", (req, res) => {
+  res.sendFile(path.join(staticPath, "api-docs.html"));
+});
 
 app.use("/users", verifyJWT, UsersRouter);
 
