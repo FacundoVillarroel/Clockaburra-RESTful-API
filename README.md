@@ -79,14 +79,14 @@ Start the development server:
 ```bash
 npm run dev
 ```
-
-By default, the API will be available at `http://localhost:3000/`.
+0
+By default, the API will be available at `http://localhost:8080/`.
 
 ## API Documentation
 
 Interactive API documentation is available at:
 
-- **Swagger:** `http://localhost:3000/api-docs`
+- **Swagger:** `http://localhost:8080/api-docs`
 
 ## Project Structure
 
