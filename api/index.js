@@ -1,4 +1,5 @@
 require("dotenv").config();
+const isProduction = process.env.NODE_ENV === "production";
 
 const express = require("express");
 const path = require("path");
@@ -17,14 +18,9 @@ const verifyJWT = require("../src/middlewares/verifyJWT");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
-
-const isProduction = process.env.NODE_ENV === "production";
-
-const swaggerDocumentPath = isProduction
-  ? path.join(__dirname, "public", "openapi", "openapi.yaml") // in production
-  : path.join(__dirname, "..", "public", "openapi", "openapi.yaml"); // in develpoment
-
-const swaggerDocument = YAML.load(swaggerDocumentPath);
+const swaggerDocument = YAML.load(
+  path.join(__dirname, "../public/openapi/openapi.yaml")
+);
 
 const app = express();
 
@@ -46,14 +42,15 @@ app.use((req, res, next) => {
 });
 
 // Middleware for Swagger documentation serving base in enviroment variable
-const baseUrl = isProduction
-  ? "https://clockaburra-restful-api.vercel.app/"
-  : "http://localhost:8080";
+const baseUrl =
+isProduction 
+    ? "https://clockaburra-restful-api.vercel.app/"
+    : "http://localhost:8080";
 swaggerDocument.servers[0].url = baseUrl;
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Middleware for static files serving
-app.use("/openapi", express.static(path.join(__dirname, "../public/openapi")));
+app.use("/openapi", express.static(path.join(__dirname, "public", "openapi")));
 
 // bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);
