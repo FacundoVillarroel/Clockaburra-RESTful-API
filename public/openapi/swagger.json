@@ -1,0 +1,5747 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Clockaburra Timesheet API",
+    "version": "1.0.0",
+    "description": "API for managing timesheets, schedules, and employee data for Clockaburra Timesheet App."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    },
+    {
+      "url": "https://clockaburra-restful-api.vercel.app/",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Operations related to users."
+    },
+    {
+      "name": "Authentication",
+      "description": "Operations related to authentication."
+    },
+    {
+      "name": "Clock",
+      "description": "Operation related to clock status of an user."
+    },
+    {
+      "name": "Shifts",
+      "description": "Operation related to the shifts of an user."
+    },
+    {
+      "name": "Timesheets",
+      "description": "Operation related to the timesheets of an user."
+    },
+    {
+      "name": "Roles",
+      "description": "Operation related to the possible roles for the users."
+    },
+    {
+      "name": "Departments",
+      "description": "Operation related to the possible departments for the users."
+    },
+    {
+      "name": "Images",
+      "description": "Operation related to images storage."
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Retrieve a list of all users.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "roles",
+            "description": "Filter users by roles, separated by commas",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Chef,Manager"
+            }
+          },
+          {
+            "in": "query",
+            "name": "departments",
+            "description": "Filter users by departments, separated by commas",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "BOH,Management"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of users.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique identifier for the user.",
+                        "default": "examplo@email.com"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the user.",
+                        "default": "Name"
+                      },
+                      "surname": {
+                        "type": "string",
+                        "description": "The surname of the user.",
+                        "default": "Surname"
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "The username of the user.",
+                        "default": "example@email.com"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "The email address of the user.",
+                        "default": "example@email.com"
+                      },
+                      "role": {
+                        "type": "string",
+                        "description": "The job role of the user.",
+                        "default": "employee"
+                      },
+                      "hourlyRate": {
+                        "type": "number",
+                        "description": "The hourly rate of the user.",
+                        "default": 30
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "description": "The start date of the user in ISO format.",
+                        "default": "2024-04-21T00:00:00.000-05:00"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "The hashed password of the user."
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "The address of the user.",
+                        "default": "Fake address 123"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "description": "The phone number of the user.",
+                        "default": "+610412345678"
+                      },
+                      "validationToken": {
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": null
+                          }
+                        ],
+                        "description": "The validation token of the user.",
+                        "default": null
+                      },
+                      "isRegistered": {
+                        "type": "boolean",
+                        "description": "The complete registration status of the user.",
+                        "default": true
+                      },
+                      "permissions": {
+                        "type": "string",
+                        "description": "The type of permission this user have",
+                        "default": "employee"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new user",
+        "description": "Add a new user to the system.",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email of the user.",
+                    "default": "example@email.com"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the user.",
+                    "default": "Name"
+                  },
+                  "surname": {
+                    "type": "string",
+                    "description": "Surname of the user.",
+                    "default": "Surname"
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "The job role of the user.",
+                    "default": "employee"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "description": "The start date of the user in ISO format.",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  },
+                  "hourlyRate": {
+                    "type": "number",
+                    "description": "The hourly rate of the user.",
+                    "default": 30
+                  },
+                  "permissions": {
+                    "type": "string",
+                    "description": "The type of permission this user will have",
+                    "default": "employee"
+                  }
+                },
+                "required": [
+                  "name",
+                  "surname",
+                  "email",
+                  "role",
+                  "hourlyRate",
+                  "startDate",
+                  "permissions"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Message 'User created successfully'"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The unique identifier for the user.",
+                          "default": "examplo@email.com"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the user.",
+                          "default": "Name"
+                        },
+                        "surname": {
+                          "type": "string",
+                          "description": "The surname of the user.",
+                          "default": "Surname"
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username of the user.",
+                          "default": "example@email.com"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The email address of the user.",
+                          "default": "example@email.com"
+                        },
+                        "role": {
+                          "type": "string",
+                          "description": "The job role of the user.",
+                          "default": "employee"
+                        },
+                        "hourlyRate": {
+                          "type": "number",
+                          "description": "The hourly rate of the user.",
+                          "default": 30
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "description": "The start date of the user in ISO format.",
+                          "default": "2024-04-21T00:00:00.000-05:00"
+                        },
+                        "validationToken": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": null
+                            }
+                          ],
+                          "description": "The validation token of the user.",
+                          "default": null
+                        },
+                        "isRegistered": {
+                          "type": "boolean",
+                          "description": "The complete registration status of the user.",
+                          "default": true
+                        },
+                        "permissions": {
+                          "type": "string",
+                          "description": "The type of permission this user have",
+                          "default": "employee"
+                        }
+                      }
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "Id of the user."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid data entered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing properties for this new user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user a single user.",
+        "description": "Retrieve the user an existing user by their ID.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to retrieve.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "retrieved user by their ID succesfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The unique identifier for the user.",
+                              "default": "examplo@email.com"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the user.",
+                              "default": "Name"
+                            },
+                            "surname": {
+                              "type": "string",
+                              "description": "The surname of the user.",
+                              "default": "Surname"
+                            },
+                            "username": {
+                              "type": "string",
+                              "description": "The username of the user.",
+                              "default": "example@email.com"
+                            },
+                            "email": {
+                              "type": "string",
+                              "description": "The email address of the user.",
+                              "default": "example@email.com"
+                            },
+                            "role": {
+                              "type": "string",
+                              "description": "The job role of the user.",
+                              "default": "employee"
+                            },
+                            "hourlyRate": {
+                              "type": "number",
+                              "description": "The hourly rate of the user.",
+                              "default": 30
+                            },
+                            "startDate": {
+                              "type": "string",
+                              "description": "The start date of the user in ISO format.",
+                              "default": "2024-04-21T00:00:00.000-05:00"
+                            },
+                            "password": {
+                              "type": "string",
+                              "description": "The hashed password of the user."
+                            },
+                            "address": {
+                              "type": "string",
+                              "description": "The address of the user.",
+                              "default": "Fake address 123"
+                            },
+                            "phoneNumber": {
+                              "type": "string",
+                              "description": "The phone number of the user.",
+                              "default": "+610412345678"
+                            },
+                            "validationToken": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": null
+                                }
+                              ],
+                              "description": "The validation token of the user.",
+                              "default": null
+                            },
+                            "isRegistered": {
+                              "type": "boolean",
+                              "description": "The complete registration status of the user.",
+                              "default": true
+                            },
+                            "permissions": {
+                              "type": "string",
+                              "description": "The type of permission this user have",
+                              "default": "employee"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "validationToken": null,
+                            "password": null
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found with introduced ID.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "message of error not found."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Edit a single user.",
+        "description": "Edit an user by their ID.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to edit.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email of the user.",
+                    "default": "example@email.com"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the user.",
+                    "default": "Name"
+                  },
+                  "surname": {
+                    "type": "string",
+                    "description": "Surname of the user.",
+                    "default": "Surname"
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "The job role of the user.",
+                    "default": "employee"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "description": "The start date of the user in ISO format.",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  },
+                  "hourlyRate": {
+                    "type": "number",
+                    "description": "The hourly rate of the user.",
+                    "default": 30
+                  },
+                  "permissions": {
+                    "type": "string",
+                    "description": "The type of permission this user will have",
+                    "default": "employee"
+                  }
+                },
+                "required": [
+                  "name",
+                  "surname",
+                  "email",
+                  "role",
+                  "hourlyRate",
+                  "startDate",
+                  "permissions"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User edited by their ID successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "updatedUser": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The unique identifier for the user.",
+                          "default": "examplo@email.com"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the user.",
+                          "default": "Name"
+                        },
+                        "surname": {
+                          "type": "string",
+                          "description": "The surname of the user.",
+                          "default": "Surname"
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username of the user.",
+                          "default": "example@email.com"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The email address of the user.",
+                          "default": "example@email.com"
+                        },
+                        "role": {
+                          "type": "string",
+                          "description": "The job role of the user.",
+                          "default": "employee"
+                        },
+                        "hourlyRate": {
+                          "type": "number",
+                          "description": "The hourly rate of the user.",
+                          "default": 30
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "description": "The start date of the user in ISO format.",
+                          "default": "2024-04-21T00:00:00.000-05:00"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The hashed password of the user."
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "The address of the user.",
+                          "default": "Fake address 123"
+                        },
+                        "phoneNumber": {
+                          "type": "string",
+                          "description": "The phone number of the user.",
+                          "default": "+610412345678"
+                        },
+                        "validationToken": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": null
+                            }
+                          ],
+                          "description": "The validation token of the user.",
+                          "default": null
+                        },
+                        "isRegistered": {
+                          "type": "boolean",
+                          "description": "The complete registration status of the user.",
+                          "default": true
+                        },
+                        "permissions": {
+                          "type": "string",
+                          "description": "The type of permission this user have",
+                          "default": "employee"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, json in wrong format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "The description of the error."
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found with introduced id.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a single user.",
+        "description": "Delete an user by their ID.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to delete.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted by ID successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "default": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found with introduced id.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/resend-validation-link/{id}": {
+      "put": {
+        "summary": "Resend validation link.",
+        "description": "Resend validation link to user email.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to resend link.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation link resent successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "updatedUser": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The unique identifier for the user.",
+                          "default": "examplo@email.com"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the user.",
+                          "default": "Name"
+                        },
+                        "surname": {
+                          "type": "string",
+                          "description": "The surname of the user.",
+                          "default": "Surname"
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username of the user.",
+                          "default": "example@email.com"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "The email address of the user.",
+                          "default": "example@email.com"
+                        },
+                        "role": {
+                          "type": "string",
+                          "description": "The job role of the user.",
+                          "default": "employee"
+                        },
+                        "hourlyRate": {
+                          "type": "number",
+                          "description": "The hourly rate of the user.",
+                          "default": 30
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "description": "The start date of the user in ISO format.",
+                          "default": "2024-04-21T00:00:00.000-05:00"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The hashed password of the user."
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "The address of the user.",
+                          "default": "Fake address 123"
+                        },
+                        "phoneNumber": {
+                          "type": "string",
+                          "description": "The phone number of the user.",
+                          "default": "+610412345678"
+                        },
+                        "validationToken": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": null
+                            }
+                          ],
+                          "description": "The validation token of the user.",
+                          "default": null
+                        },
+                        "isRegistered": {
+                          "type": "boolean",
+                          "description": "The complete registration status of the user.",
+                          "default": true
+                        },
+                        "permissions": {
+                          "type": "string",
+                          "description": "The type of permission this user have",
+                          "default": "employee"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, json in wrong format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "The description of the error."
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found with introduced ID.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/reset-password": {
+      "put": {
+        "summary": "Reset user password.",
+        "description": "Update a new password for the user using a reset token.",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "password"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The JWT reset password token."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The new password for the user.",
+                    "minLength": 8
+                  }
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "password": "newSecurePassword123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, token invalid or password too short.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid token. Please check the activation link or request a new one."
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token has expired. Please request a new activation link."
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register an user.",
+        "description": "Complete registration of an user.",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": "12345678"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Name"
+                  },
+                  "surname": {
+                    "type": "string",
+                    "default": "Surname"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "default": "+610492156825"
+                  },
+                  "address": {
+                    "type": "string",
+                    "default": "Fake 123"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password",
+                  "name",
+                  "surname",
+                  "phoneNumber",
+                  "address"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration complete successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Successful registration"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "default": "example@email.com"
+                    },
+                    "userName": {
+                      "type": "string",
+                      "default": "Name"
+                    },
+                    "role": {
+                      "type": "string",
+                      "default": "employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "The password must be at least 8 characters"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Email not found for pending registration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "This email is already registrated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login an user.",
+        "description": "Login an user with their credentials.",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": "12345678"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Login successful"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "default": "example@email.com"
+                    },
+                    "name": {
+                      "type": "string",
+                      "default": "Name"
+                    },
+                    "role": {
+                      "type": "string",
+                      "default": "employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Incorrect password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User did not complete email validation"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/googleLogin": {
+      "post": {
+        "summary": "Authenticate user with token.",
+        "description": "Authenticates the user using a JWT token and retrieves user details.",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The JWT token.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Login successful"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "User's email.",
+                      "example": "user@example.com"
+                    },
+                    "userName": {
+                      "type": "string",
+                      "description": "User's name.",
+                      "example": "John Doe"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "User's role.",
+                      "example": "admin"
+                    },
+                    "permissions": {
+                      "type": "string",
+                      "description": "User's permissions.",
+                      "example": "read,write"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Could not authenticate Google account."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "get": {
+        "summary": "Request password reset email.",
+        "description": "Sends an email with a password reset link to the user.",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email address to send the reset link to.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "user@example.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset link sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Password reset link sent successfully to email."
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "description": "User object with user details (if needed)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email not registered in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Email not registered in db"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Internal server error"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Retrieve Json Web Token information.",
+        "description": "Get info about active JWT sent on headers.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JWT information retrieved successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Token Information"
+                    },
+                    "userName": {
+                      "type": "string",
+                      "default": "userName"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "default": "example@gmail.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "default": "employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Failed to authenticate token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": null,
+                  "object": {
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "default": "Failed to authenticate token"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/validation": {
+      "get": {
+        "summary": "Validate email of a new user.",
+        "description": "Validate email of a new user with the unique token valid for that user.",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique token for validating the user's email."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validation link is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Valid Token"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string"
+                        },
+                        "userName": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "Internal server error"
+                    },
+                    "ok": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clock/{id}": {
+      "get": {
+        "summary": "Get a clock status.",
+        "description": "Get a clock status of an user by its ID.",
+        "tags": [
+          "Clock"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The Id of the user's Clock status.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clock retrieved successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "default": "example@email.com"
+                    },
+                    "onBreak": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "clockedIn": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "currentTimesheetId": {
+                      "type": {
+                        "oneOf": [
+                          null,
+                          "string"
+                        ]
+                      },
+                      "default": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No clock found with ID provided.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clock/in": {
+      "post": {
+        "summary": "Clock-in an user.",
+        "description": "Clock in an user with its ID.",
+        "tags": [
+          "Clock"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "dateTime": {
+                    "type": "string",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "dateTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clock-in successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User example@email.com clocked In"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "newTimesheet": {
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "userId": {
+                                  "type": "string",
+                                  "default": "example@email.com"
+                                },
+                                "startDate": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "example": "2024-04-21T00:00:00.000-05:00"
+                                },
+                                "endDate": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "example": null
+                                },
+                                "expectedHours": {
+                                  "type": "number",
+                                  "example": null
+                                },
+                                "workedHours": {
+                                  "type": "number",
+                                  "example": null
+                                },
+                                "breaks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object"
+                                  }
+                                },
+                                "actionHistory": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "actionType": {
+                                        "type": "string",
+                                        "example": "checkIn"
+                                      },
+                                      "timeStamp": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-04-21T00:00:00.000-05:00"
+                                      }
+                                    }
+                                  }
+                                },
+                                "approved": {
+                                  "type": "boolean",
+                                  "default": false
+                                },
+                                "rejected": {
+                                  "type": "boolean",
+                                  "default": false
+                                }
+                              }
+                            },
+                            "id": {
+                              "type": "string",
+                              "default": "8CCcleukURtq0b5qeu1U"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clock/out": {
+      "post": {
+        "summary": "Clock-out an user.",
+        "description": "Clock out an user with its ID.",
+        "tags": [
+          "Clock"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "dateTime": {
+                    "type": "string",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "dateTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clock-out successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User example@email.com clocked Out"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clock/breakStart": {
+      "post": {
+        "summary": "Start break of an user.",
+        "description": "Start break of an user with its ID.",
+        "tags": [
+          "Clock"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "dateTime": {
+                    "type": "string",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "dateTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Break started successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User example@email.com break started"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clock/breakEnd": {
+      "post": {
+        "summary": "End break of an user.",
+        "description": "End break of an user with its ID.",
+        "tags": [
+          "Clock"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "default": "example@email.com"
+                  },
+                  "dateTime": {
+                    "type": "string",
+                    "default": "2024-04-21T00:00:00.000-05:00"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "dateTime"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Break ended successfully.",
+            "headers": {
+              "Authorization": {
+                "description": "The Bearer token with updated expiration date.",
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer <newly-updated-token>"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "default": "User example@email.com break ended"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Information of error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/shift": {
+      "get": {
+        "summary": "Get user shifts",
+        "description": "Retrieves an array of shifts for the selected users. If no userIds are provided, all available shifts within the specified date range will be returned.",
+        "tags": [
+          "Shifts"
+        ],
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "description": "Start date of the search range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-10-14T00:00:00.000+08:00"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "description": "End date of the search range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-10-20T23:59:59.999+08:00"
+            }
+          },
+          {
+            "name": "userIds",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of user email addresses to filter the shifts.",
+            "schema": {
+              "type": "string",
+              "example": "example@gmail.com,admin@admin.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shifts retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "shiftId": {
+                        "type": "string",
+                        "example": "shift_12345"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "example@gmail.com"
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-15T08:00:00.000+08:00"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-15T16:00:00.000+08:00"
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "scheduled"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Bad request: invalid parameters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new shift",
+        "description": "Creates a new shift for a user with specified start and end times. Breaks are optional and shifts can be an empty array.",
+        "tags": [
+          "Shifts"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "example@gmail.com"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T09:00:00.000+08:00"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T17:00:00.000+08:00"
+                  },
+                  "breaks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "breakStart": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:00:00.000+08:00"
+                        },
+                        "breakEnd": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:30:00.000+08:00"
+                        }
+                      }
+                    },
+                    "description": "An optional array of breaks for the shift."
+                  }
+                },
+                "required": [
+                  "userId",
+                  "startDate",
+                  "endDate"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Shift created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Shift created successfully"
+                    },
+                    "shift": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "shift_12345"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "example@gmail.com"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T09:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T17:00:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: invalid input parameters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity due to missing properties.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Missing properties for this shift."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/shift/{id}": {
+      "get": {
+        "summary": "Get a shift by ID",
+        "description": "Retrieves a specific shift based on the provided shift ID.",
+        "tags": [
+          "Shifts"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the shift to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "shift_12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shift retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shift": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "shift_12345"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "example@gmail.com"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T09:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T17:00:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: invalid shift ID."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update a shift by ID",
+        "description": "Updates a specific shift based on the provided shift ID. The request body should ideally match the structure of the shift schema but is not mandatory.",
+        "tags": [
+          "Shifts"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the shift to update.",
+            "schema": {
+              "type": "string",
+              "example": "shift_12345"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "example@gmail.com"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T09:00:00.000+08:00"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T17:00:00.000+08:00"
+                  },
+                  "breaks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "breakStart": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:00:00.000+08:00"
+                        },
+                        "breakEnd": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:30:00.000+08:00"
+                        }
+                      }
+                    }
+                  }
+                },
+                "description": "The shift details to update. The structure can be similar to the shift schema but is not mandatory."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Shift updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Shift updated successfully"
+                    },
+                    "update": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "updatedShift": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "shift_12345"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "example@gmail.com"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T09:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T17:00:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing properties or invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Missing properties for the shift"
+                    },
+                    "update": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a shift by ID",
+        "description": "Deletes a specific shift based on the provided shift ID.",
+        "tags": [
+          "Shifts"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the shift to delete.",
+            "schema": {
+              "type": "string",
+              "example": "shift_12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shift deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Shift deleted successfully"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while deleting the shift.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to delete the shift."
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/timesheet": {
+      "get": {
+        "summary": "Get user timesheets",
+        "description": "Retrieves an array of timesheets for the selected users. If no userIds are provided, all available timesheets within the specified date range will be returned.",
+        "tags": [
+          "Timesheets"
+        ],
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "description": "Start date of the search range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-10-14T00:00:00.000+08:00"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "description": "End date of the search range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-10-20T23:59:59.999+08:00"
+            }
+          },
+          {
+            "name": "userIds",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of user email addresses to filter the timesheets.",
+            "schema": {
+              "type": "string",
+              "example": "example@gmail.com,admin@admin.com"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Timesheets retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "timesheetId": {
+                        "type": "string",
+                        "example": "timesheet_12345"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "example@gmail.com"
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-15T08:00:00.000+08:00"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-15T16:00:00.000+08:00"
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "submitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Bad request: invalid parameters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new timesheet",
+        "description": "Creates a new timesheet for a user with specified start and end times. Breaks are optional and the timesheets can be an empty array.",
+        "tags": [
+          "Timesheets"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "example@gmail.com"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T09:00:00.000+08:00"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-10-14T17:00:00.000+08:00"
+                  },
+                  "breaks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "breakStart": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:00:00.000+08:00"
+                        },
+                        "breakEnd": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:30:00.000+08:00"
+                        }
+                      }
+                    },
+                    "description": "An optional array of breaks for the timesheet."
+                  }
+                },
+                "required": [
+                  "userId",
+                  "startDate",
+                  "endDate"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Timesheet created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Timesheet created successfully"
+                    },
+                    "timesheet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "timesheet_12345"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "example@gmail.com"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T09:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T17:00:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: invalid input parameters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity due to missing properties.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Missing properties for this timesheet."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/timesheet/{id}": {
+      "get": {
+        "summary": "Get a timesheet by ID",
+        "description": "Retrieves a specific timesheet based on the provided timesheet ID.",
+        "tags": [
+          "Timesheets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the timesheet to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "timesheet_12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Timesheet retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timesheet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "timesheet_12345"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "example@gmail.com"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T09:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T17:00:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: invalid timesheet ID."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update a timesheet by ID",
+        "description": "Updates a specific timesheet based on the provided timesheet ID. The request body should contain the `startDate`, `endDate`, and an optional array of `breaks` (which can be empty or include break times).",
+        "tags": [
+          "Timesheets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the timesheet to update.",
+            "schema": {
+              "type": "string",
+              "example": "timesheet_12345"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-09-05T00:00:00.000+08:00"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-09-05T02:30:00.000+08:00"
+                  },
+                  "breaks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "breakStart": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:00:00.000+08:00"
+                        },
+                        "breakEnd": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-10-14T13:30:00.000+08:00"
+                        }
+                      }
+                    },
+                    "description": "An optional array of breaks. This can either be an empty array `[]` or an array with break details."
+                  }
+                },
+                "example": {
+                  "startDate": "2024-09-05T00:00:00.000+08:00",
+                  "endDate": "2024-09-05T02:30:00.000+08:00",
+                  "breaks": []
+                },
+                "description": "The timesheet details to update."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Timesheet updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Timesheet updated successfully"
+                    },
+                    "update": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "updatedTimesheet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "timesheet_12345"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-09-05T00:00:00.000+08:00"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-09-05T02:30:00.000+08:00"
+                        },
+                        "breaks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "breakStart": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:00:00.000+08:00"
+                              },
+                              "breakEnd": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-10-14T13:30:00.000+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing properties or invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Missing properties for the timesheet"
+                    },
+                    "update": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a timesheet by ID",
+        "description": "Deletes a specific timesheet based on the provided timesheet ID.",
+        "tags": [
+          "Timesheets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the timesheet to delete.",
+            "schema": {
+              "type": "string",
+              "example": "timesheet_12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Timesheet deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Timesheet deleted successfully"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while deleting the timesheet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to delete the timesheet."
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/timesheet/approve": {
+      "post": {
+        "summary": "Approve a timesheet",
+        "description": "Approves a timesheet based on the provided timesheet ID.",
+        "tags": [
+          "Timesheets"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the timesheet to approve.",
+                    "example": "timesheet_12345"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Timesheet approved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Timesheet approved successfully"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while approving the timesheet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to approve the timesheet."
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/timesheet/reject": {
+      "post": {
+        "summary": "Reject a timesheet",
+        "description": "Rejects a timesheet based on the provided timesheet ID.",
+        "tags": [
+          "Timesheets"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the timesheet to reject.",
+                    "example": "timesheet_12345"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Timesheet rejected successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Timesheet rejected successfully"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while rejecting the timesheet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to reject the timesheet."
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/role": {
+      "get": {
+        "summary": "Get roles",
+        "description": "Retrieves an array of roles, where each role contains a description, ID, and name.",
+        "tags": [
+          "Roles"
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "6fiVcScwCwMXgMXYd5Td"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Assistant manager"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while retrieving the roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to retrieve roles."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new role",
+        "description": "Creates a new role. The name is required, and the description is optional.",
+        "tags": [
+          "Roles"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Assistant manager"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "role created successfully"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "6fiVcScwCwMXgMXYd5Td"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Assistant manager"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error during role creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to create role."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Role name is missing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role Name can not be empty"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/role/{id}": {
+      "get": {
+        "summary": "Get role by ID",
+        "description": "Retrieves a role by its unique ID.",
+        "tags": [
+          "Roles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the role to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "6fiVcScwCwMXgMXYd5Td"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Assistant manager"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Supports the general manager in daily operations and may handle specific areas like scheduling or inventory."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error retrieving role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to retrieve role."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update role by ID",
+        "description": "Updates a role by its unique ID. The request body should include the updated values.",
+        "tags": [
+          "Roles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the role to update.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Manager"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Handles all management tasks and reports to upper management."
+                  }
+                },
+                "description": "Role details to update."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role updated successfully"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "updatedRole": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "6fiVcScwCwMXgMXYd5Td"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Manager"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Handles all management tasks and reports to upper management."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid role update request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "role update can not be empty"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete role by ID",
+        "description": "Deletes a role by its unique ID.",
+        "tags": [
+          "Roles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the role to delete.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role deleted successfully"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error deleting role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to delete role."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/department": {
+      "get": {
+        "summary": "Get departments",
+        "description": "Retrieves an array of departments, where each department contains a description, ID, and name.",
+        "tags": [
+          "Departments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Departments retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "6fiVcScwCwMXgMXYd5Td"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Marketing"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error while retrieving the departments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to retrieve departments."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new department",
+        "description": "Creates a new department. The name is required, and the description is optional.",
+        "tags": [
+          "Departments"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Marketing"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Department created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Department created successfully"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "6fiVcScwCwMXgMXYd5Td"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Marketing"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to an error during department creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to create department."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Department name is missing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Department Name can not be empty"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/department/{id}": {
+      "get": {
+        "summary": "Get department by ID",
+        "description": "Retrieves a department by its unique ID.",
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the department to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Department retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "6fiVcScwCwMXgMXYd5Td"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Marketing"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Responsible for creating, communicating, and delivering offerings that have value for customers, clients, partners, and society at large."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error retrieving department.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to retrieve department."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update department by ID",
+        "description": "Updates a department by its unique ID. The request body should include the updated values.",
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the department to update.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sales"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Responsible for overseeing and driving the sales activities of the organization."
+                  }
+                },
+                "description": "Department details to update."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Department updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Department updated successfully"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "updatedDepartment": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "6fiVcScwCwMXgMXYd5Td"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Sales"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Responsible for overseeing and driving the sales activities of the organization."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid department update request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Department update cannot be empty"
+                    },
+                    "updated": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete department by ID",
+        "description": "Deletes a department by its unique ID.",
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the department to delete.",
+            "schema": {
+              "type": "string",
+              "example": "6fiVcScwCwMXgMXYd5Td"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Department deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Department deleted successfully"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error deleting department.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error: Unable to delete department."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/images/profile-images": {
+      "put": {
+        "summary": "Update profile image",
+        "description": "Updates a profile image. The request body must include the image in JPEG or PNG format. Optionally, a filePath can be provided to indicate the previous image to be replaced for the new one.",
+        "tags": [
+          "Images"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The image file in JPEG or PNG format. This field is required."
+                  },
+                  "filePath": {
+                    "type": "string",
+                    "description": "Optional path to the previous image. If not included, a new image will be added.",
+                    "example": "profile-images/old-image.jpeg"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Image updated successfully. Returns the new URL of the uploaded image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "https://your-domain.com/images/profile-images/new-image.jpeg"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request if no file is uploaded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "No file uploaded"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error if there is an error uploading the image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error uploading image"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/images/profile-images/{filePath}": {
+      "delete": {
+        "summary": "Delete profile image",
+        "description": "Deletes a profile image by its file path. The file path must be provided as a parameter.",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "name": "filePath",
+            "in": "path",
+            "required": true,
+            "description": "The file path of the image to be deleted.",
+            "Example": "profile-images/1728486219241_68cbe5aa-c179-4ae3-b3e0-422bd7a17a73.jpeg",
+            "schema": {
+              "type": "string",
+              "example": "profile-images/1728486219241_68cbe5aa-c179-4ae3-b3e0-422bd7a17a73.jpeg"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Image deleted successfully"
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request if the file path is invalid or not provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "invalid filePath"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, no token provided or token invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Failed to authenticate token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Failed to authenticate token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error if there is an error during the deletion process.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error deleting image"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Users": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the user.",
+            "default": "examplo@email.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the user.",
+            "default": "Name"
+          },
+          "surname": {
+            "type": "string",
+            "description": "The surname of the user.",
+            "default": "Surname"
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user.",
+            "default": "example@email.com"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "default": "example@email.com"
+          },
+          "role": {
+            "type": "string",
+            "description": "The job role of the user.",
+            "default": "employee"
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "The hourly rate of the user.",
+            "default": 30
+          },
+          "startDate": {
+            "type": "string",
+            "description": "The start date of the user in ISO format.",
+            "default": "2024-04-21T00:00:00.000-05:00"
+          },
+          "password": {
+            "type": "string",
+            "description": "The hashed password of the user."
+          },
+          "address": {
+            "type": "string",
+            "description": "The address of the user.",
+            "default": "Fake address 123"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "The phone number of the user.",
+            "default": "+610412345678"
+          },
+          "validationToken": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": null
+              }
+            ],
+            "description": "The validation token of the user.",
+            "default": null
+          },
+          "isRegistered": {
+            "type": "boolean",
+            "description": "The complete registration status of the user.",
+            "default": true
+          },
+          "permissions": {
+            "type": "string",
+            "description": "The type of permission this user have",
+            "default": "employee"
+          }
+        }
+      },
+      "NewUsers": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email of the user.",
+            "default": "example@email.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the user.",
+            "default": "Name"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Surname of the user.",
+            "default": "Surname"
+          },
+          "role": {
+            "type": "string",
+            "description": "The job role of the user.",
+            "default": "employee"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "The start date of the user in ISO format.",
+            "default": "2024-04-21T00:00:00.000-05:00"
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "The hourly rate of the user.",
+            "default": 30
+          },
+          "permissions": {
+            "type": "string",
+            "description": "The type of permission this user will have",
+            "default": "employee"
+          }
+        },
+        "required": [
+          "name",
+          "surname",
+          "email",
+          "role",
+          "hourlyRate",
+          "startDate",
+          "permissions"
+        ]
+      },
+      "NewUsersResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the user.",
+            "default": "examplo@email.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the user.",
+            "default": "Name"
+          },
+          "surname": {
+            "type": "string",
+            "description": "The surname of the user.",
+            "default": "Surname"
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user.",
+            "default": "example@email.com"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "default": "example@email.com"
+          },
+          "role": {
+            "type": "string",
+            "description": "The job role of the user.",
+            "default": "employee"
+          },
+          "hourlyRate": {
+            "type": "number",
+            "description": "The hourly rate of the user.",
+            "default": 30
+          },
+          "startDate": {
+            "type": "string",
+            "description": "The start date of the user in ISO format.",
+            "default": "2024-04-21T00:00:00.000-05:00"
+          },
+          "validationToken": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": null
+              }
+            ],
+            "description": "The validation token of the user.",
+            "default": null
+          },
+          "isRegistered": {
+            "type": "boolean",
+            "description": "The complete registration status of the user.",
+            "default": true
+          },
+          "permissions": {
+            "type": "string",
+            "description": "The type of permission this user have",
+            "default": "employee"
+          }
+        }
+      }
+    }
+  }
+}

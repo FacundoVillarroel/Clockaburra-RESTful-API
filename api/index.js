@@ -40,18 +40,25 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 // Middleware for static files serving
-console.log("Path to public, openapi:", path.join(__dirname,"..", "public", "openapi"))
-app.use("/openapi", express.static(path.join(__dirname,"..", "public", "openapi")));
+if (isProduction) {
+  app.use(
+    "/openapi",
+    express.static(path.join(__dirname, "public", "openapi"))
+  );
+} else {
+  app.use(
+    "/openapi",
+    express.static(path.join(__dirname, "..", "public", "openapi"))
+  );
+}
 
 // Middleware for Swagger documentation serving base in enviroment variable
-const baseUrl =
-isProduction 
-    ? "https://clockaburra-restful-api.vercel.app/"
-    : "http://localhost:8080";
-swaggerDocument.servers[0].url = baseUrl;
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get("/api-docs", (req, res) => {
+  isProduction
+    ? res.sendFile(path.join(__dirname, "public", "api-docs.html"))
+    : res.sendFile(path.join(__dirname, "..", "public", "api-docs.html"));
+});
 
 // bodyParser is used in the following middleware.
 app.use(jsonErrorHandler);
