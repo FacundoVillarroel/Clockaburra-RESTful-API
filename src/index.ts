@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import path from "path";
 // @ts-ignore
 import passport from "./config/PassportConfig";
@@ -25,25 +25,11 @@ import RolesRouter from "./routes/rolesRoutes";
 import ImagesRouter from "./routes/imagesRoutes";
 // @ts-ignore
 import verifyJWT from "./middlewares/verifyJWT";
+import corsHandler from "./middlewares/corsHandler";
 
 const app = express();
 // Middleware for CORS handling
-app.use((req:Request, res:Response, next:NextFunction) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://clockaburra-web.vercel.app"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") {
-    res.sendStatus(200);
-    return
-  }
-  next();
-});
+app.use(corsHandler);
 
 // Static files
 const staticPath = path.join(__dirname, "..", "public");

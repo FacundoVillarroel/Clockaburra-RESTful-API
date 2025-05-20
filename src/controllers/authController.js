@@ -14,7 +14,18 @@ exports.register = (req, res, next) => {
       return next(error);
     }
     if (!user) {
-      return res.status(info.code || 400).send({ message: info.message });
+      let errorCode = 400;
+      switch (info.message) {
+        case "Email not found for pending registration":
+          errorCode = 404;
+          break;
+        case "This email is already registrated":
+          errorCode = 409;
+          break;
+        case "The password must be at least 8 characters":
+          errorCode = 400;
+      }
+      return res.status(errorCode).send({ message: info.message });
     }
     const token = jwt.sign(
       {
@@ -46,7 +57,18 @@ exports.login = (req, res, next) => {
       return next(error);
     }
     if (!user) {
-      return res.status(info.code || 400).send({ message: info.message });
+      let errorCode = 400;
+      switch (info.message) {
+        case "User not found":
+          errorCode = 404;
+          break;
+        case "User did not complete email validation":
+          errorCode = 409;
+          break;
+        case "Incorrect password":
+          errorCode = 400;
+      }
+      return res.status(errorCode).send({ message: info.message });
     }
     const token = jwt.sign(
       {
