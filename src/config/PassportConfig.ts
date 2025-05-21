@@ -114,7 +114,7 @@ passport.use(
   "login",
   new LocalStrategy(strategyOptions, async (req, username, password, done) => {
     try {
-      const userStored = await userService.getUserById(username);
+      const userStored : User | null = await userService.getUserById(username);
       if (!userStored) {
         return done(null, false, AuthErrors.UserNotFound() as any);
       }
@@ -133,7 +133,6 @@ passport.use(
       } satisfies AuthenticatedUser);
     } catch (error) {
       let codeStatus = 400;
-
       if (
         error instanceof Error &&
         error.message === `there is no document with id: ${username}`

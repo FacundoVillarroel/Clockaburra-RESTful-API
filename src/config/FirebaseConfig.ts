@@ -1,6 +1,11 @@
-const admin = require("firebase-admin");
+import admin from"firebase-admin";
+
+import { Firestore, CollectionReference, Query, DocumentData } from "firebase-admin/firestore";
 
 const firebaseData = process.env.FIREBASE_CREDENTIALS;
+if (!firebaseData) {
+  throw new Error("Firebase credentials not found");
+}
 const serviceAccount = JSON.parse(firebaseData);
 
 admin.initializeApp({
@@ -8,30 +13,38 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
-class FirebaseConfig {
-  constructor(collection) {
+export interface Condition {
+  field: string;
+  operator: FirebaseFirestore.WhereFilterOp;
+  value: any;
+}
+
+export default class FirebaseConfig <T extends DocumentData> {
+  private db: Firestore;
+  private query: CollectionReference<T>;
+
+  constructor(collection:string) {
     this.db = admin.firestore();
-    this.query = this.db.collection(collection);
+    this.query = this.db.collection(collection) as CollectionReference<T>;
   }
 
-  async getAll() {
+  async getAll() : Promise<T[] | null> {
     try {
       const docs = await this.query.get();
       if (!docs) {
         return null;
       } else {
         return docs.docs.map((doc) => {
-          const data = doc.data();
-          data.id = doc.id;
+          const data = {...doc.data(), id: doc.id};
           return data;
         });
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Error getting documents");
     }
   }
 
-  async save(doc) {
+  async save(doc: T & { id?: string }): Promise<{ data: T; id: string }> {
     try {
       if (doc.id) {
         const itemToAdd = this.query.doc(`${doc.id}`);
@@ -41,7 +54,7 @@ class FirebaseConfig {
         const response = await this.query.add(doc);
         return { data: doc, id: response.id };
       }
-    } catch (error) {
+    } catch (error:any) {
       if (error.code === 6) {
         throw new Error("Document already exists");
       } else {
@@ -50,56 +63,56 @@ class FirebaseConfig {
     }
   }
 
-  async getById(id) {
+  async getById(id: string): Promise<T & { id: string }> {
     try {
       const docFound = await this.query.doc(`${id}`).get();
-      const doc = { ...docFound.data(), id: docFound.id };
       if (!docFound.data()) {
         throw new Error(`there is no document with id: ${id}`);
       }
+      const dataFound = docFound.data();
+      if (!dataFound) {
+        throw new Error(`there is no document with id: ${id}`);
+      }
+      const doc = { ...dataFound, id: docFound.id };
       return doc;
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Error getting document");
     }
   }
 
-  async filterByConditions(conditions) {
+  async filterByConditions(conditions: Condition[]): Promise<(T & { id: string })[]> {
     try {
-      let queryRef = this.query;
+      let queryRef : Query<T>= this.query;
 
       conditions.forEach((condition) => {
-        queryRef = queryRef.where(
-          condition.field,
-          condition.operator,
-          condition.value
-        );
+        queryRef = queryRef.where(condition.field, condition.operator, condition.value);
       });
 
       const snapshot = await queryRef.get();
       if (snapshot.empty) {
         return [];
       }
-      let docsFound = [];
-      snapshot.forEach((doc) => {
-        docsFound.push({ id: doc.id, ...doc.data() });
-      });
+      const docsFound = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       return docsFound;
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
       throw new Error(error.message || "Error getting documents");
     }
   }
 
-  async updateById(id, update) {
+  async updateById(id:string, update: Partial<T>): Promise<void> {
     try {
       const currentDoc = this.query.doc(`${id}`);
       await currentDoc.update({ ...update });
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Error updating document");
     }
   }
 
-  async deleteById(id) {
+  async deleteById(id:string): Promise<void> {
     try {
       const docRef = this.query.doc(`${id}`);
       const docSnapshot = await docRef.get();
@@ -108,10 +121,9 @@ class FirebaseConfig {
       } else {
         throw new Error(`there is no document with id: ${id}`);
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Error deleting document");
     }
   }
 }
 
-module.exports = FirebaseConfig;
