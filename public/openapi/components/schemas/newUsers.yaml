@@ -19,7 +19,7 @@ properties:
   deparment:
     type: string
     description: The department of the user.
-    default: IT
+    default: BOH
   startDate:
     type: string
     description: The start date of the user in ISO format.

@@ -1,4 +1,4 @@
-const daoFactory = require("../daoFactory/daoFactory");
+const daoFactory = require("../daoFactory/daoFactory").default;
 
 const DaoFactoryInstance = daoFactory.getInstance();
 

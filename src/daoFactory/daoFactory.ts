@@ -5,22 +5,31 @@ const DaoFirebaseTimesheets = require("../dao/DaoFirebaseTimesheets").default;
 const DaoFirebaseDepartments = require("../dao/DaoFirebaseDepartments").default;
 const DaoFirebaseRoles = require("../dao/DaoFirebaseRoles").default;
 
-let instance = null;
+type CollectionName = "users" | "clock" | "shifts" | "timesheets" | "departments" | "roles";
+
 
 class DaoFactory {
-  static getInstance() {
-    if (!instance) instance = new DaoFactory();
-    return instance;
+  private static instance : DaoFactory;
+  
+  private constructor() {
+    // Private constructor to prevent instantiation
   }
 
-  create(dbType, collectionName) {
+  public static getInstance() {
+    if (!DaoFactory.instance) {
+      DaoFactory.instance = new DaoFactory();
+    }
+    return DaoFactory.instance;
+  }
+
+  create(dbType:String, collectionName:CollectionName) {
     switch (dbType) {
       case "firebase":
         return DaoFactory.getFirebaseDao(collectionName);
     }
   }
 
-  static getFirebaseDao(collectionName) {
+  static getFirebaseDao(collectionName: CollectionName) {
     switch (collectionName) {
       case "users":
         return DaoFirebaseUsers.getInstance();
@@ -40,4 +49,4 @@ class DaoFactory {
   }
 }
 
-module.exports = DaoFactory;
+export default DaoFactory;

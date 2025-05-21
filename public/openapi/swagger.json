@@ -236,6 +236,11 @@
                     "description": "The job role of the user.",
                     "default": "employee"
                   },
+                  "deparment": {
+                    "type": "string",
+                    "description": "The department of the user.",
+                    "default": "BOH"
+                  },
                   "startDate": {
                     "type": "string",
                     "description": "The start date of the user in ISO format.",
@@ -259,7 +264,8 @@
                   "role",
                   "hourlyRate",
                   "startDate",
-                  "permissions"
+                  "permissions",
+                  "deparment"
                 ]
               }
             }
@@ -636,6 +642,11 @@
                     "description": "The job role of the user.",
                     "default": "employee"
                   },
+                  "deparment": {
+                    "type": "string",
+                    "description": "The department of the user.",
+                    "default": "BOH"
+                  },
                   "startDate": {
                     "type": "string",
                     "description": "The start date of the user in ISO format.",
@@ -659,7 +670,8 @@
                   "role",
                   "hourlyRate",
                   "startDate",
-                  "permissions"
+                  "permissions",
+                  "deparment"
                 ]
               }
             }
@@ -5649,6 +5661,11 @@
             "description": "The job role of the user.",
             "default": "employee"
           },
+          "deparment": {
+            "type": "string",
+            "description": "The department of the user.",
+            "default": "BOH"
+          },
           "startDate": {
             "type": "string",
             "description": "The start date of the user in ISO format.",
@@ -5672,7 +5689,8 @@
           "role",
           "hourlyRate",
           "startDate",
-          "permissions"
+          "permissions",
+          "deparment"
         ]
       },
       "NewUsersResponse": {
