@@ -1,7 +1,7 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
-import { User } from "../models/users/types/User";
+import type User from "../models/users/types/User";
 
-export type FilterParams = {
+type FilterParams = {
   roles: string[];
   departments: string[];
 };

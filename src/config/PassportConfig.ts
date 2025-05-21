@@ -5,7 +5,7 @@ import { Strategy as LocalStrategy, IStrategyOptionsWithRequest } from "passport
 import bcrypt from "bcrypt";
 // @ts-ignore
 import UserService from "../service/UserService";
-import type { User } from "../models/users/types/User";
+import type User from "../models/users/types/User";
 import { AuthenticatedUser } from "../models/users/types/AuthenticatedUser";
 
 const userService = new UserService(process.env.DATA_BASE);

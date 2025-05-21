@@ -1,8 +1,8 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 import { DateTime } from "luxon";
-import type { Timesheet } from "../models/timesheets/types/Timesheet";
+import type Timesheet from "../models/timesheets/types/Timesheet";
 
-export type FilterParams = {
+type FilterParams = {
   userIds: string[];
   startDate?: string;
   endDate?: string;

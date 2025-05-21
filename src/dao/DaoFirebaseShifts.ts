@@ -1,38 +1,48 @@
-const FirebaseConfig = require("../config/FirebaseConfig").default;
+import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 
-const { DateTime } = require("luxon");
+import { DateTime } from "luxon";
+import type Shift from "../models/shifts/types/Shift";
 
-let instance = null;
+type FilterParams = {
+  userIds: string[];
+  startDate?: string;
+  endDate?: string;
+};
 
 class DaoFirebaseShifts {
-  constructor() {
+  private static instance: DaoFirebaseShifts;
+  private firebaseClient: FirebaseConfig<Shift>;
+  
+  private constructor() {
     this.firebaseClient = new FirebaseConfig("shifts");
   }
 
-  static getInstance() {
-    if (!instance) instance = new DaoFirebaseShifts();
-    return instance;
-  }
+  public static getInstance() {
+    if (!DaoFirebaseShifts.instance) {
+      DaoFirebaseShifts.instance = new DaoFirebaseShifts();
+      }
+      return DaoFirebaseShifts.instance;
+    }
 
   async getAllShifts() {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getById(id) {
+  async getById(id:string): Promise<Shift & { id: string } | null> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getByFilters(filters) {
+  async getByFilters(filters:FilterParams): Promise<(Shift & { id: string })[]> {
     try {
-      let conditions = [];
+      const conditions: Condition[] = [];
       // Iterate over each filter and push it to the conditions array
       if (filters.userIds.length > 0) {
         conditions.push({
@@ -59,14 +69,14 @@ class DaoFirebaseShifts {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async filterByUserId(userId, startDate, endDate) {
+  async filterByUserId(userId:string, startDate:string, endDate:string): Promise<(Shift & { id: string })[]> {
     try {
-      let conditions = [{ field: "userId", operator: "==", value: userId }];
+      const conditions: Condition[] = [{ field: "userId", operator: "==", value: userId }];
       if (startDate) {
         conditions.push({
           field: "startDate",
@@ -81,7 +91,7 @@ class DaoFirebaseShifts {
           });
         } else {
           const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
-          conditions.push({
+          endDateTime && conditions.push({
             field: "endDate",
             operator: "<=",
             value: endDateTime,
@@ -89,34 +99,34 @@ class DaoFirebaseShifts {
         }
       }
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
 
-  async save(shift) {
+  async save(shift:Shift) : Promise<  {data:Shift, id: string }> {
     try {
       return this.firebaseClient.save(shift);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async updateById(id, update) {
+  async updateById(id:string, update:Partial<Shift>) : Promise<void> {
     try {
       await this.firebaseClient.updateById(id, update);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async deleteById(id) {
+  async deleteById(id:string) : Promise<void> {
     try {
       return await this.firebaseClient.deleteById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw Error(error.message || "Unknown error occurred");
     }
   }
 }
 
-module.exports = DaoFirebaseShifts;
+export default DaoFirebaseShifts;

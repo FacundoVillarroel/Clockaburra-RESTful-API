@@ -6,10 +6,10 @@ type Break ={
   breakEnd: string;
 }
 
-export interface Timesheet {
+export default interface Timesheet {
   actionHistory: TimesheetAction[];
   approved: boolean;
-  breaks: Break[]
+  breaks: Break[];
   endDate: string;
   expectedHours: number | null;
   id: string;
