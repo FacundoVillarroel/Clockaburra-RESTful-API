@@ -1,4 +1,4 @@
-const FirebaseConfig = require("../config/FirebaseConfig");
+const FirebaseConfig = require("../config/FirebaseConfig").default;
 
 const { DateTime } = require("luxon");
 

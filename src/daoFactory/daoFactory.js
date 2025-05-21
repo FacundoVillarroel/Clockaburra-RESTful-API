@@ -1,4 +1,4 @@
-const DaoFirebaseUsers = require("../dao/DaoFirebaseUsers");
+const DaoFirebaseUsers = require("../dao/DaoFirebaseUsers").default;
 const DaoFirebaseClock = require("../dao/DaoFirebaseClock");
 const DaoFirebaseShifts = require("../dao/DaoFirebaseShifts");
 const DaoFirebaseTimesheets = require("../dao/DaoFirebaseTimesheets");
