@@ -16,6 +16,10 @@ properties:
     type: string
     description: The job role of the user.
     default: employee
+  deparment:
+    type: string
+    description: The department of the user.
+    default: IT
   startDate:
     type: string
     description: The start date of the user in ISO format.
@@ -36,3 +40,4 @@ required:
   - hourlyRate
   - startDate
   - permissions
+  - deparment
