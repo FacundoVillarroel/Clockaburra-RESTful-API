@@ -1,28 +1,39 @@
-const FirebaseConfig = require("../config/FirebaseConfig");
+import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
+import { User } from "../models/users/types/User";
 
-let instance = null;
+type FilterParams = {
+  roles: string[];
+  departments: string[];
+};
+
+
 
 class DaoFirebaseUsers {
-  constructor() {
+  private static instance: DaoFirebaseUsers;
+  private firebaseClient: FirebaseConfig<User>;
+
+  private constructor() {
     this.firebaseClient = new FirebaseConfig("users");
   }
 
-  static getInstance() {
-    if (!instance) instance = new DaoFirebaseUsers();
-    return instance;
+  public static getInstance(): DaoFirebaseUsers {
+    if (!DaoFirebaseUsers.instance) {
+      DaoFirebaseUsers.instance = new DaoFirebaseUsers();
+    }
+    return DaoFirebaseUsers.instance;
   }
 
-  async getAll() {
+  async getAll(): Promise<(User & { id: string })[] | null> {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getByFilters(filters) {
+  async getByFilters(filters: FilterParams): Promise<(User & { id: string })[] | null> {
     try {
-      let conditions = [];
+      let conditions: Condition[]= [];
       // Iterate over each filter and push it to the conditions array
       if (filters.roles.length > 0) {
         conditions.push({
@@ -41,44 +52,44 @@ class DaoFirebaseUsers {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async save(user) {
+  async save(user: User): Promise<{ data: User; id: string }> {
     try {
       return await this.firebaseClient.save(user);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getById(id) {
+  async getById(id: string): Promise<User & { id: string }> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async updateUserById(id, userUpdate) {
+  async updateUserById(id:string, userUpdate: Partial<User>): Promise<User & { id: string }> {
     try {
       await this.firebaseClient.updateById(id, userUpdate);
       const updatedUser = await this.getById(id);
       return updatedUser;
-    } catch (error) {
+    } catch (error:any) {
       throw Error(error.message || "Unknown error occurred");
     }
   }
 
-  async deleteById(id) {
+  async deleteById(id: string): Promise<void> {
     try {
       return await this.firebaseClient.deleteById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw Error(error.message || "Unknown error occurred");
     }
   }
 }
 
-module.exports = DaoFirebaseUsers;
+export default DaoFirebaseUsers;
