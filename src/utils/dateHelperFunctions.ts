@@ -1,6 +1,6 @@
-const { DateTime } = require("luxon");
+import { DateTime } from "luxon";
 
-const calculateWorkedHours = (start, end, breaks) => {
+export const calculateWorkedHours = (start:string, end:string, breaks:{breakStart:string, breakEnd:string}[]) => {
   const startDateTime = DateTime.fromISO(start);
   const endDateTime = DateTime.fromISO(end);
   let totalBreakTime = 0;
@@ -18,9 +18,8 @@ const calculateWorkedHours = (start, end, breaks) => {
   return workedHours;
 };
 
-const isValidDate = (dateString) => {
+export const isValidDate = (dateString:string) => {
   const dateTime = DateTime.fromISO(dateString, { zone: "utc" });
   return dateTime.isValid;
 };
 
-module.exports = { calculateWorkedHours, isValidDate };

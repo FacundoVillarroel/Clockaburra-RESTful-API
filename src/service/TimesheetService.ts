@@ -3,7 +3,6 @@ import type DaoFirebaseTimesheets from "../dao/DaoFirebaseTimesheets";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
-// @ts-ignore
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";
 import type { FilterParams } from "../dao/DaoFirebaseTimesheets";
 import type Timesheet from "../models/timesheets/types/Timesheet";
@@ -102,17 +101,26 @@ class TimesheetService {
       const lastBreakIndex = breaks.length - 1;
       if (action === "out") {
         currentTimesheet.endDate = date;
-        if (breaks.length && breaks[lastBreakIndex].breakEnd === null) {
+        if (breaks[lastBreakIndex].breakEnd === null) {
           breaks[lastBreakIndex]["breakEnd"] = date;
           currentTimesheet.actionHistory.push({
             actionType: "breakEnd",
             timeStamp: date,
           });
         }
+        const completedBreaks = breaks.map((b) => {
+          if (b.breakEnd === null) {
+            throw new Error("Hay breaks sin terminar.");
+          }
+          return {
+            breakStart: b.breakStart,
+            breakEnd: b.breakEnd, // TS sabe que no es null porque hiciste el check
+          };
+        });
         currentTimesheet.workedHours = calculateWorkedHours(
           currentTimesheet.startDate,
           currentTimesheet.endDate,
-          breaks
+          completedBreaks
         );
       } else {
         if (action === "breakStart") {
