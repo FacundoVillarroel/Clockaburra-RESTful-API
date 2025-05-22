@@ -1,47 +1,51 @@
-const daoFactory = require("../daoFactory/daoFactory").default;
+import DaoFirebaseShifts, { FilterParams } from "../dao/DaoFirebaseShifts";
+import daoFactory from "../daoFactory/daoFactory";
+import Shift from "../models/shifts/types/Shift";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
-const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
+import { calculateWorkedHours } from "../utils/dateHelperFunctions";
 
 class ShiftService {
-  constructor(type) {
+private shifts : DaoFirebaseShifts
+
+  constructor(type:"firebase") {
     this.shifts = DaoFactoryInstance.create(type, "shifts");
   }
 
-  async getShifts(filters) {
+  async getShifts(filters: FilterParams) {
     try {
       if (
-        !filters.userIds.lenght > 0 &&
-        !filters.startDate &&
-        !filters.endDate
+        filters.userIds.length > 0 ||
+        filters.startDate ||
+        filters.endDate
       ) {
-        return await this.shifts.getAllShifts();
-      } else {
         return await this.shifts.getByFilters(filters);
+      } else {
+        return await this.shifts.getAllShifts();
       }
-    } catch (error) {
+    } catch (error: any) {
       throw Error(error.message);
     }
   }
 
-  async getByUserId(userId, startDate, endDate) {
+  async getByUserId(userId:string, startDate:string | null, endDate:string | null) {
     try {
       return await this.shifts.filterByUserId(userId, startDate, endDate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async getShiftById(id) {
+  async getShiftById(id: string) {
     try {
       return await this.shifts.getById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async addShift(shift) {
+  async addShift(shift: Shift) {
     try {
       shift.totalHours = calculateWorkedHours(
         shift.startDate,
@@ -49,12 +53,12 @@ class ShiftService {
         shift.breaks
       );
       return await this.shifts.save(shift);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async updateShiftById(id, update) {
+  async updateShiftById(id:string, update:Shift) {
     try {
       update.totalHours = calculateWorkedHours(
         update.startDate,
@@ -62,18 +66,18 @@ class ShiftService {
         update.breaks
       );
       await this.shifts.updateById(id, update);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async deleteShiftById(id) {
+  async deleteShiftById(id:string) {
     try {
       return await this.shifts.deleteById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw Error(error.message);
     }
   }
 }
 
-module.exports = ShiftService;
+export default ShiftService;

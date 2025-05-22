@@ -1,4 +1,4 @@
-const ShiftService = require("../service/ShiftService");
+const ShiftService = require("../service/ShiftService").default;
 const shiftService = new ShiftService(process.env.DATA_BASE);
 
 exports.getShifts = async (req, res, next) => {
