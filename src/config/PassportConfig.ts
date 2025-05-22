@@ -8,6 +8,12 @@ import UserService from "../service/UserService";
 import type User from "../models/users/types/User";
 import { AuthenticatedUser } from "../models/users/types/AuthenticatedUser";
 
+if (process.env.DATA_BASE !== "firebase") {
+  throw new Error(
+    "DATA_BASE environment variable is not defined or is not set to 'firebase'"
+  );
+}
+
 const userService = new UserService(process.env.DATA_BASE);
 
 interface AuthErrorInfo {
@@ -114,7 +120,7 @@ passport.use(
   "login",
   new LocalStrategy(strategyOptions, async (req, username, password, done) => {
     try {
-      const userStored : User | null = await userService.getUserById(username);
+      const userStored: User | null = await userService.getUserById(username);
       if (!userStored) {
         return done(null, false, AuthErrors.UserNotFound() as any);
       }
@@ -150,9 +156,13 @@ passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id: string, done) => {
   try {
-    const user: User = await userService.getUserById(id);
+    const userFound = await userService.getUserById(id);
+    if (!userFound) {
+      return done(AuthErrors.UserNotFound() as any);
+    }
+    const user: User = userFound;
     if (!user) {
       return done(AuthErrors.UserNotFound() as any);
     }
