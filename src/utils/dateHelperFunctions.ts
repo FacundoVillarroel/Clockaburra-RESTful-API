@@ -18,7 +18,7 @@ export const calculateWorkedHours = (start:string, end:string, breaks:{breakStar
   return workedHours;
 };
 
-export const isValidDate = (dateString:string) => {
+export const isValidDate = (dateString: string): boolean => {
   const dateTime = DateTime.fromISO(dateString, { zone: "utc" });
   return dateTime.isValid;
 };

@@ -124,7 +124,7 @@ passport.use(
       if (!userStored) {
         return done(null, false, AuthErrors.UserNotFound() as any);
       }
-      if (!userStored.isRegistered) {
+      if (!userStored.isRegistered || !userStored.password) {
         return done(null, false, AuthErrors.EmailNotValidated as any);
       }
       const passwordMatch = await bcrypt.compare(password, userStored.password);

@@ -6,7 +6,7 @@ const emailFrom = process.env.FROM_EMAIL;
 
 const websiteDomain = "http://localhost:3000";
 
-const sendRegistrationEmail = async (email, name, token) => {
+export const sendRegistrationEmail = async (email:string, name:string, token:string) => {
   try {
     const request = mailjet.post("send", { version: "v3.1" }).request({
       Messages: [
@@ -36,7 +36,7 @@ const sendRegistrationEmail = async (email, name, token) => {
   }
 };
 
-const sendResetPasswordEmail = async (email, name, token) => {
+export const sendResetPasswordEmail = async (email: string, name:string, token:string) => {
   try {
     const request = mailjet.post("send", { version: "v3.1" }).request({
       Messages: [
@@ -66,14 +66,8 @@ const sendResetPasswordEmail = async (email, name, token) => {
   }
 };
 
-function isValidEmail(email) {
+export function isValidEmail(email:string): boolean {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   return emailRegex.test(email);
 }
-
-module.exports = {
-  sendRegistrationEmail,
-  isValidEmail,
-  sendResetPasswordEmail,
-};

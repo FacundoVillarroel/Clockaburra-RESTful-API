@@ -1,24 +1,44 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import type { Request, Response } from "express";
 
-const UserService = require("../service/UserService").default;
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
+import UserService from "../service/UserService";
 const userService = new UserService(process.env.DATA_BASE);
-const ClockService = require("../service/ClockService").default;
+import ClockService from "../service/ClockService";
 const clockService = new ClockService(process.env.DATA_BASE);
 
 const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
 
-const {
-  sendRegistrationEmail,
-  isValidEmail,
-} = require("../utils/emailHelperFunctions");
-const { isValidDate } = require("../utils/dateHelperFunctions");
+if (!secretKey) {
+  throw new Error("JWT_VALIDATION_LINK_SECRET environment variable is not defined");
+}
 
-exports.getUsers = async (req, res, next) => {
+import { sendRegistrationEmail, isValidEmail,} from "../utils/emailHelperFunctions";
+
+import { isValidDate } from "../utils/dateHelperFunctions"
+import type User from "../models/users/types/User";
+
+export const getUsers = async (req:Request, res:Response) => {
   try {
-    const roles = req.query.roles?.split(",") || []; //must be an array
-    const departments = req.query.departments?.split(",") || []; //must be an array
-    const filters = { roles, departments };
+    const { roles, departments } = req.query;
+    
+    const rolesArray = typeof roles === 'string'
+      ? roles.split(',')
+      : Array.isArray(roles)
+        ? roles.flatMap(role => typeof role === 'string' ? role.split(',') : [])
+        : [];
+    
+    const departmentsArray = typeof departments === 'string'
+      ? departments.split(',')
+      : Array.isArray(departments)
+        ? departments.flatMap(dep => typeof dep === 'string' ? dep.split(',') : [])
+        : [];
+
+    const filters = { roles:rolesArray, departments:departmentsArray };
     const users = await userService.getUsers(filters);
     res.status(200).send(users);
   } catch (error) {
@@ -26,7 +46,7 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
-exports.postUsers = async (req, res, next) => {
+export const postUsers = async (req: Request, res:Response) => {
   try {
     if (isNaN(parseFloat(req.body.hourlyRate))) {
       throw new Error("hourlyRate must be a Number");
@@ -34,6 +54,7 @@ exports.postUsers = async (req, res, next) => {
     if (!isValidEmail(req.body.email)) {
       throw new Error("The Email is invalid");
     }
+
     const token = jwt.sign(
       {
         userName: req.body.name,
@@ -46,7 +67,7 @@ exports.postUsers = async (req, res, next) => {
         expiresIn: "3d",
       }
     );
-    const user = {
+    const user: User = {
       id: req.body.email,
       email: req.body.email,
       name: req.body.name,
@@ -94,25 +115,28 @@ exports.postUsers = async (req, res, next) => {
         ...response,
       });
     }
-  } catch (error) {
+  } catch (error:any) {
     console.error("UserController", error);
     res.status(409).send({ message: error.message });
   }
 };
 
-exports.getUser = async (req, res, next) => {
+export const getUser = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const user = await userService.getUserById(id);
-    delete user.password;
-    res.send({ user });
-  } catch (error) {
+    const safeUser = {
+      ...user
+    };
+    delete (safeUser as any).password;
+    res.send({ user:safeUser });
+  } catch (error:any) {
     console.error("UserController", error);
     res.status(404).send(error.message);
   }
 };
 
-exports.putUser = async (req, res, next) => {
+export const putUser = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const userUpdate = req.body;
@@ -128,7 +152,7 @@ exports.putUser = async (req, res, next) => {
         updatedUser: response,
       });
     }
-  } catch (error) {
+  } catch (error:any) {
     console.error("UserController", error);
     if (error.message === `there is no document with id: ${req.params.id}`) {
       res.status(404).send({ message: error.message, updated: false });
@@ -138,7 +162,7 @@ exports.putUser = async (req, res, next) => {
   }
 };
 
-exports.deleteUser = async (req, res, next) => {
+export const deleteUser = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     await userService.deleteUserById(id);
@@ -147,13 +171,13 @@ exports.deleteUser = async (req, res, next) => {
     res
       .status(200)
       .send({ message: "User deleted successfully", deleted: true });
-  } catch (error) {
+  } catch (error:any) {
     console.error("UserController", error);
     res.status(404).send({ message: error.message, deleted: false });
   }
 };
 
-exports.resendValidationLink = async (req, res, next) => {
+export const resendValidationLink = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const newToken = jwt.sign(
@@ -177,21 +201,20 @@ exports.resendValidationLink = async (req, res, next) => {
       ok: true,
       updatedUser: response,
     });
-  } catch (error) {
+  } catch (error:any) {
     console.error("UserController", error);
     res.status(404).send({ message: error.message, ok: false });
   }
 };
 
-exports.resetPassword = async (req, res, next) => {
+export const resetPassword = async (req:Request, res:Response) => {
   try {
     let decoded;
-    const secretKey = process.env.JWT_SECRET;
     const token = req.body.token;
     // Handling errors jwt specific
     try {
       decoded = jwt.verify(token, secretKey);
-    } catch (error) {
+    } catch (error:any) {
       if (error.name === "TokenExpiredError") {
         return res.status(400).send({
           message: "Token has expired. Please request a new activation link.",
@@ -212,6 +235,12 @@ exports.resetPassword = async (req, res, next) => {
       }
     }
     // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
+    if (typeof decoded === "string" ) {
+      return res.status(400).send({
+        message: "Invalid token. Please check the activation link or request a new one.",
+        updated: false,
+      });
+    }
     const userStored = await userService.getUserById(decoded.userId);
     if (!userStored) {
       throw new Error(`No user with id ${decoded.userId}`);
@@ -231,7 +260,7 @@ exports.resetPassword = async (req, res, next) => {
       isRegistered: true,
     });
     res.send({ message: "Password updated", updated: true });
-  } catch (error) {
+  } catch (error:any) {
     console.error("UserController", error);
     res.status(400).send({ message: error.message, updated: false });
   }
