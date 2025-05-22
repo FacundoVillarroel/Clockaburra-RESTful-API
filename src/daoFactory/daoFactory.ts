@@ -1,16 +1,32 @@
-const DaoFirebaseUsers = require("../dao/DaoFirebaseUsers").default;
-const DaoFirebaseClock = require("../dao/DaoFirebaseClock").default;
-const DaoFirebaseShifts = require("../dao/DaoFirebaseShifts").default;
-const DaoFirebaseTimesheets = require("../dao/DaoFirebaseTimesheets").default;
-const DaoFirebaseDepartments = require("../dao/DaoFirebaseDepartments").default;
-const DaoFirebaseRoles = require("../dao/DaoFirebaseRoles").default;
+import DaoFirebaseUsers from "../dao/DaoFirebaseUsers";
+import DaoFirebaseClock from "../dao/DaoFirebaseClock";
+import DaoFirebaseShifts from "../dao/DaoFirebaseShifts";
+import DaoFirebaseTimesheets from "../dao/DaoFirebaseTimesheets";
+import DaoFirebaseDepartments from "../dao/DaoFirebaseDepartments";
+import DaoFirebaseRoles from "../dao/DaoFirebaseRoles";
 
-type CollectionName = "users" | "clock" | "shifts" | "timesheets" | "departments" | "roles";
+import { type InterfaceUserDao } from "../models/users/types/IntefaceUserDao";
 
+type DbType = "firebase";
+type CollectionName =
+  | "users"
+  | "clock"
+  | "shifts"
+  | "timesheets"
+  | "departments"
+  | "roles";
+
+type AnyDao =
+  | DaoFirebaseUsers
+  | DaoFirebaseClock
+  | DaoFirebaseShifts
+  | DaoFirebaseTimesheets
+  | DaoFirebaseDepartments
+  | DaoFirebaseRoles;
 
 class DaoFactory {
-  private static instance : DaoFactory;
-  
+  private static instance: DaoFactory;
+
   private constructor() {
     // Private constructor to prevent instantiation
   }
@@ -22,10 +38,20 @@ class DaoFactory {
     return DaoFactory.instance;
   }
 
-  create(dbType:String, collectionName:CollectionName) {
+  // Overload for every instance of Dao
+  create<T>(dbType: DbType, collectionName: "users"): InterfaceUserDao;
+  create<T>(dbType: DbType, collection: "clock"): DaoFirebaseClock;
+  create<T>(dbType: DbType, collection: "shifts"): DaoFirebaseShifts;
+  create<T>(dbType: DbType, collection: "timesheets"): DaoFirebaseTimesheets;
+  create<T>(dbType: DbType, collection: "departments"): DaoFirebaseDepartments;
+  create<T>(dbType: DbType, collection: "roles"): DaoFirebaseRoles;
+
+  create<T extends AnyDao>(dbType: DbType, collectionName: CollectionName): T {
     switch (dbType) {
       case "firebase":
-        return DaoFactory.getFirebaseDao(collectionName);
+        return DaoFactory.getFirebaseDao(collectionName) as T;
+      default:
+        throw new Error("Invalid database type");
     }
   }
 

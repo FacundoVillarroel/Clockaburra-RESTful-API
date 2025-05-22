@@ -1,12 +1,12 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 import type User from "../models/users/types/User";
 
-type FilterParams = {
-  roles: string[];
-  departments: string[];
-};
+import {
+  type InterfaceUserDao,
+  type FilterParams,
+} from "../models/users/types/IntefaceUserDao";
 
-class DaoFirebaseUsers {
+class DaoFirebaseUsers implements InterfaceUserDao {
   private static instance: DaoFirebaseUsers;
   private firebaseClient: FirebaseConfig<User>;
 
