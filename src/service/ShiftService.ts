@@ -1,25 +1,22 @@
-import DaoFirebaseShifts, { FilterParams } from "../dao/DaoFirebaseShifts";
+import type DaoFirebaseShifts from "../dao/DaoFirebaseShifts";
+import type { FilterParams } from "../dao/DaoFirebaseShifts";
 import daoFactory from "../daoFactory/daoFactory";
-import Shift from "../models/shifts/types/Shift";
+import type Shift from "../models/shifts/types/Shift";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";
 
 class ShiftService {
-private shifts : DaoFirebaseShifts
+  private shifts: DaoFirebaseShifts;
 
-  constructor(type:"firebase") {
+  constructor(type: "firebase") {
     this.shifts = DaoFactoryInstance.create(type, "shifts");
   }
 
   async getShifts(filters: FilterParams) {
     try {
-      if (
-        filters.userIds.length > 0 ||
-        filters.startDate ||
-        filters.endDate
-      ) {
+      if (filters.userIds.length > 0 || filters.startDate || filters.endDate) {
         return await this.shifts.getByFilters(filters);
       } else {
         return await this.shifts.getAllShifts();
@@ -29,10 +26,14 @@ private shifts : DaoFirebaseShifts
     }
   }
 
-  async getByUserId(userId:string, startDate:string | null, endDate:string | null) {
+  async getByUserId(
+    userId: string,
+    startDate: string | null,
+    endDate: string | null
+  ) {
     try {
       return await this.shifts.filterByUserId(userId, startDate, endDate);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
@@ -40,7 +41,7 @@ private shifts : DaoFirebaseShifts
   async getShiftById(id: string) {
     try {
       return await this.shifts.getById(id);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
@@ -53,12 +54,12 @@ private shifts : DaoFirebaseShifts
         shift.breaks
       );
       return await this.shifts.save(shift);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
 
-  async updateShiftById(id:string, update:Shift) {
+  async updateShiftById(id: string, update: Shift) {
     try {
       update.totalHours = calculateWorkedHours(
         update.startDate,
@@ -66,15 +67,15 @@ private shifts : DaoFirebaseShifts
         update.breaks
       );
       await this.shifts.updateById(id, update);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message);
     }
   }
 
-  async deleteShiftById(id:string) {
+  async deleteShiftById(id: string) {
     try {
       return await this.shifts.deleteById(id);
-    } catch (error:any) {
+    } catch (error: any) {
       throw Error(error.message);
     }
   }

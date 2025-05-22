@@ -1,4 +1,4 @@
-const DepartmentsService = require("../service/DepartmentsService");
+const DepartmentsService = require("../service/DepartmentsService").default;
 const departmentsService = new DepartmentsService(process.env.DATA_BASE);
 
 exports.getDepartments = async (req, res, next) => {
@@ -44,12 +44,10 @@ exports.modifyDepartmentById = async (req, res, next) => {
     const id = req.params.id;
     const departmentUpdate = req.body;
     if (!Object.keys(departmentUpdate).length) {
-      res
-        .status(400)
-        .send({
-          message: "department update can not be empty",
-          updated: false,
-        });
+      res.status(400).send({
+        message: "department update can not be empty",
+        updated: false,
+      });
     } else {
       await departmentsService.updateDepartmentById(id, departmentUpdate);
       res.send({

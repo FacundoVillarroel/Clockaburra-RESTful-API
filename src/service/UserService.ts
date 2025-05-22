@@ -1,6 +1,9 @@
 import daoFactory from "../daoFactory/daoFactory";
-import { FilterParams, InterfaceUserDao } from "../models/users/types/IntefaceUserDao";
-import User from "../models/users/types/User";
+import type {
+  FilterParams,
+  InterfaceUserDao,
+} from "../models/users/types/IntefaceUserDao";
+import type User from "../models/users/types/User";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
