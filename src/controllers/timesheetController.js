@@ -1,4 +1,4 @@
-const TimesheetService = require("../service/TimesheetService");
+const TimesheetService = require("../service/TimesheetService").default;
 const {
   createTimesheetActionHistory,
 } = require("../utils/createTimesheetActionHistory");
@@ -50,21 +50,23 @@ exports.postNewTimesheet = async (req, res, next) => {
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
     const breaks = req.body.breaks; //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}] || []
+    const expectedHours = req.body.expectedHours | null;
     const actionHistory = createTimesheetActionHistory(
       startDate,
       breaks,
       endDate
     );
     const workedHours = calculateWorkedHours(startDate, endDate, breaks);
-    const response = await timesheetService.createTimesheet(
+    const newTimesheet = {
       userId,
       startDate,
-      null,
+      expectedHours,
       endDate,
       breaks,
       actionHistory,
-      workedHours
-    );
+      workedHours,
+    };
+    const response = await timesheetService.createTimesheet(newTimesheet);
     res.status(201).json({
       message: "timesheet created successfully",
       ...response,

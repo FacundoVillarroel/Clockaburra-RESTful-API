@@ -1,6 +1,6 @@
 const ClockService = require("../service/ClockService");
 const clockService = new ClockService(process.env.DATA_BASE);
-const TimesheetService = require("../service/TimesheetService");
+const TimesheetService = require("../service/TimesheetService").default;
 const { isValidDate } = require("../utils/dateHelperFunctions");
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 

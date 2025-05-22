@@ -2,15 +2,15 @@ import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 import { DateTime } from "luxon";
 import type Timesheet from "../models/timesheets/types/Timesheet";
 
-type FilterParams = {
+export type FilterParams = {
   userIds: string[];
-  startDate?: string;
-  endDate?: string;
+  startDate?: string | null;
+  endDate?: string | null;
 };
 
 class DaoFirebaseTimesheets {
   private static instance: DaoFirebaseTimesheets;
-  private firebaseClient: FirebaseConfig<Timesheet>
+  private firebaseClient: FirebaseConfig<Timesheet>;
 
   private constructor() {
     this.firebaseClient = new FirebaseConfig("timesheets");
@@ -18,28 +18,28 @@ class DaoFirebaseTimesheets {
 
   public static getInstance(): DaoFirebaseTimesheets {
     if (!DaoFirebaseTimesheets.instance) {
-      DaoFirebaseTimesheets.instance = new DaoFirebaseTimesheets()      
-    } 
+      DaoFirebaseTimesheets.instance = new DaoFirebaseTimesheets();
+    }
     return DaoFirebaseTimesheets.instance;
   }
 
   async getAll() {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getById(id:string): Promise<Timesheet  & {id:string} | null> {
+  async getById(id: string): Promise<(Timesheet & { id: string }) | null> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async getByFilters(filters:FilterParams): Promise<Timesheet[] | null> {
+  async getByFilters(filters: FilterParams): Promise<Timesheet[] | null> {
     try {
       let conditions: Condition[] = [];
       // Iterate over each filter and push it to the conditions array
@@ -68,14 +68,20 @@ class DaoFirebaseTimesheets {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async filterByUserId(userId:string, startDate:string, endDate:string) {
+  async filterByUserId(
+    userId: string,
+    startDate: string | null,
+    endDate: string | null
+  ) {
     try {
-      const conditions: Condition[]= [{ field: "userId", operator: "==", value: userId }];
+      const conditions: Condition[] = [
+        { field: "userId", operator: "==", value: userId },
+      ];
 
       if (startDate) {
         conditions.push({
@@ -83,47 +89,51 @@ class DaoFirebaseTimesheets {
           operator: ">=",
           value: startDate,
         });
-      }
-      if (endDate) {
-        conditions.push({
-          field: "endDate",
-          operator: "<=",
-          value: endDate,
-        });
-      } else {
-        const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
-        endDateTime && conditions.push({
-          field: "endDate",
-          operator: "<=",
-          value: endDateTime,
-        });
+        if (endDate) {
+          conditions.push({
+            field: "endDate",
+            operator: "<=",
+            value: endDate,
+          });
+        } else {
+          const endDateTime = DateTime.fromISO(startDate).endOf("week").toISO();
+          endDateTime &&
+            conditions.push({
+              field: "endDate",
+              operator: "<=",
+              value: endDateTime,
+            });
+        }
       }
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async updateTimesheetById(id:string, update:Partial<Timesheet>) : Promise<void> {
+  async updateTimesheetById(
+    id: string,
+    update: Partial<Timesheet>
+  ): Promise<void> {
     try {
       await this.firebaseClient.updateById(id, update);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async save(timesheet:Timesheet): Promise<{ data: Timesheet; id: string }> {
+  async save(timesheet: Timesheet): Promise<{ data: Timesheet; id: string }> {
     try {
       return this.firebaseClient.save(timesheet);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }
 
-  async deleteById(id:string): Promise<void> {
+  async deleteById(id: string): Promise<void> {
     try {
       await this.firebaseClient.deleteById(id);
-    } catch (error:any) {
+    } catch (error: any) {
       throw new Error(error.message || "Unknown error occurred");
     }
   }

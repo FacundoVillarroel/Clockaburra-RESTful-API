@@ -1,47 +1,53 @@
-const daoFactory = require("../daoFactory/daoFactory").default;
+import daoFactory from "../daoFactory/daoFactory";
+import type DaoFirebaseTimesheets from "../dao/DaoFirebaseTimesheets";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
-const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
+// @ts-ignore
+import { calculateWorkedHours } from "../utils/dateHelperFunctions";
+import type { FilterParams } from "../dao/DaoFirebaseTimesheets";
+import type Timesheet from "../models/timesheets/types/Timesheet";
 
 class TimesheetService {
-  constructor(type) {
+  private timesheets: DaoFirebaseTimesheets;
+
+  constructor(type: "firebase") {
     this.timesheets = DaoFactoryInstance.create(type, "timesheets");
   }
 
-  async getTimesheets() {
+  async getTimesheets(filters: FilterParams) {
     try {
       if (
-        !filters.userIds.lenght > 0 &&
-        !filters.startDate &&
-        !filters.endDate
+        filters.userIds.length > 0 ||
+        filters.startDate ||
+        filters.endDate
       ) {
-        return await this.timesheets.getAll();
-      } else {
         return await this.timesheets.getByFilters(filters);
+      } else {
+        return await this.timesheets.getAll();
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async getTimesheetById(id) {
+  async getTimesheetById(id:string) {
     try {
       return await this.timesheets.getById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async getTimesheetsByUser(userId, startDate = null, endDate = null) {
+  async getTimesheetsByUser(userId:string, startDate : string | null = null, endDate : string | null = null) {
     try {
       return await this.timesheets.filterByUserId(userId, startDate, endDate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async changeTimesheetStatus(id, action) {
+  async changeTimesheetStatus(id:string, action:"approve" | "reject") {
     try {
       if (action === "approve") {
         const update = { approved: true, rejected: false };
@@ -50,49 +56,28 @@ class TimesheetService {
         const update = { approved: false, rejected: true };
         await this.timesheets.updateTimesheetById(id, update);
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async createTimesheet(
-    userId,
-    startDate,
-    expectedHours = null,
-    endDate = null,
-    breaks = [],
-    actionHistory = null,
-    workedHours = null
-  ) {
+  async createTimesheet(newTimesheet: Timesheet) {
     try {
-      const newTimesheet = {
-        userId,
-        startDate,
-        endDate,
-        expectedHours,
-        workedHours,
-        breaks,
-        actionHistory: actionHistory || [
-          { actionType: "checkIn", timeStamp: startDate },
-        ],
-        approved: false,
-        rejected: false,
-      };
       return await this.timesheets.save(newTimesheet);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async deleteTimesheetById(id) {
+  async deleteTimesheetById(id:string) {
     try {
       await this.timesheets.deleteById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async updateAndApproveById(timesheet, id) {
+  async updateAndApproveById(timesheet: Timesheet, id:string) {
     try {
       const timesheetUpdate = {
         ...timesheet,
@@ -102,14 +87,17 @@ class TimesheetService {
         id,
       };
       await this.timesheets.updateTimesheetById(id, timesheetUpdate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async updateTimesheetById(id, date, action) {
+  async updateTimesheetById(id:string, date:string, action:string) {
     try {
       const currentTimesheet = await this.timesheets.getById(id);
+      if (!currentTimesheet) {
+        throw new Error(`there is no timesheet with id: ${id}`);
+      }
       const breaks = currentTimesheet.breaks;
       const lastBreakIndex = breaks.length - 1;
       if (action === "out") {
@@ -139,10 +127,10 @@ class TimesheetService {
       });
       currentTimesheet.breaks = breaks;
       await this.timesheets.updateTimesheetById(id, currentTimesheet);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 }
 
-module.exports = TimesheetService;
+export default TimesheetService;
