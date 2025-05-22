@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const UserService = require("../service/UserService");
+const UserService = require("../service/UserService").default;
 const userService = new UserService(process.env.DATA_BASE);
-const ClockService = require("../service/ClockService");
+const ClockService = require("../service/ClockService").default;
 const clockService = new ClockService(process.env.DATA_BASE);
 
 const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;

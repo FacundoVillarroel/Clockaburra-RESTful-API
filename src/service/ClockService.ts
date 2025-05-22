@@ -1,13 +1,17 @@
-const daoFactory = require("../daoFactory/daoFactory").default;
+import type DaoFirebaseClock from "../dao/DaoFirebaseClock";
+import daoFactory from "../daoFactory/daoFactory";
+import Clock from "../models/clock/types/Clock";
 
 const DaoFactoryInstance = daoFactory.getInstance();
 
 class ClockService {
-  constructor(type) {
+  private clock: DaoFirebaseClock
+
+  constructor(type:"firebase") {
     this.clock = DaoFactoryInstance.create(type, "clock");
   }
 
-  async getStatusByUserId(userId) {
+  async getStatusByUserId(userId:string) {
     try {
       const statusArray = await this.clock.getByUserId(userId);
       if (!statusArray[0]) {
@@ -15,12 +19,12 @@ class ClockService {
       } else {
         return statusArray[0];
       }
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async createClockForNewUser(userId) {
+  async createClockForNewUser(userId:string) {
     try {
       const clock = {
         clockedIn: false,
@@ -29,59 +33,71 @@ class ClockService {
         userId,
       };
       return await this.clock.addNewClock(clock);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async postClockIn(userClockStatus) {
+  async postClockIn(userClockStatus:Partial<Clock>) {
     try {
       const userStatusUpdate = userClockStatus;
       userStatusUpdate.clockedIn = true;
+      if (!userStatusUpdate.id) {
+        throw new Error("User clock status not found");
+      }
       await this.clock.updateStatus(userStatusUpdate.id, userStatusUpdate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async postClockOut(userClockStatus) {
+  async postClockOut(userClockStatus:Partial<Clock>) {
     try {
       const userStatusUpdate = userClockStatus;
       userStatusUpdate.clockedIn = false;
       userStatusUpdate.onBreak = false;
+      if (!userStatusUpdate.id) {
+        throw new Error("User clock status not found");
+      }
       await this.clock.updateStatus(userStatusUpdate.id, userStatusUpdate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async postBreakStart(userClockStatus) {
+  async postBreakStart(userClockStatus:Partial<Clock>) {
     try {
       const userStatusUpdate = userClockStatus;
       userStatusUpdate.onBreak = true;
+      if (!userStatusUpdate.id) {
+        throw new Error("User clock status not found");
+      }
       await this.clock.updateStatus(userStatusUpdate.id, userStatusUpdate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async postBreakEnd(userClockStatus) {
+  async postBreakEnd(userClockStatus:Partial<Clock>) {
     try {
       const userStatusUpdate = userClockStatus;
       userStatusUpdate.onBreak = false;
+      if (!userStatusUpdate.id) {
+        throw new Error("User clock status not found");
+      }
       await this.clock.updateStatus(userStatusUpdate.id, userStatusUpdate);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 
-  async deleteClockByUserId(id) {
+  async deleteClockByUserId(id:string) {
     try {
       return await this.clock.deleteById(id);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error.message);
     }
   }
 }
 
-module.exports = ClockService;
+export default ClockService;

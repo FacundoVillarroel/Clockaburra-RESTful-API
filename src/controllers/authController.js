@@ -2,7 +2,7 @@ const passport = require("../config/PassportConfig");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-const UserService = require("../service/UserService");
+const UserService = require("../service/UserService").default;
 const userService = new UserService(process.env.DATA_BASE);
 
 const { sendResetPasswordEmail } = require("../utils/emailHelperFunctions");
