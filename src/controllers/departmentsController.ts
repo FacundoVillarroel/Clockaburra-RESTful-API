@@ -1,28 +1,35 @@
+import type { Request, Response } from "express";
+import Department from "../models/departments/types/Department";
+
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
 const DepartmentsService = require("../service/DepartmentsService").default;
 const departmentsService = new DepartmentsService(process.env.DATA_BASE);
 
-exports.getDepartments = async (req, res, next) => {
+export const getDepartments = async (req:Request, res:Response) => {
   try {
     const departments = await departmentsService.getDepartments();
     res.send(departments);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.getDepartmentById = async (req, res, next) => {
+export const getDepartmentById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const department = await departmentsService.getDepartmentById(id);
     res.send(department);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.postNewDepartment = async (req, res, next) => {
+export const postNewDepartment = async (req:Request, res:Response) => {
   try {
-    const department = {
+    const department : Department = {
       name: req.body.name,
       description: req.body.description,
     };
@@ -34,12 +41,12 @@ exports.postNewDepartment = async (req, res, next) => {
       message: "department created successfully",
       ...response,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.modifyDepartmentById = async (req, res, next) => {
+export const modifyDepartmentById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const departmentUpdate = req.body;
@@ -56,12 +63,12 @@ exports.modifyDepartmentById = async (req, res, next) => {
         updatedDepartment: { id: id, ...departmentUpdate },
       });
     }
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.deleteDepartmentById = async (req, res, next) => {
+export const deleteDepartmentById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     await departmentsService.deleteDepartmentById(id);
@@ -69,7 +76,7 @@ exports.deleteDepartmentById = async (req, res, next) => {
       message: "Department deleted successfully",
       deleted: true,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };

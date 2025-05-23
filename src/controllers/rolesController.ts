@@ -1,7 +1,14 @@
-const RolesService = require("../service/RolesService").default;
+import type { Request, Response } from "express";
+
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
+import RolesService from "../service/RolesService";
+import Role from "../models/roles/types/Role";
 const rolesService = new RolesService(process.env.DATA_BASE);
 
-exports.getRoles = async (req, res, next) => {
+export const getRoles = async (req:Request, res:Response) => {
   try {
     /**
      * method description: get all the roles from db,
@@ -10,24 +17,24 @@ exports.getRoles = async (req, res, next) => {
      */
     const roles = await rolesService.getRoles();
     res.send(roles);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.getRoleById = async (req, res, next) => {
+export const getRoleById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const role = await rolesService.getRoleById(id);
     res.send(role);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.postNewRole = async (req, res, next) => {
+export const postNewRole = async (req:Request, res:Response) => {
   try {
-    const role = {
+    const role : Role = {
       name: req.body.name,
       description: req.body.description,
     };
@@ -40,12 +47,12 @@ exports.postNewRole = async (req, res, next) => {
         ...response,
       });
     }
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.modifyRoleById = async (req, res, next) => {
+export const modifyRoleById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     const roleUpdate = req.body;
@@ -62,12 +69,12 @@ exports.modifyRoleById = async (req, res, next) => {
         updatedRole: { id: id, ...roleUpdate },
       });
     }
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.deleteRoleById = async (req, res, next) => {
+export const deleteRoleById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     await rolesService.deleteRoleById(id);
@@ -75,7 +82,7 @@ exports.deleteRoleById = async (req, res, next) => {
       message: "Role deleted successfully",
       deleted: true,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };

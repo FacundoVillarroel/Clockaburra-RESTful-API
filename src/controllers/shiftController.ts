@@ -10,7 +10,7 @@ const shiftService = new ShiftService(process.env.DATA_BASE);
 
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";
 
-exports.getShifts = async (req:Request, res: Response) => {
+export const getShifts = async (req:Request, res: Response) => {
   try {
     const userIdsQuery = req.query.userIds;
     const userIds = typeof userIdsQuery === "string" 
@@ -32,7 +32,7 @@ exports.getShifts = async (req:Request, res: Response) => {
   }
 };
 
-exports.getShiftByUser = async (req:Request, res: Response) => {
+export const getShiftByUser = async (req:Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const startDateRaw = req.query.startDate;
@@ -47,7 +47,7 @@ exports.getShiftByUser = async (req:Request, res: Response) => {
   }
 };
 
-exports.getShiftById = async (req:Request, res: Response) => {
+export const getShiftById = async (req:Request, res: Response) => {
   try {
     const id = req.params.id;
     const shift = await shiftService.getShiftById(id);
@@ -57,7 +57,7 @@ exports.getShiftById = async (req:Request, res: Response) => {
   }
 };
 
-exports.postNewShift = async (req:Request, res: Response) => {
+export const postNewShift = async (req:Request, res: Response) => {
   try {
     const {userId, startDate, endDate, breaks} = req.body
     if (typeof userId !== "string" || !userId) {
@@ -95,7 +95,7 @@ exports.postNewShift = async (req:Request, res: Response) => {
   }
 };
 
-exports.modifyShift = async (req:Request, res: Response) => {
+export const modifyShift = async (req:Request, res: Response) => {
   try {
     const id = req.params.id;
     const shiftUpdate = req.body;
@@ -116,7 +116,7 @@ exports.modifyShift = async (req:Request, res: Response) => {
   }
 };
 
-exports.deleteShift = async (req:Request, res: Response) => {
+export const deleteShift = async (req:Request, res: Response) => {
   try {
     const id = req.params.id;
     await shiftService.deleteShiftById(id);
