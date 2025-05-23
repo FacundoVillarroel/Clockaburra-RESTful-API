@@ -48,11 +48,6 @@ class ShiftService {
 
   async addShift(shift: Shift) {
     try {
-      shift.totalHours = calculateWorkedHours(
-        shift.startDate,
-        shift.endDate,
-        shift.breaks
-      );
       return await this.shifts.save(shift);
     } catch (error: any) {
       throw new Error(error.message);

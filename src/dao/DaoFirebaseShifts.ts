@@ -5,8 +5,8 @@ import type Shift from "../models/shifts/types/Shift";
 
 export type FilterParams = {
   userIds: string[];
-  startDate?: string;
-  endDate?: string;
+  startDate?: string | null;
+  endDate?: string | null;
 };
 
 class DaoFirebaseShifts {

@@ -3,6 +3,5 @@ export default interface Shift {
   startDate: string;
   endDate: string;
   totalHours: number;
-  startTime: string;
-  breaks: {breakStart:string, breakEnd:string}[]
+  breaks: { breakStart: string; breakEnd: string }[];
 }
