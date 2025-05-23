@@ -1,11 +1,18 @@
-const ClockService = require("../service/ClockService").default;
+import type { Request, Response } from "express";
+
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
+import ClockService from "../service/ClockService";
 const clockService = new ClockService(process.env.DATA_BASE);
-const TimesheetService = require("../service/TimesheetService").default;
-const { isValidDate } = require("../utils/dateHelperFunctions");
+import TimesheetService from "../service/TimesheetService";
+import { isValidDate } from "../utils/dateHelperFunctions";
+import Timesheet from "../models/timesheets/types/Timesheet";
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 // Validar el id Ingresado, devolver usuario encontrado
-exports.getUserClockStatus = async (req, res, next) => {
+export const getUserClockStatus = async (req:Request, res:Response) => {
   try {
     const userId = req.params.id;
     if (userId) {
@@ -14,7 +21,7 @@ exports.getUserClockStatus = async (req, res, next) => {
     } else {
       throw new Error("Must enter a User Id");
     }
-  } catch (error) {
+  } catch (error:any) {
     if (
       error.message === `User clock status not found with id: ${req.params.id}`
     ) {
@@ -26,7 +33,7 @@ exports.getUserClockStatus = async (req, res, next) => {
 };
 
 //validar si existe usuario con userId, validar si esta clockOut, almacenar en timesheet el historial de acciones
-exports.clockStatusChange = async (req, res, next) => {
+export const clockStatusChange = async (req:Request, res:Response) => {
   try {
     const userId = req.body.userId;
     const dateTime = req.body.dateTime;
@@ -45,11 +52,18 @@ exports.clockStatusChange = async (req, res, next) => {
         if (userClockStatus.clockedIn) {
           throw new Error("This user is already clocked in");
         }
-        //verificar si tenia turno y pasar expectedHours a timesheet
-        const newTimesheet = await timesheetService.createTimesheet(
+        const timesheetToAdd : Timesheet = {
           userId,
-          dateTime
-        );
+          startDate:dateTime,
+          expectedHours : null,
+          endDate : null,
+          breaks : [],
+          actionHistory : [{ actionType: "checkIn", timeStamp: dateTime }],
+          workedHours : null,
+          approved:false,
+          rejected:false
+        }
+        const newTimesheet = await timesheetService.createTimesheet(timesheetToAdd);
         userClockStatus.currentTimesheetId = newTimesheet.id;
         await clockService.postClockIn(userClockStatus);
         res.send({
@@ -60,7 +74,7 @@ exports.clockStatusChange = async (req, res, next) => {
         break;
 
       case "out":
-        if (!userClockStatus.clockedIn) {
+        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
           throw new Error("This user is not clocked in");
         }
         await timesheetService.updateTimesheetById(
@@ -77,7 +91,7 @@ exports.clockStatusChange = async (req, res, next) => {
         break;
 
       case "breakStart":
-        if (!userClockStatus.clockedIn) {
+        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
           throw new Error("This user is not clocked in");
         }
         if (userClockStatus.onBreak) {
@@ -94,7 +108,7 @@ exports.clockStatusChange = async (req, res, next) => {
         break;
 
       case "breakEnd":
-        if (!userClockStatus.clockedIn) {
+        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
           throw new Error("This user is not clocked in");
         }
         if (!userClockStatus.onBreak) {
@@ -114,7 +128,7 @@ exports.clockStatusChange = async (req, res, next) => {
           "Invalid route for changing clock status, valid routes are: in, out, breakStart, breakEnd"
         );
     }
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message, updated: false });
   }
 };

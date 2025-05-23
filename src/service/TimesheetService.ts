@@ -114,7 +114,7 @@ class TimesheetService {
           }
           return {
             breakStart: b.breakStart,
-            breakEnd: b.breakEnd, // TS sabe que no es null porque hiciste el check
+            breakEnd: b.breakEnd,
           };
         });
         currentTimesheet.workedHours = calculateWorkedHours(

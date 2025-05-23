@@ -10,11 +10,11 @@ export default interface Timesheet {
   actionHistory: TimesheetAction[];
   approved: boolean;
   breaks: Break[];
-  endDate: string;
+  endDate: string | null;
   expectedHours: number | null;
   id?: string;
   rejected: boolean;
   startDate: string;
   userId: string;
-  workedHours: number;
+  workedHours: number | null;
 }
