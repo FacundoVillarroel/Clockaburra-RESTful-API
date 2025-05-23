@@ -1,4 +1,11 @@
-const createTimesheetActionHistory = (startDate, breaks, endDate) => {
+import type TimesheetAction from "../models/timesheets/types/TimesheetAction";
+
+type Break = {
+  breakStart:string, 
+  breakEnd:string
+}
+
+export const createTimesheetActionHistory = (startDate: string, breaks:Break[], endDate:string) : TimesheetAction[] => {
   // Create an empty array to store the history of actions
   const actionHistory = [];
 
@@ -16,4 +23,3 @@ const createTimesheetActionHistory = (startDate, breaks, endDate) => {
 
   return actionHistory;
 };
-module.exports = { createTimesheetActionHistory };

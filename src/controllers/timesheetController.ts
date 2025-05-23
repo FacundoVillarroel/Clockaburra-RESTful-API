@@ -1,63 +1,82 @@
-const TimesheetService = require("../service/TimesheetService").default;
-const {
-  createTimesheetActionHistory,
-} = require("../utils/createTimesheetActionHistory");
-const { calculateWorkedHours } = require("../utils/dateHelperFunctions");
+import type { Request, Response } from "express";
+
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
+import TimesheetService from "../service/TimesheetService";
+import {createTimesheetActionHistory} from "../utils/createTimesheetActionHistory";
+import { calculateWorkedHours } from "../utils/dateHelperFunctions";
+import Timesheet from "../models/timesheets/types/Timesheet";
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
-exports.getTimesheets = async (req, res, next) => {
+export const getTimesheets = async (req: Request, res: Response) => {
   try {
-    const userIds = req.query.userIds?.split(",") || []; //may be undefined or []
-    const startDate = req.query.startDate; // shouldn't be undefined
-    const endDate = req.query.endDate; // shouldn't be undefined
-    filters = { userIds, startDate, endDate };
+    const userIdsQuery = req.query.userIds;
+    const userIds = typeof userIdsQuery === "string" 
+      ? userIdsQuery.split(",")
+      : Array.isArray(userIdsQuery)
+        ? userIdsQuery.flatMap(userId => typeof userId === "string" ? userId.split(",") : [] )
+        : [];
+
+    const startDateRaw = req.query.startDate;
+    const endDateRaw = req.query.endDate;
+    
+    const startDate = typeof startDateRaw === "string" ? startDateRaw : null;
+    const endDate = typeof endDateRaw === "string" ? endDateRaw : null;
+    const filters = { userIds, startDate, endDate };
     const timesheet = await timesheetService.getTimesheets(filters);
     res.send(timesheet);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.getUserTimesheets = async (req, res, next) => {
+export const getUserTimesheets = async (req:Request, res:Response) => {
   try {
     const userId = req.params.userId;
-    const startDate = req.query.startDate;
-    const endDate = req.query.endDate;
+
+    const startDateRaw = req.query.startDate;
+    const endDateRaw = req.query.endDate;
+    
+    const startDate = typeof startDateRaw === "string" ? startDateRaw : null;
+    const endDate = typeof endDateRaw === "string" ? endDateRaw : null;
+
     const timesheets = await timesheetService.getTimesheetsByUser(
       userId,
       startDate,
       endDate
     );
     res.send(timesheets);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.getTimesheetById = async (req, res, next) => {
+export const getTimesheetById = async (req:Request, res:Response) => {
   try {
     const timesheetId = req.params.timesheetId;
     const timesheet = await timesheetService.getTimesheetById(timesheetId);
     res.send(timesheet);
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.postNewTimesheet = async (req, res, next) => {
+export const postNewTimesheet = async (req:Request, res:Response) => {
   try {
     const userId = req.body.userId;
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
-    const breaks = req.body.breaks; //[{breakStart:"2024-08-26T13:00:00.000+08:00",breakEnd:"2024-08-26T13:30:00.000+08:00"}] || []
-    const expectedHours = req.body.expectedHours | null;
+    const breaks = req.body.breaks; 
+    const expectedHours = req.body.expectedHours || null;
     const actionHistory = createTimesheetActionHistory(
       startDate,
       breaks,
       endDate
     );
     const workedHours = calculateWorkedHours(startDate, endDate, breaks);
-    const newTimesheet = {
+    const newTimesheet : Timesheet = {
       userId,
       startDate,
       expectedHours,
@@ -65,18 +84,20 @@ exports.postNewTimesheet = async (req, res, next) => {
       breaks,
       actionHistory,
       workedHours,
+      approved:false,
+      rejected:false
     };
     const response = await timesheetService.createTimesheet(newTimesheet);
     res.status(201).json({
       message: "timesheet created successfully",
       ...response,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.updateTimesheet = async (req, res, next) => {
+export const updateTimesheet = async (req:Request, res:Response) => {
   try {
     const timesheetId = req.params.timesheetId;
     const timesheetUpdate = req.body;
@@ -91,45 +112,45 @@ exports.updateTimesheet = async (req, res, next) => {
       endDate,
       breaks
     );
-    const response = await timesheetService.updateAndApproveById(
+    await timesheetService.updateAndApproveById(
       timesheetUpdate,
       timesheetId
     );
     res.status(201).json({
       message: "Timesheet updated & approved successfully",
-      ...response,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.approveTimesheet = async (req, res, next) => {
+export const approveTimesheet = async (req:Request, res:Response) => {
   try {
     const id = req.body.id;
     await timesheetService.changeTimesheetStatus(id, "approve");
     res.send({ message: "timesheet approved successfully", updated: true });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message, updated: false });
   }
 };
 
-exports.rejectTimesheet = async (req, res, next) => {
+export const rejectTimesheet = async (req:Request, res:Response) => {
   try {
     const id = req.body.id;
     await timesheetService.changeTimesheetStatus(id, "reject");
     res.send({ message: "timesheet rejected succesfully", updated: true });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message, updated: false });
   }
 };
 
-exports.deleteTimesheetById = async (req, res, next) => {
+export const deleteTimesheetById = async (req:Request, res:Response) => {
   try {
     const id = req.params.id;
     await timesheetService.deleteTimesheetById(id);
     res.send({ message: "Timesheet deletede successfully", deleted: true });
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).send({ message: error.message, deleted: false });
   }
 };
+
