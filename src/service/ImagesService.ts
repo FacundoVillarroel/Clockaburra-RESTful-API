@@ -1,11 +1,8 @@
 import { Storage } from "@google-cloud/storage";
 import type { StorageOptions } from "@google-cloud/storage";
-import type { Express } from "express";
 
 if (!process.env.FIREBASE_CREDENTIALS) {
-  throw new Error(
-    "FIREBASE_CREDENTIALS environment variable is not defined"
-  );
+  throw new Error("FIREBASE_CREDENTIALS environment variable is not defined");
 }
 
 const firebaseCredentials = JSON.parse(process.env.FIREBASE_CREDENTIALS);
@@ -17,19 +14,19 @@ const storageOptions: StorageOptions = {
     client_email: firebaseCredentials.client_email,
     private_key: firebaseCredentials.private_key,
   },
-}
+};
 const storage = new Storage(storageOptions);
 
 const bucketURL = process.env.STORAGE_BUCKET_URL;
 if (!bucketURL) {
-  throw new Error(
-    "STORAGE_BUCKET_URL environment variable is not defined"
-  );
+  throw new Error("STORAGE_BUCKET_URL environment variable is not defined");
 }
 const bucket = storage.bucket(`gs://${bucketURL}`);
 
 class ImagesService {
-  static async uploadImageToFirebase(file: Express.Multer.File) : Promise<string> {
+  static async uploadImageToFirebase(
+    file: Express.Multer.File
+  ): Promise<string> {
     try {
       // Define the file name with a unique timestamp to avoid conflicts
       const blob = bucket.file(
@@ -64,7 +61,7 @@ class ImagesService {
     }
   }
 
-  static async deleteImage(filePath:string) : Promise<void> {
+  static async deleteImage(filePath: string): Promise<void> {
     try {
       await bucket.file(filePath).delete();
     } catch (error) {
@@ -74,4 +71,4 @@ class ImagesService {
   }
 }
 
-module.exports = ImagesService;
+export default ImagesService;

@@ -7,7 +7,7 @@ if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" )
 import TimesheetService from "../service/TimesheetService";
 import {createTimesheetActionHistory} from "../utils/createTimesheetActionHistory";
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";
-import Timesheet from "../models/timesheets/types/Timesheet";
+import type Timesheet from "../models/timesheets/types/Timesheet";
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 export const getTimesheets = async (req: Request, res: Response) => {

@@ -1,6 +1,8 @@
-const ImagesService = require("../service/ImagesService");
+import type { Request, Response } from "express";
 
-exports.uploadImage = async (req, res, next) => {
+import ImagesService from "../service/ImagesService";
+
+export const uploadImage = async (req:Request, res:Response) => {
   try {
     // verify if there is a file
     if (!req.file) {
@@ -20,13 +22,13 @@ exports.uploadImage = async (req, res, next) => {
   }
 };
 
-exports.deleteImage = async (req, res, next) => {
+export const deleteImage = async (req:Request, res:Response) => {
   try {
     const filePath = req.params.filePath;
     if (!filePath) return res.status(400).send("invalid filePath");
     await ImagesService.deleteImage(filePath);
     res.send({ message: "Image deleted successfully", deleted: true });
-  } catch (error) {
+  } catch (error:any) {
     console.error(error);
     res.status(400).send({ error: error.mesagge });
   }

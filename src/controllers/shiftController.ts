@@ -5,7 +5,7 @@ if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" )
 }
 
 import ShiftService from "../service/ShiftService";
-import Shift from "../models/shifts/types/Shift";
+import type Shift from "../models/shifts/types/Shift";
 const shiftService = new ShiftService(process.env.DATA_BASE);
 
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";

@@ -5,7 +5,7 @@ if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" )
 }
 
 import RolesService from "../service/RolesService";
-import Role from "../models/roles/types/Role";
+import type Role from "../models/roles/types/Role";
 const rolesService = new RolesService(process.env.DATA_BASE);
 
 export const getRoles = async (req:Request, res:Response) => {
