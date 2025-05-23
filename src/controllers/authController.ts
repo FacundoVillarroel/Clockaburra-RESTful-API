@@ -1,20 +1,39 @@
-const passport = require("../config/PassportConfig");
-const jwt = require("jsonwebtoken");
-const axios = require("axios");
+import passport from "../config/PassportConfig";
+import jwt from "jsonwebtoken";
+import axios from "axios";
+import { sendResetPasswordEmail } from "../utils/emailHelperFunctions";
+import type { Request, Response, NextFunction } from "express";
+import type { AuthErrorInfo } from "../config/PassportConfig";
+import type { AuthenticatedUser } from "../models/users/types/AuthenticatedUser";
+import type { AuthenticatedRequest } from "../middlewares/verifyJWT";
 
-const UserService = require("../service/UserService").default;
+if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
+  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+}
+
+import UserService from "../service/UserService";
 const userService = new UserService(process.env.DATA_BASE);
 
-const { sendResetPasswordEmail } = require("../utils/emailHelperFunctions");
 const secretKey = process.env.JWT_SECRET;
+if (!secretKey) {
+  throw new Error("JWT_SECRET environment variable is not defined");
+}
 
-exports.register = (req, res, next) => {
-  passport.authenticate("register", (error, user, info) => {
+const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
+if (!secretKeyValidation) {
+  throw new Error("JWT_VALIDATION_LINK_SECRET environment variable is not defined");
+}
+
+export const register = (req:Request, res:Response, next:NextFunction) => {
+  passport.authenticate("register", (error:AuthErrorInfo, user: AuthenticatedUser | false, info:AuthErrorInfo | undefined) => {
     if (error) {
       return next(error);
     }
     if (!user) {
-      let errorCode = 400;
+      let errorCode = 400; 
+      if (!info) {
+        return res.status(500).send({ message: "Unknown error" });
+      }
       switch (info.message) {
         case "Email not found for pending registration":
           errorCode = 404;
@@ -29,12 +48,12 @@ exports.register = (req, res, next) => {
     }
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: user.userId,
         userName: user.name,
         role: user.role,
         permissions: user.permissions,
       },
-      process.env.JWT_SECRET,
+      secretKey,
       {
         expiresIn: "1w",
       }
@@ -51,13 +70,16 @@ exports.register = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.login = (req, res, next) => {
-  passport.authenticate("login", (error, user, info) => {
+export const login = (req:Request, res:Response, next:NextFunction) => {
+  passport.authenticate("login", (error:AuthErrorInfo, user: AuthenticatedUser | false, info:AuthErrorInfo | undefined) => {
     if (error) {
       return next(error);
     }
     if (!user) {
       let errorCode = 400;
+      if (!info) {
+        return res.status(500).send({ message: "Unknown error" });
+      }
       switch (info.message) {
         case "User not found":
           errorCode = 404;
@@ -77,7 +99,7 @@ exports.login = (req, res, next) => {
         role: user.role,
         permissions: user.permissions,
       },
-      process.env.JWT_SECRET,
+      secretKey,
       {
         expiresIn: "1w",
       }
@@ -94,7 +116,7 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.getJWT = async (req, res, next) => {
+export const getJWT = async (req:AuthenticatedRequest, res:Response) => {
   res.send({
     message: "Token information",
     userName: req.userName,
@@ -104,7 +126,7 @@ exports.getJWT = async (req, res, next) => {
   });
 };
 
-exports.googleLogin = async (req, res, next) => {
+export const googleLogin = async (req:Request, res:Response) => {
   try {
     const { accessToken } = req.body;
     const response = await axios.get(
@@ -114,6 +136,13 @@ exports.googleLogin = async (req, res, next) => {
       const email = response.data.email;
       const user = await userService.getUserById(email);
 
+      if(!user) {
+        return res.status(404).send({
+          message: "User not found",
+          ok: false,
+        });
+      }
+
       const token = jwt.sign(
         {
           userId: user.email,
@@ -121,7 +150,7 @@ exports.googleLogin = async (req, res, next) => {
           role: user.role,
           permissions: user.permissions,
         },
-        process.env.JWT_SECRET,
+        secretKey,
         {
           expiresIn: "1w",
         }
@@ -140,21 +169,27 @@ exports.googleLogin = async (req, res, next) => {
         .status(400)
         .send({ message: "Could not authenticate Google account." });
     }
-  } catch (error) {
+  } catch (error:any) {
     console.error(error.message);
     res.status(400).send({ message: "Could not authenticate Google account." });
   }
 };
 
-exports.validateUser = async (req, res, next) => {
+export const validateUser = async (req:Request, res:Response) => {
   try {
     let decoded;
-    const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
+    
     const { token } = req.query;
+    if (!token || typeof token !== "string") {
+      return res.status(400).send({
+        message: "Token as string is required",
+        ok: false,
+      });
+    }
     // Handling errors jwt specific
     try {
       decoded = jwt.verify(token, secretKeyValidation);
-    } catch (error) {
+    } catch (error:any) {
       if (error.name === "TokenExpiredError") {
         return res.status(400).send({
           message: "Token has expired. Please request a new activation link.",
@@ -174,9 +209,21 @@ exports.validateUser = async (req, res, next) => {
         });
       }
     }
-    // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
+    // At this point Token was validated by JWT, now need to be validated with token stored in user in the DB
+    if (!decoded || typeof decoded !== "object") {
+      return res.status(400).send({
+        message: "Invalid token. Please check the activation link or request a new one.",
+        ok: false,
+      });
+    }
     const { userId, userName, role, permissions } = decoded;
     const user = await userService.getUserById(userId);
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+        ok: false,
+      });
+    }
     if (user.isRegistered) {
       res.status(400).send({
         message: `This email is already registered and validated`,
@@ -205,10 +252,22 @@ exports.validateUser = async (req, res, next) => {
   }
 };
 
-exports.sendLinkResetPassword = async (req, res, next) => {
+export const sendLinkResetPassword = async (req:Request, res:Response) => {
   const { email } = req.query;
+  if (!email || typeof email !== "string") {
+    return res.status(400).send({
+      message: "Email as string is required",
+      ok: false,
+    });
+  }
   try {
     const user = await userService.getUserById(email);
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+        ok: false,
+      });
+    }
     const newToken = jwt.sign(
       {
         userName: user.name,
@@ -231,7 +290,7 @@ exports.sendLinkResetPassword = async (req, res, next) => {
       ok: true,
       user: response,
     });
-  } catch (error) {
+  } catch (error:any) {
     if (error.message === `there is no document with id: ${email}`) {
       res.status(404).send({
         message: "Email not registered in db",

@@ -16,7 +16,7 @@ if (process.env.DATA_BASE !== "firebase") {
 
 const userService = new UserService(process.env.DATA_BASE);
 
-interface AuthErrorInfo {
+export interface AuthErrorInfo {
   message: string;
   code?: number;
 }
@@ -64,14 +64,14 @@ passport.use(
           return done(
             null,
             false,
-            AuthErrors.EmailNotPendingRegistration as any
+            AuthErrors.EmailNotPendingRegistration as AuthErrorInfo
           );
         }
         if (userStored.isRegistered) {
-          return done(done(null, false, AuthErrors.AlreadyRegistered as any));
+          return done(done(null, false, AuthErrors.AlreadyRegistered as AuthErrorInfo));
         }
         if (password.length < 8) {
-          return done(null, false, AuthErrors.PasswordTooShort as any);
+          return done(null, false, AuthErrors.PasswordTooShort as AuthErrorInfo);
         }
         const user: User = {
           ...userStored,
@@ -104,7 +104,7 @@ passport.use(
           return done(
             null,
             false,
-            AuthErrors.EmailNotPendingRegistration as any
+            AuthErrors.EmailNotPendingRegistration as AuthErrorInfo
           );
         }
 
@@ -122,14 +122,14 @@ passport.use(
     try {
       const userStored: User | null = await userService.getUserById(username);
       if (!userStored) {
-        return done(null, false, AuthErrors.UserNotFound() as any);
+        return done(null, false, AuthErrors.UserNotFound() as AuthErrorInfo);
       }
       if (!userStored.isRegistered || !userStored.password) {
-        return done(null, false, AuthErrors.EmailNotValidated as any);
+        return done(null, false, AuthErrors.EmailNotValidated as AuthErrorInfo);
       }
       const passwordMatch = await bcrypt.compare(password, userStored.password);
       if (!passwordMatch) {
-        return done(null, false, AuthErrors.IncorrectPassword as any);
+        return done(null, false, AuthErrors.IncorrectPassword as AuthErrorInfo);
       }
       return done(null, {
         userId: userStored.id,
@@ -143,7 +143,7 @@ passport.use(
         error instanceof Error &&
         error.message === `there is no document with id: ${username}`
       ) {
-        return done(null, false, AuthErrors.UserNotFound() as any);
+        return done(null, false, AuthErrors.UserNotFound() as AuthErrorInfo);
       }
 
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -160,11 +160,11 @@ passport.deserializeUser(async (id: string, done) => {
   try {
     const userFound = await userService.getUserById(id);
     if (!userFound) {
-      return done(AuthErrors.UserNotFound() as any);
+      return done(AuthErrors.UserNotFound() as AuthErrorInfo);
     }
     const user: User = userFound;
     if (!user) {
-      return done(AuthErrors.UserNotFound() as any);
+      return done(AuthErrors.UserNotFound() as AuthErrorInfo);
     }
     const safeUser = {
       ...user,

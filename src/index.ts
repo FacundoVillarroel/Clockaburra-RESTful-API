@@ -3,7 +3,6 @@ dotenv.config();
 
 import express, { Request, Response } from "express";
 import path from "path";
-// @ts-ignore
 import passport from "./config/PassportConfig";
 // @ts-ignore
 import jsonErrorHandler from "./middlewares/jsonErrorHandler";
@@ -23,7 +22,6 @@ import DepartmentsRouter from "./routes/departmentsRoutes";
 import RolesRouter from "./routes/rolesRoutes";
 // @ts-ignore
 import ImagesRouter from "./routes/imagesRoutes";
-// @ts-ignore
 import verifyJWT from "./middlewares/verifyJWT";
 import corsHandler from "./middlewares/corsHandler";
 
@@ -48,13 +46,17 @@ app.get("/api-docs", (req: Request, res: Response) => {
   res.sendFile(path.join(staticPath, "api-docs.html"));
 });
 
-app.use("/users", verifyJWT.default || verifyJWT, UsersRouter.default || UsersRouter);
-app.use("/clock", verifyJWT.default || verifyJWT, ClockRouter.default || ClockRouter);
-app.use("/shift", verifyJWT.default || verifyJWT, ShiftRouter.default || ShiftRouter);
-app.use("/timesheet", verifyJWT.default || verifyJWT, TimesheetRouter.default || TimesheetRouter);
+app.use("/users", verifyJWT, UsersRouter.default || UsersRouter);
+app.use("/clock", verifyJWT, ClockRouter.default || ClockRouter);
+app.use("/shift", verifyJWT, ShiftRouter.default || ShiftRouter);
+app.use("/timesheet", verifyJWT, TimesheetRouter.default || TimesheetRouter);
 app.use("/auth", AuthRouter.default || AuthRouter);
-app.use("/department", verifyJWT.default || verifyJWT, DepartmentsRouter.default || DepartmentsRouter);
-app.use("/role", verifyJWT.default || verifyJWT, RolesRouter.default || RolesRouter);
-app.use("/images", verifyJWT.default || verifyJWT, ImagesRouter.default || ImagesRouter);
+app.use(
+  "/department",
+  verifyJWT,
+  DepartmentsRouter.default || DepartmentsRouter
+);
+app.use("/role", verifyJWT, RolesRouter.default || RolesRouter);
+app.use("/images", verifyJWT, ImagesRouter.default || ImagesRouter);
 
 export default app;

@@ -3,7 +3,7 @@ const express = require("express");
 const AuthRouter = express.Router();
 const authController = require("../controllers/authController");
 
-const verifyJWT = require("../middlewares/verifyJWT");
+const verifyJWT = require("../middlewares/verifyJWT").default;
 
 AuthRouter.post("/register", authController.register);
 
