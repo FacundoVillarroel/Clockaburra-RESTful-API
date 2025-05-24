@@ -2,7 +2,7 @@
   "name": "clockaburra-restful-api",
   "version": "1.0.0",
   "description": "",
-  "main": "api/index.js",
+  "main": "api/index.ts",
   "scripts": {
     "start": "node dist/app.js",
     "start:prod": "npm run build && npm run start",
