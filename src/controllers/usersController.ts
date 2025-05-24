@@ -214,32 +214,37 @@ export const resetPassword = async (req:Request, res:Response) => {
     // Handling errors jwt specific
     try {
       decoded = jwt.verify(token, secretKey);
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.name === "TokenExpiredError") {
-        return res.status(400).send({
+        res.status(400).send({
           message: "Token has expired. Please request a new activation link.",
           updated: false,
         });
+        return;
       } else if (error.name === "JsonWebTokenError") {
-        return res.status(400).send({
+        res.status(400).send({
           message:
             "Invalid token. Please check the activation link or request a new one.",
           updated: false,
         });
+        return;
       } else {
-        return res.status(400).send({
+        res.status(400).send({
           message:
             "An error occurred during token validation. Please try again later.",
           updated: false,
         });
+        return;
       }
     }
     // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
-    if (typeof decoded === "string" ) {
-      return res.status(400).send({
-        message: "Invalid token. Please check the activation link or request a new one.",
+    if (typeof decoded === "string") {
+      res.status(400).send({
+        message:
+          "Invalid token. Please check the activation link or request a new one.",
         updated: false,
       });
+      return;
     }
     const userStored = await userService.getUserById(decoded.userId);
     if (!userStored) {

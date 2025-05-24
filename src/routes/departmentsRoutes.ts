@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-const departmentsController = require("../controllers/departmentsController");
+import * as departmentsController from "../controllers/departmentsController";
 
 const DepartmentsRouter = express.Router();
 
@@ -14,4 +14,4 @@ DepartmentsRouter.put("/:id", departmentsController.modifyDepartmentById);
 
 DepartmentsRouter.delete("/:id", departmentsController.deleteDepartmentById);
 
-module.exports = DepartmentsRouter;
+export default DepartmentsRouter;

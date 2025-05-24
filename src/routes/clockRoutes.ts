@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-const clockController = require("../controllers/clockController");
+import * as clockController from "../controllers/clockController";
 
 const ClockRouter = express.Router();
 
@@ -24,4 +24,4 @@ ClockRouter.post("/breakStart", clockController.clockStatusChange);
 
 ClockRouter.post("/breakEnd", clockController.clockStatusChange);
 
-module.exports = ClockRouter;
+export default ClockRouter;

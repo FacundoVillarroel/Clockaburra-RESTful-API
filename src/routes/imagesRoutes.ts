@@ -1,8 +1,8 @@
-const express = require("express");
-const multer = require("multer");
+import express from "express";
+import multer from "multer";
 
 const ImagesRouter = express.Router();
-const imagesController = require("../controllers/imagesController");
+import * as imagesController from "../controllers/imagesController";
 
 const upload = multer({
   storage: multer.memoryStorage(), // Save the file temporarily in memory
@@ -16,4 +16,4 @@ ImagesRouter.put(
 
 ImagesRouter.delete("/profile-images/:filePath", imagesController.deleteImage);
 
-module.exports = ImagesRouter;
+export default ImagesRouter;

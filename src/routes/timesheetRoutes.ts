@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-const timesheetController = require("../controllers/timesheetController");
+import * as timesheetController from "../controllers/timesheetController";
 
 const TimesheetRouter = express.Router();
 
@@ -32,4 +32,4 @@ TimesheetRouter.get("/:timesheetId", timesheetController.getTimesheetById);
 
 TimesheetRouter.delete("/:id", timesheetController.deleteTimesheetById);
 
-module.exports = TimesheetRouter;
+export default TimesheetRouter;

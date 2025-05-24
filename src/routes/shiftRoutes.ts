@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-const shiftController = require("../controllers/shiftController");
+import * as shiftController from "../controllers/shiftController";
 
 const ShiftRouter = express.Router();
 
@@ -24,4 +24,4 @@ ShiftRouter.put("/:id", shiftController.modifyShift);
 
 ShiftRouter.delete("/:id", shiftController.deleteShift);
 
-module.exports = ShiftRouter;
+export default ShiftRouter;

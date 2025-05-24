@@ -1,9 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as authController from "../controllers/authController";
+import verifyJWT from "../middlewares/verifyJWT" ;
 
 const AuthRouter = express.Router();
-const authController = require("../controllers/authController");
-
-const verifyJWT = require("../middlewares/verifyJWT").default;
 
 AuthRouter.post("/register", authController.register);
 
@@ -20,4 +19,4 @@ AuthRouter.get(
   authController.sendLinkResetPassword
 );
 
-module.exports = AuthRouter;
+export default AuthRouter;

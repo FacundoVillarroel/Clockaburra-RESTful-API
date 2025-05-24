@@ -24,99 +24,117 @@ if (!secretKeyValidation) {
   throw new Error("JWT_VALIDATION_LINK_SECRET environment variable is not defined");
 }
 
-export const register = (req:Request, res:Response, next:NextFunction) => {
-  passport.authenticate("register", (error:AuthErrorInfo, user: AuthenticatedUser | false, info:AuthErrorInfo | undefined) => {
-    if (error) {
-      return next(error);
-    }
-    if (!user) {
-      let errorCode = 400; 
-      if (!info) {
-        return res.status(500).send({ message: "Unknown error" });
+export const register = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate(
+    "register",
+    (
+      error: AuthErrorInfo,
+      user: AuthenticatedUser | false,
+      info: AuthErrorInfo | undefined
+    ) => {
+      if (error) {
+        return next(error);
       }
-      switch (info.message) {
-        case "Email not found for pending registration":
-          errorCode = 404;
-          break;
-        case "This email is already registrated":
-          errorCode = 409;
-          break;
-        case "The password must be at least 8 characters":
-          errorCode = 400;
+      if (!user) {
+        let errorCode = 400;
+        if (!info) {
+          res.status(500).send({ message: "Unknown error" });
+          return;
+        }
+        switch (info.message) {
+          case "Email not found for pending registration":
+            errorCode = 404;
+            break;
+          case "This email is already registrated":
+            errorCode = 409;
+            break;
+          case "The password must be at least 8 characters":
+            errorCode = 400;
+        }
+        res.status(errorCode).send({ message: info.message });
+        return;
       }
-      return res.status(errorCode).send({ message: info.message });
-    }
-    const token = jwt.sign(
-      {
+      const token = jwt.sign(
+        {
+          userId: user.userId,
+          userName: user.name,
+          role: user.role,
+          permissions: user.permissions,
+        },
+        secretKey,
+        {
+          expiresIn: "1w",
+        }
+      );
+      res.header("Authorization", "Bearer " + token);
+      res.setHeader("Access-Control-Expose-Headers", "Authorization");
+      res.status(201).send({
+        message: "Successful registration",
         userId: user.userId,
         userName: user.name,
         role: user.role,
         permissions: user.permissions,
-      },
-      secretKey,
-      {
-        expiresIn: "1w",
-      }
-    );
-    res.header("Authorization", "Bearer " + token);
-    res.setHeader("Access-Control-Expose-Headers", "Authorization");
-    res.status(201).send({
-      message: "Successful registration",
-      userId: user.userId,
-      userName: user.name,
-      role: user.role,
-      permissions: user.permissions,
-    });
-  })(req, res, next);
+      });
+    }
+  )(req, res, next);
 };
 
-export const login = (req:Request, res:Response, next:NextFunction) => {
-  passport.authenticate("login", (error:AuthErrorInfo, user: AuthenticatedUser | false, info:AuthErrorInfo | undefined) => {
-    if (error) {
-      return next(error);
-    }
-    if (!user) {
-      let errorCode = 400;
-      if (!info) {
-        return res.status(500).send({ message: "Unknown error" });
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate(
+    "login",
+    (
+      error: AuthErrorInfo,
+      user: AuthenticatedUser | false,
+      info: AuthErrorInfo | undefined
+    ) => {
+      if (error) {
+        return next(error);
       }
-      switch (info.message) {
-        case "User not found":
-          errorCode = 404;
-          break;
-        case "User did not complete email validation":
-          errorCode = 409;
-          break;
-        case "Incorrect password":
-          errorCode = 400;
+      if (!user) {
+        let errorCode = 400;
+        if (!info) {
+          res.status(500).send({ message: "Unknown error" });
+          return;
+        }
+        switch (info.message) {
+          case "User not found":
+            errorCode = 404;
+            break;
+          case "User did not complete email validation":
+            errorCode = 409;
+            break;
+          case "Incorrect password":
+            errorCode = 400;
+        }
+        res.status(errorCode).send({ message: info.message });
+        return;
       }
-      return res.status(errorCode).send({ message: info.message });
-    }
-    const token = jwt.sign(
-      {
+      const token = jwt.sign(
+        {
+          userId: user.userId,
+          userName: user.name,
+          role: user.role,
+          permissions: user.permissions,
+        },
+        secretKey,
+        {
+          expiresIn: "1w",
+        }
+      );
+      res.header("Authorization", "Bearer " + token);
+      res.setHeader("Access-Control-Expose-Headers", "Authorization");
+      res.send({
+        message: "Login successful",
         userId: user.userId,
         userName: user.name,
         role: user.role,
         permissions: user.permissions,
-      },
-      secretKey,
-      {
-        expiresIn: "1w",
-      }
-    );
-    res.header("Authorization", "Bearer " + token);
-    res.setHeader("Access-Control-Expose-Headers", "Authorization");
-    res.send({
-      message: "Login successful",
-      userId: user.userId,
-      userName: user.name,
-      role: user.role,
-      permissions: user.permissions,
-    });
-  })(req, res, next);
+      });
+    }
+  )(req, res, next);
 };
 
-export const getJWT = async (req:AuthenticatedRequest, res:Response) => {
+export const getJWT = async (req: AuthenticatedRequest, res: Response) => {
   res.send({
     message: "Token information",
     userName: req.userName,
@@ -126,7 +144,7 @@ export const getJWT = async (req:AuthenticatedRequest, res:Response) => {
   });
 };
 
-export const googleLogin = async (req:Request, res:Response) => {
+export const googleLogin = async (req: Request, res: Response) => {
   try {
     const { accessToken } = req.body;
     const response = await axios.get(
@@ -136,11 +154,12 @@ export const googleLogin = async (req:Request, res:Response) => {
       const email = response.data.email;
       const user = await userService.getUserById(email);
 
-      if(!user) {
-        return res.status(404).send({
+      if (!user) {
+        res.status(404).send({
           message: "User not found",
           ok: false,
         });
+        return;
       }
 
       const token = jwt.sign(
@@ -169,60 +188,67 @@ export const googleLogin = async (req:Request, res:Response) => {
         .status(400)
         .send({ message: "Could not authenticate Google account." });
     }
-  } catch (error:any) {
+  } catch (error: any) {
     console.error(error.message);
     res.status(400).send({ message: "Could not authenticate Google account." });
   }
 };
 
-export const validateUser = async (req:Request, res:Response) => {
+export const validateUser = async (req: Request, res: Response) => {
   try {
     let decoded;
-    
+
     const { token } = req.query;
     if (!token || typeof token !== "string") {
-      return res.status(400).send({
+      res.status(400).send({
         message: "Token as string is required",
         ok: false,
       });
+      return;
     }
     // Handling errors jwt specific
     try {
       decoded = jwt.verify(token, secretKeyValidation);
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.name === "TokenExpiredError") {
-        return res.status(400).send({
+        res.status(400).send({
           message: "Token has expired. Please request a new activation link.",
           ok: false,
         });
+        return;
       } else if (error.name === "JsonWebTokenError") {
-        return res.status(400).send({
+        res.status(400).send({
           message:
             "Invalid token. Please check the activation link or request a new one.",
           ok: false,
         });
+        return;
       } else {
-        return res.status(400).send({
+        res.status(400).send({
           message:
             "An error occurred during token validation. Please try again later.",
           ok: false,
         });
+        return;
       }
     }
     // At this point Token was validated by JWT, now need to be validated with token stored in user in the DB
     if (!decoded || typeof decoded !== "object") {
-      return res.status(400).send({
-        message: "Invalid token. Please check the activation link or request a new one.",
+      res.status(400).send({
+        message:
+          "Invalid token. Please check the activation link or request a new one.",
         ok: false,
       });
+      return;
     }
     const { userId, userName, role, permissions } = decoded;
     const user = await userService.getUserById(userId);
     if (!user) {
-      return res.status(404).send({
+      res.status(404).send({
         message: "User not found",
         ok: false,
       });
+      return;
     }
     if (user.isRegistered) {
       res.status(400).send({
@@ -252,21 +278,23 @@ export const validateUser = async (req:Request, res:Response) => {
   }
 };
 
-export const sendLinkResetPassword = async (req:Request, res:Response) => {
+export const sendLinkResetPassword = async (req: Request, res: Response) => {
   const { email } = req.query;
   if (!email || typeof email !== "string") {
-    return res.status(400).send({
+    res.status(400).send({
       message: "Email as string is required",
       ok: false,
     });
+    return;
   }
   try {
     const user = await userService.getUserById(email);
     if (!user) {
-      return res.status(404).send({
+      res.status(404).send({
         message: "User not found",
         ok: false,
       });
+      return;
     }
     const newToken = jwt.sign(
       {
@@ -290,7 +318,7 @@ export const sendLinkResetPassword = async (req:Request, res:Response) => {
       ok: true,
       user: response,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     if (error.message === `there is no document with id: ${email}`) {
       res.status(404).send({
         message: "Email not registered in db",
