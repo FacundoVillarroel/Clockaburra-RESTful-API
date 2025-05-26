@@ -5,7 +5,10 @@ import DaoFirebaseTimesheets from "../dao/DaoFirebaseTimesheets";
 import DaoFirebaseDepartments from "../dao/DaoFirebaseDepartments";
 import DaoFirebaseRoles from "../dao/DaoFirebaseRoles";
 
+import { AppError } from "../errors/AppError";
+
 import { type InterfaceUserDao } from "../models/users/types/IntefaceUserDao";
+import { InternalServerError } from "../errors/HttpErrors";
 
 type DbType = "firebase";
 type CollectionName =
@@ -51,7 +54,7 @@ class DaoFactory {
       case "firebase":
         return DaoFactory.getFirebaseDao(collectionName) as T;
       default:
-        throw new Error("Invalid database type");
+        throw new InternalServerError(`Invalid database type ${dbType}`);
     }
   }
 
@@ -70,7 +73,7 @@ class DaoFactory {
       case "roles":
         return DaoFirebaseRoles.getInstance();
       default:
-        throw new Error("Invalid collection name");
+        throw new InternalServerError( `Invalid collection name ${collectionName} `);
     }
   }
 }
