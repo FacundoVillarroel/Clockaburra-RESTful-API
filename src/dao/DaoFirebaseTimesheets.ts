@@ -1,5 +1,7 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 import { DateTime } from "luxon";
+import { AppError } from "../errors/AppError";
+import { InternalServerError } from "../errors/HttpErrors";
 import type Timesheet from "../models/timesheets/types/Timesheet";
 
 export type FilterParams = {
@@ -26,16 +28,24 @@ class DaoFirebaseTimesheets {
   async getAll() {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async getById(id: string): Promise<(Timesheet & { id: string }) | null> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -68,8 +78,12 @@ class DaoFirebaseTimesheets {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -106,8 +120,12 @@ class DaoFirebaseTimesheets {
         }
       }
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -117,24 +135,36 @@ class DaoFirebaseTimesheets {
   ): Promise<void> {
     try {
       await this.firebaseClient.updateById(id, update);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async save(timesheet: Timesheet): Promise<{ data: Timesheet; id: string }> {
     try {
       return this.firebaseClient.save(timesheet);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async deleteById(id: string): Promise<void> {
     try {
       await this.firebaseClient.deleteById(id);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 }

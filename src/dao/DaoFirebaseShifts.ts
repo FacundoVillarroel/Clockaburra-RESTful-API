@@ -1,6 +1,8 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
 
 import { DateTime } from "luxon";
+import { AppError } from "../errors/AppError";
+import { InternalServerError } from "../errors/HttpErrors";
 import type Shift from "../models/shifts/types/Shift";
 
 export type FilterParams = {
@@ -27,16 +29,24 @@ class DaoFirebaseShifts {
   async getAllShifts() {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async getById(id: string): Promise<(Shift & { id: string }) | null> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -71,8 +81,12 @@ class DaoFirebaseShifts {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -108,32 +122,48 @@ class DaoFirebaseShifts {
         }
       }
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error: any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async save(shift: Shift): Promise<{ data: Shift; id: string }> {
     try {
       return this.firebaseClient.save(shift);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async updateById(id: string, update: Partial<Shift>): Promise<void> {
     try {
       await this.firebaseClient.updateById(id, update);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async deleteById(id: string): Promise<void> {
     try {
       return await this.firebaseClient.deleteById(id);
-    } catch (error: any) {
-      throw Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 }

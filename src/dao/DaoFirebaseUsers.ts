@@ -1,4 +1,6 @@
 import FirebaseConfig, { Condition } from "../config/FirebaseConfig";
+import { AppError } from "../errors/AppError";
+import { InternalServerError } from "../errors/HttpErrors";
 import type User from "../models/users/types/User";
 
 import {
@@ -24,8 +26,12 @@ class DaoFirebaseUsers implements InterfaceUserDao {
   async getAll(): Promise<(User & { id: string })[] | null> {
     try {
       return await this.firebaseClient.getAll();
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users");
+      }
     }
   }
 
@@ -52,24 +58,36 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       }
 
       return await this.firebaseClient.filterByConditions(conditions);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async save(user: User): Promise<{ data: User; id: string }> {
     try {
       return await this.firebaseClient.save(user);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async getById(id: string): Promise<User & { id: string }> {
     try {
       return await this.firebaseClient.getById(id);
-    } catch (error: any) {
-      throw new Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
@@ -81,16 +99,24 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       await this.firebaseClient.updateById(id, userUpdate);
       const updatedUser = await this.getById(id);
       return updatedUser;
-    } catch (error: any) {
-      throw Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async deleteById(id: string): Promise<void> {
     try {
       return await this.firebaseClient.deleteById(id);
-    } catch (error: any) {
-      throw Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 }

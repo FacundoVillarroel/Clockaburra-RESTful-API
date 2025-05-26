@@ -1,4 +1,6 @@
 import FirebaseConfig from "../config/FirebaseConfig";
+import { AppError } from "../errors/AppError";
+import { InternalServerError } from "../errors/HttpErrors";
 import type Clock from "../models/clock/types/Clock";
 
 class DaoFirebaseClock {
@@ -21,32 +23,48 @@ class DaoFirebaseClock {
       return await this.firebaseClient.filterByConditions([
         { field: "userId", operator: "==", value: userId },
       ]);
-    } catch (error:any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async addNewClock(clock:Clock) {
     try {
       return await this.firebaseClient.save(clock);
-    } catch (error:any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async updateStatus(id:string, update:Partial<Clock>) {
     try {
       await this.firebaseClient.updateById(id, update);
-    } catch (error:any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 
   async deleteById(id:string) {
     try {
       return await this.firebaseClient.deleteById(id);
-    } catch (error:any) {
-      throw Error(error.message || "Unknown error occurred");
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        throw error; 
+      } else {
+        throw new InternalServerError("Failed to fetch users by filters");
+      }
     }
   }
 }
