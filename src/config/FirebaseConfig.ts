@@ -2,6 +2,13 @@ import admin from"firebase-admin";
 
 import { Firestore, CollectionReference, Query, DocumentData } from "firebase-admin/firestore";
 
+import { AppError } from "../errors/AppError";
+import {
+  NotFoundError,
+  ConflictError,
+  InternalServerError,
+} from "../errors/HttpErrors";
+
 const firebaseData = process.env.FIREBASE_CREDENTIALS;
 if (!firebaseData) {
   throw new Error("Firebase credentials not found");
@@ -19,28 +26,28 @@ export interface Condition {
   value: any;
 }
 
-export default class FirebaseConfig <T extends DocumentData> {
+export default class FirebaseConfig<T extends DocumentData> {
   private db: Firestore;
   private query: CollectionReference<T>;
 
-  constructor(collection:string) {
+  constructor(collection: string) {
     this.db = admin.firestore();
     this.query = this.db.collection(collection) as CollectionReference<T>;
   }
 
-  async getAll() : Promise<T[] | null> {
+  async getAll(): Promise<T[] | null> {
     try {
       const docs = await this.query.get();
       if (!docs) {
         return null;
       } else {
         return docs.docs.map((doc) => {
-          const data = {...doc.data(), id: doc.id};
+          const data = { ...doc.data(), id: doc.id };
           return data;
         });
       }
-    } catch (error:any) {
-      throw new Error(error.message || "Error getting documents");
+    } catch (error: any) {
+      throw new InternalServerError(error.message || "Error getting documents");
     }
   }
 
@@ -54,12 +61,11 @@ export default class FirebaseConfig <T extends DocumentData> {
         const response = await this.query.add(doc);
         return { data: doc, id: response.id };
       }
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.code === 6) {
-        throw new Error("Document already exists");
-      } else {
-        throw new Error(error.message || "Error saving document");
+        throw new ConflictError("Document already exists");
       }
+      throw new InternalServerError(error.message || "Error saving document");
     }
   }
 
@@ -67,62 +73,71 @@ export default class FirebaseConfig <T extends DocumentData> {
     try {
       const docFound = await this.query.doc(`${id}`).get();
       if (!docFound.data()) {
-        throw new Error(`there is no document with id: ${id}`);
+        throw new NotFoundError(`Document with id ${id}`);
       }
       const dataFound = docFound.data();
       if (!dataFound) {
-        throw new Error(`there is no document with id: ${id}`);
+        throw new NotFoundError(`Document with id ${id}`);
       }
       const doc = { ...dataFound, id: docFound.id };
       return doc;
-    } catch (error:any) {
-      throw new Error(error.message || "Error getting document");
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      throw new InternalServerError(error.message || "Error getting document");
     }
   }
 
-  async filterByConditions(conditions: Condition[]): Promise<(T & { id: string })[]> {
+  async filterByConditions(
+    conditions: Condition[]
+  ): Promise<(T & { id: string })[]> {
     try {
-      let queryRef : Query<T>= this.query;
+      let queryRef: Query<T> = this.query;
 
       conditions.forEach((condition) => {
-        queryRef = queryRef.where(condition.field, condition.operator, condition.value);
+        queryRef = queryRef.where(
+          condition.field,
+          condition.operator,
+          condition.value
+        );
       });
 
       const snapshot = await queryRef.get();
       if (snapshot.empty) {
         return [];
       }
-      const docsFound = snapshot.docs.map(doc => ({
+      const docsFound = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       return docsFound;
-    } catch (error:any) {
-      console.log(error);
-      throw new Error(error.message || "Error getting documents");
+    } catch (error: any) {
+      throw new InternalServerError(
+        error.message || "Error getting filtered documents"
+      );
     }
   }
 
-  async updateById(id:string, update: Partial<T>): Promise<void> {
+  async updateById(id: string, update: Partial<T>): Promise<void> {
     try {
       const currentDoc = this.query.doc(`${id}`);
       await currentDoc.update({ ...update });
-    } catch (error:any) {
-      throw new Error(error.message || "Error updating document");
+    } catch (error: any) {
+      throw new InternalServerError(error.message || "Error updating document");
     }
   }
 
-  async deleteById(id:string): Promise<void> {
+  async deleteById(id: string): Promise<void> {
     try {
       const docRef = this.query.doc(`${id}`);
       const docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         await docRef.delete();
       } else {
-        throw new Error(`there is no document with id: ${id}`);
+        throw new NotFoundError(`Document with id ${id}`);
       }
-    } catch (error:any) {
-      throw new Error(error.message || "Error deleting document");
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      throw new InternalServerError(error.message || "Error deleting document");
     }
   }
 }

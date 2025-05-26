@@ -15,6 +15,7 @@ import RolesRouter from "./routes/rolesRoutes";
 import ImagesRouter from "./routes/imagesRoutes";
 import verifyJWT from "./middlewares/verifyJWT";
 import corsHandler from "./middlewares/corsHandler";
+import errorHandler from "./middlewares/errorHandler";
 
 const app = express();
 // Middleware for CORS handling
@@ -25,6 +26,7 @@ const staticPath = path.join(__dirname, "..", "public");
 console.log("Static path: ", staticPath);
 app.use("/public", express.static(staticPath));
 
+//middleware for json error handling
 app.use(jsonErrorHandler);
 
 app.use(passport.initialize());
@@ -45,5 +47,8 @@ app.use("/auth", AuthRouter);
 app.use("/department", verifyJWT, DepartmentsRouter);
 app.use("/role", verifyJWT, RolesRouter);
 app.use("/images", verifyJWT, ImagesRouter);
+
+//middleware for handling errors
+app.use(errorHandler);
 
 export default app;

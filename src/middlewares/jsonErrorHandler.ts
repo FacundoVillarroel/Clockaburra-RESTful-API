@@ -11,7 +11,6 @@ const jsonErrorHandler = bodyParser.json({
         error: e.message,
         ok: false,
       });
-      throw e;
     }
   },
 });
