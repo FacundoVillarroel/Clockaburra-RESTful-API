@@ -1,7 +1,14 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError";
+import { BadRequestError, InternalServerError } from "../errors/HttpErrors";
 
-if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
-  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+if (
+  process.env.DATA_BASE === undefined ||
+  process.env.DATA_BASE !== "firebase"
+) {
+  throw new Error(
+    "DATA_BASE environment variable is not defined or is not set to 'firebase'"
+  );
 }
 
 import ShiftService from "../service/ShiftService";
@@ -10,100 +17,138 @@ const shiftService = new ShiftService(process.env.DATA_BASE);
 
 import { calculateWorkedHours } from "../utils/dateHelperFunctions";
 
-export const getShifts = async (req:Request, res: Response) => {
+export const getShifts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userIdsQuery = req.query.userIds;
-    const userIds = typeof userIdsQuery === "string" 
-      ? userIdsQuery.split(",")
-      : Array.isArray(userIdsQuery)
-        ? userIdsQuery.flatMap(userId => typeof userId === "string" ? userId.split(",") : [] )
+    const userIds =
+      typeof userIdsQuery === "string"
+        ? userIdsQuery.split(",")
+        : Array.isArray(userIdsQuery)
+        ? userIdsQuery.flatMap((userId) =>
+            typeof userId === "string" ? userId.split(",") : []
+          )
         : [];
 
     const startDateRaw = req.query.startDate;
     const endDateRaw = req.query.endDate;
-    
+
     const startDate = typeof startDateRaw === "string" ? startDateRaw : null;
     const endDate = typeof endDateRaw === "string" ? endDateRaw : null;
     const filters = { userIds, startDate, endDate };
     const shifts = await shiftService.getShifts(filters);
     res.send(shifts);
-  } catch (error:any) {
-    res.status(400).send({ message: error.message });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const getShiftByUser = async (req:Request, res: Response) => {
+export const getShiftByUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.params.userId;
     const startDateRaw = req.query.startDate;
     const endDateRaw = req.query.endDate;
-    
+
     const startDate = typeof startDateRaw === "string" ? startDateRaw : null;
     const endDate = typeof endDateRaw === "string" ? endDateRaw : null;
     const response = await shiftService.getByUserId(userId, startDate, endDate);
     res.send(response);
-  } catch (error:any) {
-    res.status(400).send({ message: error.message });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const getShiftById = async (req:Request, res: Response) => {
+export const getShiftById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const shift = await shiftService.getShiftById(id);
     res.send(shift);
-  } catch (error:any) {
-    res.status(400).send({ message: error.message });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const postNewShift = async (req:Request, res: Response) => {
+export const postNewShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const {userId, startDate, endDate, breaks} = req.body
+    const { userId, startDate, endDate, breaks } = req.body;
     if (typeof userId !== "string" || !userId) {
-      res.status(422).send({ message: "missing userId" });
+      next(new BadRequestError("userId must be a non-empty string"));
       return;
     }
     if (typeof startDate !== "string" || !startDate) {
-      res.status(422).send({ message: "missing startDate" });
+      next(new BadRequestError("startDate must be a non-empty string"));
       return;
     }
     if (typeof endDate !== "string" || !endDate) {
-      res.status(422).send({ message: "missing endDate" });
+      next(new BadRequestError("endDate must be a non-empty string"));
       return;
     }
     if (typeof breaks !== "object" || !Array.isArray(breaks)) {
-      res.status(422).send({ message: "breaks must be an array" });
+      next(new BadRequestError("breaks must be an array"));
       return;
     }
     const totalHours = calculateWorkedHours(startDate, endDate, breaks);
-    const shift : Shift = {
+    const shift: Shift = {
       userId: userId,
       startDate,
       endDate,
       breaks,
-      totalHours
+      totalHours,
     };
-    
+
     const response = await shiftService.addShift(shift);
     res.status(201).send({
       message: "shift created successfully",
       ...response,
     });
-  } catch (error:any) {
-    res.status(400).send({ message: error.message });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const modifyShift = async (req:Request, res: Response) => {
+export const modifyShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const shiftUpdate = req.body;
-    if (!Object.keys(shiftUpdate).length)
-      res
-        .status(400)
-        .send({ message: "Missing properies for the shift", updated: false });
-    else {
+    if (!Object.keys(shiftUpdate).length) {
+      next(new BadRequestError("No properties to update provided"));
+      return;
+    } else {
       await shiftService.updateShiftById(id, shiftUpdate);
       res.send({
         message: "Shift updated successfully",
@@ -111,20 +156,32 @@ export const modifyShift = async (req:Request, res: Response) => {
         updatedShift: { id: id, ...shiftUpdate },
       });
     }
-  } catch (error:any) {
-    res.status(400).send({ message: error.message, update: false });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const deleteShift = async (req:Request, res: Response) => {
+export const deleteShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     await shiftService.deleteShiftById(id);
-    res.status(200).send({
+    res.status(204).send({
       message: "Shift deleted successfully",
       deleted: true,
     });
-  } catch (error:any) {
-    res.status(400).send({ message: error.message, deleted: false });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };

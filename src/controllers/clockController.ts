@@ -1,7 +1,18 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError";
+import {
+  InternalServerError,
+  BadRequestError,
+  ConflictError,
+} from "../errors/HttpErrors";
 
-if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
-  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+if (
+  process.env.DATA_BASE === undefined ||
+  process.env.DATA_BASE !== "firebase"
+) {
+  throw new Error(
+    "DATA_BASE environment variable is not defined or is not set to 'firebase'"
+  );
 }
 
 import ClockService from "../service/ClockService";
@@ -12,58 +23,70 @@ import Timesheet from "../models/timesheets/types/Timesheet";
 const timesheetService = new TimesheetService(process.env.DATA_BASE);
 
 // Validar el id Ingresado, devolver usuario encontrado
-export const getUserClockStatus = async (req:Request, res:Response) => {
+export const getUserClockStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.params.id;
-    if (userId) {
+    if (!userId) {
+      next(new BadRequestError("Must enter a User Id"));
+      return;
+    } else {
       const userClockStatus = await clockService.getStatusByUserId(userId);
       res.send(userClockStatus);
-    } else {
-      throw new Error("Must enter a User Id");
     }
-  } catch (error:any) {
-    if (
-      error.message === `User clock status not found with id: ${req.params.id}`
-    ) {
-      res.status(404).send({ message: error.message });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
     } else {
-      res.status(400).send({ message: error.message });
+      next(new InternalServerError());
     }
   }
 };
 
 //validar si existe usuario con userId, validar si esta clockOut, almacenar en timesheet el historial de acciones
-export const clockStatusChange = async (req:Request, res:Response) => {
+export const clockStatusChange = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.body.userId;
     const dateTime = req.body.dateTime;
     const pathSections = req.url.split("/");
     const action = pathSections[pathSections.length - 1];
     if (!userId) {
-      throw new Error("userId and date must be provided in request body");
+      next(new BadRequestError("Must enter a User Id"));
+      return;
     }
     if (!isValidDate(dateTime)) {
-      throw new Error("there must enter a valid date in ISO format");
+      next(new BadRequestError("Must enter a valid date in ISO format"));
+      return;
     }
     const userClockStatus = await clockService.getStatusByUserId(userId);
 
     switch (action) {
       case "in":
         if (userClockStatus.clockedIn) {
-          throw new Error("This user is already clocked in");
+          next(new ConflictError("This user is already clocked in"));
+          return;
         }
-        const timesheetToAdd : Timesheet = {
+        const timesheetToAdd: Timesheet = {
           userId,
-          startDate:dateTime,
-          expectedHours : null,
-          endDate : null,
-          breaks : [],
-          actionHistory : [{ actionType: "checkIn", timeStamp: dateTime }],
-          workedHours : null,
-          approved:false,
-          rejected:false
-        }
-        const newTimesheet = await timesheetService.createTimesheet(timesheetToAdd);
+          startDate: dateTime,
+          expectedHours: null,
+          endDate: null,
+          breaks: [],
+          actionHistory: [{ actionType: "checkIn", timeStamp: dateTime }],
+          workedHours: null,
+          approved: false,
+          rejected: false,
+        };
+        const newTimesheet = await timesheetService.createTimesheet(
+          timesheetToAdd
+        );
         userClockStatus.currentTimesheetId = newTimesheet.id;
         await clockService.postClockIn(userClockStatus);
         res.send({
@@ -74,8 +97,12 @@ export const clockStatusChange = async (req:Request, res:Response) => {
         break;
 
       case "out":
-        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
-          throw new Error("This user is not clocked in");
+        if (
+          !userClockStatus.clockedIn ||
+          userClockStatus.currentTimesheetId === null
+        ) {
+          next(new ConflictError("This user is not clocked in"));
+          return;
         }
         await timesheetService.updateTimesheetById(
           userClockStatus.currentTimesheetId,
@@ -91,11 +118,16 @@ export const clockStatusChange = async (req:Request, res:Response) => {
         break;
 
       case "breakStart":
-        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
-          throw new Error("This user is not clocked in");
+        if (
+          !userClockStatus.clockedIn ||
+          userClockStatus.currentTimesheetId === null
+        ) {
+          next(new ConflictError("This user is not clocked in"));
+          return;
         }
         if (userClockStatus.onBreak) {
-          throw new Error("This user is currently on Break");
+          next(new ConflictError("This user is already on Break"));
+          return;
         }
         await timesheetService.updateTimesheetById(
           userClockStatus.currentTimesheetId,
@@ -108,11 +140,16 @@ export const clockStatusChange = async (req:Request, res:Response) => {
         break;
 
       case "breakEnd":
-        if (!userClockStatus.clockedIn || userClockStatus.currentTimesheetId === null) {
-          throw new Error("This user is not clocked in");
+        if (
+          !userClockStatus.clockedIn ||
+          userClockStatus.currentTimesheetId === null
+        ) {
+          next(new ConflictError("This user is not clocked in"));
+          return;
         }
         if (!userClockStatus.onBreak) {
-          throw new Error("This user is not on break");
+          next(new ConflictError("This user is not on Break"));
+          return;
         }
         await timesheetService.updateTimesheetById(
           userClockStatus.currentTimesheetId,
@@ -124,11 +161,18 @@ export const clockStatusChange = async (req:Request, res:Response) => {
         break;
 
       default:
-        throw new Error(
-          "Invalid route for changing clock status, valid routes are: in, out, breakStart, breakEnd"
+        next(
+          new BadRequestError(
+            "Invalid route for changing clock status, valid routes are: in, out, breakStart, breakEnd"
+          )
         );
+        break;
     }
-  } catch (error:any) {
-    res.status(400).send({ message: error.message, updated: false });
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };

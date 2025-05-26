@@ -1,12 +1,18 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError";
+import { BadRequestError, InternalServerError } from "../errors/HttpErrors";
 
 import ImagesService from "../service/ImagesService";
 
-export const uploadImage = async (req: Request, res: Response) => {
+export const uploadImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // verify if there is a file
     if (!req.file) {
-      res.status(400).json({ error: "No file uploaded" });
+      next(new BadRequestError("No file uploaded"));
       return;
     }
     if (req.body.filePath) {
@@ -17,23 +23,37 @@ export const uploadImage = async (req: Request, res: Response) => {
     const imageUrl = await ImagesService.uploadImageToFirebase(req.file);
 
     res.status(201).json(imageUrl);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    res.status(500).send({ error: "Error uploading image" });
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const deleteImage = async (req: Request, res: Response) => {
+export const deleteImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const filePath = req.params.filePath;
     if (!filePath) {
-      res.status(400).send("invalid filePath");
+      next(new BadRequestError("filePath is required"));
       return;
     }
     await ImagesService.deleteImage(filePath);
-    res.send({ message: "Image deleted successfully", deleted: true });
-  } catch (error: any) {
+    res
+      .status(204)
+      .send({ message: "Image deleted successfully", deleted: true });
+  } catch (error: unknown) {
     console.error(error);
-    res.status(400).send({ error: error.mesagge });
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
