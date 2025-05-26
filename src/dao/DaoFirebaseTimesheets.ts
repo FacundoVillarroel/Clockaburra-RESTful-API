@@ -32,7 +32,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch timesheets");
       }
     }
   }
@@ -44,7 +44,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch timesheet by ID");
       }
     }
   }
@@ -82,7 +82,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch timesheets by filters");
       }
     }
   }
@@ -124,7 +124,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch timesheets by user ID");
       }
     }
   }
@@ -139,7 +139,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to Update timesheet by ID");
       }
     }
   }
@@ -151,7 +151,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save timesheet");
       }
     }
   }
@@ -163,7 +163,7 @@ class DaoFirebaseTimesheets {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to delete timesheet by ID");
       }
     }
   }

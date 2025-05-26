@@ -27,7 +27,7 @@ class DaoFirebaseClock {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch clock by user ID");
       }
     }
   }
@@ -39,7 +39,7 @@ class DaoFirebaseClock {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save clock");
       }
     }
   }
@@ -51,7 +51,7 @@ class DaoFirebaseClock {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to update clock");
       }
     }
   }
@@ -63,7 +63,7 @@ class DaoFirebaseClock {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to delete clock");
       }
     }
   }

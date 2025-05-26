@@ -25,7 +25,7 @@ class DaoFirebaseRoles {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch roles");
       }
     }
   }
@@ -37,7 +37,7 @@ class DaoFirebaseRoles {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save role");
       }
     }
   }
@@ -49,7 +49,7 @@ class DaoFirebaseRoles {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch role by ID");
       }
     }
   }
@@ -63,7 +63,7 @@ class DaoFirebaseRoles {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to update role");
       }
     }
   }
@@ -75,7 +75,7 @@ class DaoFirebaseRoles {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to delete role");
       }
     }
   }

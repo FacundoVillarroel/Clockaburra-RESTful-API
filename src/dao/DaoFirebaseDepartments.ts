@@ -25,7 +25,7 @@ class DaoFirebaseDepartments {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch departments");
       }
     }
   }
@@ -37,7 +37,7 @@ class DaoFirebaseDepartments {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save department");
       }
     }
   }
@@ -49,7 +49,7 @@ class DaoFirebaseDepartments {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch department by ID");
       }
     }
   }
@@ -63,7 +63,7 @@ class DaoFirebaseDepartments {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to update department");
       }
     }
   }
@@ -75,7 +75,7 @@ class DaoFirebaseDepartments {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to delete department by ID");
       }
     }
   }

@@ -33,7 +33,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch shifts");
       }
     }
   }
@@ -45,7 +45,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch shift by ID");
       }
     }
   }
@@ -85,7 +85,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch shifts by filters");
       }
     }
   }
@@ -126,7 +126,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to fetch shifts by user ID");
       }
     }
   }
@@ -138,7 +138,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save shift");
       }
     }
   }
@@ -150,7 +150,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to update shift");
       }
     }
   }
@@ -162,7 +162,7 @@ class DaoFirebaseShifts {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to delete shift by ID");
       }
     }
   }

@@ -74,7 +74,7 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to save user");
       }
     }
   }
@@ -86,7 +86,7 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed get user by ID");
       }
     }
   }
@@ -103,7 +103,7 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed to update user");
       }
     }
   }
@@ -115,7 +115,7 @@ class DaoFirebaseUsers implements InterfaceUserDao {
       if (error instanceof AppError) {
         throw error; 
       } else {
-        throw new InternalServerError("Failed to fetch users by filters");
+        throw new InternalServerError("Failed delete user by ID");
       }
     }
   }

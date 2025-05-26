@@ -1,9 +1,17 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import type { Request, Response } from "express";
 
-if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
-  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+import { AppError } from "../errors/AppError";
+import { BadRequestError, InternalServerError, NotFoundError } from "../errors/HttpErrors";
+import type { Request, Response, NextFunction } from "express";
+
+if (
+  process.env.DATA_BASE === undefined ||
+  process.env.DATA_BASE !== "firebase"
+) {
+  throw new Error(
+    "DATA_BASE environment variable is not defined or is not set to 'firebase'"
+  );
 }
 
 import UserService from "../service/UserService";
@@ -14,45 +22,71 @@ const clockService = new ClockService(process.env.DATA_BASE);
 const secretKey = process.env.JWT_VALIDATION_LINK_SECRET;
 
 if (!secretKey) {
-  throw new Error("JWT_VALIDATION_LINK_SECRET environment variable is not defined");
+  throw new Error(
+    "JWT_VALIDATION_LINK_SECRET environment variable is not defined"
+  );
 }
 
-import { sendRegistrationEmail, isValidEmail,} from "../utils/emailHelperFunctions";
+import {
+  sendRegistrationEmail,
+  isValidEmail,
+} from "../utils/emailHelperFunctions";
 
-import { isValidDate } from "../utils/dateHelperFunctions"
+import { isValidDate } from "../utils/dateHelperFunctions";
 import type User from "../models/users/types/User";
 
-export const getUsers = async (req:Request, res:Response) => {
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { roles, departments } = req.query;
-    
-    const rolesArray = typeof roles === 'string'
-      ? roles.split(',')
-      : Array.isArray(roles)
-        ? roles.flatMap(role => typeof role === 'string' ? role.split(',') : [])
-        : [];
-    
-    const departmentsArray = typeof departments === 'string'
-      ? departments.split(',')
-      : Array.isArray(departments)
-        ? departments.flatMap(dep => typeof dep === 'string' ? dep.split(',') : [])
+
+    const rolesArray =
+      typeof roles === "string"
+        ? roles.split(",")
+        : Array.isArray(roles)
+        ? roles.flatMap((role) =>
+            typeof role === "string" ? role.split(",") : []
+          )
         : [];
 
-    const filters = { roles:rolesArray, departments:departmentsArray };
+    const departmentsArray =
+      typeof departments === "string"
+        ? departments.split(",")
+        : Array.isArray(departments)
+        ? departments.flatMap((dep) =>
+            typeof dep === "string" ? dep.split(",") : []
+          )
+        : [];
+
+    const filters = { roles: rolesArray, departments: departmentsArray };
     const users = await userService.getUsers(filters);
     res.status(200).send(users);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("UserController", error);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const postUsers = async (req: Request, res:Response) => {
+export const postUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (isNaN(parseFloat(req.body.hourlyRate))) {
-      throw new Error("hourlyRate must be a Number");
+      next(new BadRequestError("hourlyRate must be a Number"));
+      return;
     }
     if (!isValidEmail(req.body.email)) {
-      throw new Error("The Email is invalid");
+      next(new BadRequestError("The Email is invalid"));
+      return;
     }
 
     const token = jwt.sign(
@@ -82,7 +116,8 @@ export const postUsers = async (req: Request, res:Response) => {
       validationToken: token,
     };
     if (!isValidDate(user.startDate)) {
-      throw new Error("Date entered is invalid");
+      next(new BadRequestError("Date entered is invalid"));
+      return;
     }
     const hasEmptyValue = Object.entries(user).some(([key, value]) => {
       if (
@@ -99,7 +134,8 @@ export const postUsers = async (req: Request, res:Response) => {
     });
 
     if (hasEmptyValue) {
-      res.status(422).send({ message: "missing properties for this user" });
+      next(new BadRequestError("Missing properties for this user"));
+      return;
     } else {
       const response = await userService.addUser(user);
       await clockService.createClockForNewUser(user.id);
@@ -115,36 +151,51 @@ export const postUsers = async (req: Request, res:Response) => {
         ...response,
       });
     }
-  } catch (error:any) {
+  } catch (error: unknown) {
     console.error("UserController", error);
-    res.status(409).send({ message: error.message });
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const getUser = async (req:Request, res:Response) => {
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const user = await userService.getUserById(id);
     const safeUser = {
-      ...user
+      ...user,
     };
     delete (safeUser as any).password;
-    res.send({ user:safeUser });
-  } catch (error:any) {
+    res.send({ user: safeUser });
+  } catch (error: unknown) {
     console.error("UserController", error);
-    res.status(404).send(error.message);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const putUser = async (req:Request, res:Response) => {
+export const putUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const userUpdate = req.body;
-    if (!Object.keys(userUpdate).length)
-      res
-        .status(400)
-        .send({ message: "Missing properies for the user", updated: false });
-    else {
+    if (!Object.keys(userUpdate).length) {
+      next(new BadRequestError("No properties to update"));
+      return;
+    } else {
       const response = await userService.updateUserById(id, userUpdate);
       res.send({
         message: "User updated successfully",
@@ -152,32 +203,38 @@ export const putUser = async (req:Request, res:Response) => {
         updatedUser: response,
       });
     }
-  } catch (error:any) {
+  } catch (error: unknown) {
     console.error("UserController", error);
-    if (error.message === `there is no document with id: ${req.params.id}`) {
-      res.status(404).send({ message: error.message, updated: false });
+    if (error instanceof AppError) {
+      next(error);
     } else {
-      res.status(400).send({ message: error.message, updated: false });
+      next(new InternalServerError());
     }
   }
 };
 
-export const deleteUser = async (req:Request, res:Response) => {
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     await userService.deleteUserById(id);
     const clock = await clockService.getStatusByUserId(id);
     await clockService.deleteClockByUserId(clock.id);
-    res
-      .status(200)
-      .send({ message: "User deleted successfully", deleted: true });
-  } catch (error:any) {
+    res.status(204).send({ message: "User deleted successfully", deleted: true });
+  } catch (error: unknown) {
     console.error("UserController", error);
-    res.status(404).send({ message: error.message, deleted: false });
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new InternalServerError());
+    }
   }
 };
 
-export const resendValidationLink = async (req:Request, res:Response) => {
+export const resendValidationLink = async (req:Request, res:Response, next:NextFunction) => {
   try {
     const id = req.params.id;
     const newToken = jwt.sign(
@@ -201,13 +258,17 @@ export const resendValidationLink = async (req:Request, res:Response) => {
       ok: true,
       updatedUser: response,
     });
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.error("UserController", error);
-    res.status(404).send({ message: error.message, ok: false });
+    if (error instanceof AppError) {
+        next(error); 
+      } else {
+        next(new InternalServerError());
+      }
   }
 };
 
-export const resetPassword = async (req:Request, res:Response) => {
+export const resetPassword = async (req:Request, res:Response, next:NextFunction) => {
   try {
     let decoded;
     const token = req.body.token;
@@ -216,47 +277,33 @@ export const resetPassword = async (req:Request, res:Response) => {
       decoded = jwt.verify(token, secretKey);
     } catch (error: any) {
       if (error.name === "TokenExpiredError") {
-        res.status(400).send({
-          message: "Token has expired. Please request a new activation link.",
-          updated: false,
-        });
+        next(new BadRequestError("Token has expired. Please request a new activation link."));
         return;
       } else if (error.name === "JsonWebTokenError") {
-        res.status(400).send({
-          message:
-            "Invalid token. Please check the activation link or request a new one.",
-          updated: false,
-        });
+        next(new BadRequestError("Invalid token. Please check the activation link or request a new one."));
         return;
       } else {
-        res.status(400).send({
-          message:
-            "An error occurred during token validation. Please try again later.",
-          updated: false,
-        });
+        next(new BadRequestError("Token Invalid."));
         return;
       }
     }
     // At this point Token was validated bys JWT, now need to be validated with token stored in user in the DB
     if (typeof decoded === "string") {
-      res.status(400).send({
-        message:
-          "Invalid token. Please check the activation link or request a new one.",
-        updated: false,
-      });
+      next(new BadRequestError("Invalid token format."));
       return;
     }
     const userStored = await userService.getUserById(decoded.userId);
     if (!userStored) {
-      throw new Error(`No user with id ${decoded.userId}`);
+      next(new NotFoundError(`No user with id ${decoded.userId}`));
+      return
     }
     if (userStored.resetPasswordToken !== token) {
-      throw new Error(
-        "The link is either expired or wrong, please ask for a new link."
-      );
+      next(new BadRequestError("The link is either expired or wrong, please ask for a new one."));
+      return
     }
     if (req.body.password.length < 8) {
-      throw new Error("The password must be at least 8 characters");
+      next(new BadRequestError("The password must be at least 8 characters"));
+      return
     }
     const newPassword = await bcrypt.hash(req.body.password, 10);
     await userService.updateUserById(decoded.userId, {
@@ -265,8 +312,12 @@ export const resetPassword = async (req:Request, res:Response) => {
       isRegistered: true,
     });
     res.send({ message: "Password updated", updated: true });
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.error("UserController", error);
-    res.status(400).send({ message: error.message, updated: false });
+    if (error instanceof AppError) {
+        next(error); 
+      } else {
+        next(new InternalServerError());
+      }
   }
 };
