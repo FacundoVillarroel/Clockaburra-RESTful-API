@@ -7,6 +7,13 @@ import bcrypt from "bcrypt";
 import UserService from "../service/UserService";
 import type User from "../models/users/types/User";
 import { AuthenticatedUser } from "../models/users/types/AuthenticatedUser";
+import { AppError } from "../errors/AppError";
+import {
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+  InternalServerError,
+} from "../errors/HttpErrors";
 
 if (process.env.DATA_BASE !== "firebase") {
   throw new Error(
@@ -16,33 +23,30 @@ if (process.env.DATA_BASE !== "firebase") {
 
 const userService = new UserService(process.env.DATA_BASE);
 
-export interface AuthErrorInfo {
-  message: string;
-  code?: number;
-}
+export const AuthErrors = {
+  UserNotFound: (customMsg?: string) => new NotFoundError(customMsg || "User"),
 
-const AuthErrors = {
-  UserNotFound: (customMsg?: string) =>
-    createAuthError(customMsg || "User not found", 404),
-  AlreadyRegistered: createAuthError("This email is already registered", 400),
-  PasswordTooShort: createAuthError(
-    "The password must be at least 8 characters",
-    400
+  AlreadyRegistered: new ConflictError("This email is already registered"),
+
+  PasswordTooShort: new BadRequestError(
+    "The password must be at least 8 characters"
   ),
-  EmailNotPendingRegistration: createAuthError(
-    "Email not found for pending registration",
-    404
+
+  EmailNotPendingRegistration: new NotFoundError(
+    "Email for pending registration"
   ),
-  EmailNotValidated: createAuthError(
-    "User did not complete email validation",
-    400
+
+  EmailNotValidated: new BadRequestError(
+    "User did not complete email validation"
   ),
-  IncorrectPassword: createAuthError("Incorrect password", 400),
-  Unknown: createAuthError("Unknown error", 500),
+
+  IncorrectPassword: new BadRequestError("Incorrect password"),
+
+  Unknown: new InternalServerError("Unknown error"),
 };
 
-function createAuthError(message: string, code = 400): AuthErrorInfo {
-  return { message, code };
+function createAuthError(message: string, statusCode: number): AppError {
+  return { message, statusCode, isOperational: false } as AppError;
 }
 
 const strategyOptions: IStrategyOptionsWithRequest = {
@@ -64,14 +68,16 @@ passport.use(
           return done(
             null,
             false,
-            AuthErrors.EmailNotPendingRegistration as AuthErrorInfo
+            AuthErrors.EmailNotPendingRegistration as AppError
           );
         }
         if (userStored.isRegistered) {
-          return done(done(null, false, AuthErrors.AlreadyRegistered as AuthErrorInfo));
+          return done(
+            done(null, false, AuthErrors.AlreadyRegistered as AppError)
+          );
         }
         if (password.length < 8) {
-          return done(null, false, AuthErrors.PasswordTooShort as AuthErrorInfo);
+          return done(null, false, AuthErrors.PasswordTooShort as AppError);
         }
         const user: User = {
           ...userStored,
@@ -94,23 +100,16 @@ passport.use(
           role: userStored.role,
           permissions: userStored.permissions,
         } satisfies AuthenticatedUser);
-      } catch (error) {
-        let codeStatus = 400;
-
-        if (
-          error instanceof Error &&
-          error.message === `there is no document with id: ${username}`
-        ) {
+      } catch (error: unknown) {
+        if (error instanceof AppError && error.statusCode === 404) {
           return done(
             null,
             false,
-            AuthErrors.EmailNotPendingRegistration as AuthErrorInfo
+            AuthErrors.EmailNotPendingRegistration as AppError
           );
         }
 
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
-        return done(null, false, createAuthError(message, codeStatus) as any);
+        return done(null, false, AuthErrors.Unknown as AppError);
       }
     }
   )
@@ -122,14 +121,18 @@ passport.use(
     try {
       const userStored: User | null = await userService.getUserById(username);
       if (!userStored) {
-        return done(null, false, AuthErrors.UserNotFound() as AuthErrorInfo);
+        return done(
+          null,
+          false,
+          AuthErrors.UserNotFound(`user ${username} not found`) as AppError
+        );
       }
       if (!userStored.isRegistered || !userStored.password) {
-        return done(null, false, AuthErrors.EmailNotValidated as AuthErrorInfo);
+        return done(null, false, AuthErrors.EmailNotValidated as AppError);
       }
       const passwordMatch = await bcrypt.compare(password, userStored.password);
       if (!passwordMatch) {
-        return done(null, false, AuthErrors.IncorrectPassword as AuthErrorInfo);
+        return done(null, false, AuthErrors.IncorrectPassword as AppError);
       }
       return done(null, {
         userId: userStored.id,
@@ -139,14 +142,12 @@ passport.use(
       } satisfies AuthenticatedUser);
     } catch (error) {
       let codeStatus = 400;
-      if (
-        error instanceof Error &&
-        error.message === `there is no document with id: ${username}`
-      ) {
-        return done(null, false, AuthErrors.UserNotFound() as AuthErrorInfo);
+      if (error instanceof AppError && error.statusCode === 404) {
+        return done(null, false, AuthErrors.UserNotFound("") as AppError);
       }
 
-      const message = error instanceof Error ? error.message : "Unknown error";
+      const message =
+        error instanceof AppError ? error.message : "Unknown error";
       return done(null, false, createAuthError(message, codeStatus) as any);
     }
   })
@@ -160,11 +161,11 @@ passport.deserializeUser(async (id: string, done) => {
   try {
     const userFound = await userService.getUserById(id);
     if (!userFound) {
-      return done(AuthErrors.UserNotFound() as AuthErrorInfo);
+      return done(AuthErrors.UserNotFound() as AppError);
     }
     const user: User = userFound;
     if (!user) {
-      return done(AuthErrors.UserNotFound() as AuthErrorInfo);
+      return done(AuthErrors.UserNotFound() as AppError);
     }
     const safeUser = {
       ...user,

@@ -3,12 +3,22 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 import { sendResetPasswordEmail } from "../utils/emailHelperFunctions";
 import type { Request, Response, NextFunction } from "express";
-import type { AuthErrorInfo } from "../config/PassportConfig";
 import type { AuthenticatedUser } from "../models/users/types/AuthenticatedUser";
 import type { AuthenticatedRequest } from "../middlewares/verifyJWT";
+import { AppError } from "../errors/AppError";
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from "../errors/HttpErrors";
 
-if(process.env.DATA_BASE === undefined || process.env.DATA_BASE !== "firebase" ) {
-  throw new Error("DATA_BASE environment variable is not defined or is not set to 'firebase'");
+if (
+  process.env.DATA_BASE === undefined ||
+  process.env.DATA_BASE !== "firebase"
+) {
+  throw new Error(
+    "DATA_BASE environment variable is not defined or is not set to 'firebase'"
+  );
 }
 
 import UserService from "../service/UserService";
@@ -21,37 +31,29 @@ if (!secretKey) {
 
 const secretKeyValidation = process.env.JWT_VALIDATION_LINK_SECRET;
 if (!secretKeyValidation) {
-  throw new Error("JWT_VALIDATION_LINK_SECRET environment variable is not defined");
+  throw new Error(
+    "JWT_VALIDATION_LINK_SECRET environment variable is not defined"
+  );
 }
 
 export const register = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     "register",
     (
-      error: AuthErrorInfo,
+      error: AppError,
       user: AuthenticatedUser | false,
-      info: AuthErrorInfo | undefined
+      info: AppError | undefined
     ) => {
       if (error) {
         return next(error);
       }
       if (!user) {
-        let errorCode = 400;
         if (!info) {
           res.status(500).send({ message: "Unknown error" });
           return;
         }
-        switch (info.message) {
-          case "Email not found for pending registration":
-            errorCode = 404;
-            break;
-          case "This email is already registrated":
-            errorCode = 409;
-            break;
-          case "The password must be at least 8 characters":
-            errorCode = 400;
-        }
-        res.status(errorCode).send({ message: info.message });
+
+        res.status(info.statusCode).send({ message: info.message });
         return;
       }
       const token = jwt.sign(
@@ -83,30 +85,19 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     "login",
     (
-      error: AuthErrorInfo,
+      error: AppError,
       user: AuthenticatedUser | false,
-      info: AuthErrorInfo | undefined
+      info: AppError | undefined
     ) => {
       if (error) {
         return next(error);
       }
       if (!user) {
-        let errorCode = 400;
         if (!info) {
           res.status(500).send({ message: "Unknown error" });
           return;
         }
-        switch (info.message) {
-          case "User not found":
-            errorCode = 404;
-            break;
-          case "User did not complete email validation":
-            errorCode = 409;
-            break;
-          case "Incorrect password":
-            errorCode = 400;
-        }
-        res.status(errorCode).send({ message: info.message });
+        res.status(info.statusCode).send({ message: info.message });
         return;
       }
       const token = jwt.sign(
@@ -144,7 +135,11 @@ export const getJWT = async (req: AuthenticatedRequest, res: Response) => {
   });
 };
 
-export const googleLogin = async (req: Request, res: Response) => {
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { accessToken } = req.body;
     const response = await axios.get(
@@ -155,10 +150,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       const user = await userService.getUserById(email);
 
       if (!user) {
-        res.status(404).send({
-          message: "User not found",
-          ok: false,
-        });
+        next(new NotFoundError("User"));
         return;
       }
 
@@ -184,17 +176,21 @@ export const googleLogin = async (req: Request, res: Response) => {
         permissions: user.permissions,
       });
     } else {
-      res
-        .status(400)
-        .send({ message: "Could not authenticate Google account." });
+      next(new BadRequestError("Could not authenticate Google account."));
     }
-  } catch (error: any) {
-    console.error(error.message);
-    res.status(400).send({ message: "Could not authenticate Google account." });
+  } catch (error: unknown) {
+    error instanceof Error
+      ? console.error(error.message)
+      : console.error(error);
+    next(new InternalServerError("Internal server error"));
   }
 };
 
-export const validateUser = async (req: Request, res: Response) => {
+export const validateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     let decoded;
 
@@ -209,52 +205,51 @@ export const validateUser = async (req: Request, res: Response) => {
     // Handling errors jwt specific
     try {
       decoded = jwt.verify(token, secretKeyValidation);
-    } catch (error: any) {
-      if (error.name === "TokenExpiredError") {
-        res.status(400).send({
-          message: "Token has expired. Please request a new activation link.",
-          ok: false,
-        });
-        return;
-      } else if (error.name === "JsonWebTokenError") {
-        res.status(400).send({
-          message:
-            "Invalid token. Please check the activation link or request a new one.",
-          ok: false,
-        });
-        return;
-      } else {
-        res.status(400).send({
-          message:
-            "An error occurred during token validation. Please try again later.",
-          ok: false,
-        });
-        return;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (error.name === "TokenExpiredError") {
+          next(
+            new BadRequestError(
+              "Token has expired. Please request a new activation link."
+            )
+          );
+          return;
+        } else if (error.name === "JsonWebTokenError") {
+          next(
+            new BadRequestError(
+              "Invalid token. Please check the activation link or request a new one."
+            )
+          );
+          return;
+        } else {
+          next(
+            new InternalServerError(
+              "An error occurred during token validation. Please try again later."
+            )
+          );
+          return;
+        }
       }
     }
     // At this point Token was validated by JWT, now need to be validated with token stored in user in the DB
     if (!decoded || typeof decoded !== "object") {
-      res.status(400).send({
-        message:
-          "Invalid token. Please check the activation link or request a new one.",
-        ok: false,
-      });
+      next(
+        new BadRequestError(
+          "Invalid token. Please check the activation link or request a new one."
+        )
+      );
       return;
     }
     const { userId, userName, role, permissions } = decoded;
     const user = await userService.getUserById(userId);
     if (!user) {
-      res.status(404).send({
-        message: "User not found",
-        ok: false,
-      });
+      next(new NotFoundError("User"));
       return;
     }
     if (user.isRegistered) {
-      res.status(400).send({
-        message: `This email is already registered and validated`,
-        ok: false,
-      });
+      next(
+        new BadRequestError("This email is already registered and validated")
+      );
     } else {
       if (user.validationToken === token) {
         res.send({
@@ -263,37 +258,36 @@ export const validateUser = async (req: Request, res: Response) => {
           user: { userId, userName, role, permissions },
         });
       } else {
-        res.status(400).send({
-          message:
-            "Invalid token. Please check the activation link or request a new one.",
-          ok: false,
-        });
+        next(
+          new BadRequestError(
+            "Invalid token. Please check the activation link or request a new one."
+          )
+        );
       }
     }
   } catch (error) {
-    res.status(500).send({
-      message: "Internal server error",
-      ok: false,
-    });
+    next(
+      error instanceof AppError
+        ? error
+        : new InternalServerError("Internal server error")
+    );
   }
 };
 
-export const sendLinkResetPassword = async (req: Request, res: Response) => {
+export const sendLinkResetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email } = req.query;
   if (!email || typeof email !== "string") {
-    res.status(400).send({
-      message: "Email as string is required",
-      ok: false,
-    });
+    next(new BadRequestError("Email as string is required"));
     return;
   }
   try {
     const user = await userService.getUserById(email);
     if (!user) {
-      res.status(404).send({
-        message: "User not found",
-        ok: false,
-      });
+      next(new NotFoundError("User"));
       return;
     }
     const newToken = jwt.sign(
@@ -318,18 +312,12 @@ export const sendLinkResetPassword = async (req: Request, res: Response) => {
       ok: true,
       user: response,
     });
-  } catch (error: any) {
-    if (error.message === `there is no document with id: ${email}`) {
-      res.status(404).send({
-        message: "Email not registered in db",
-        ok: false,
-      });
+  } catch (error: unknown) {
+    if (error instanceof AppError && error.statusCode === 404) {
+      next(new NotFoundError("User"));
     } else {
-      console.error("AuthController: ", error.message);
-      res.status(500).send({
-        message: "Internal server error",
-        ok: false,
-      });
+      console.error("AuthController: ", error);
+      next(new InternalServerError("Internal server error"));
     }
   }
 };
