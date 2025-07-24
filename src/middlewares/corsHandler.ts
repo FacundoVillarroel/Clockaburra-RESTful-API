@@ -10,6 +10,7 @@ const corsHandler = (req:Request, res:Response, next:NextFunction) => {
     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Expose-Headers", "Authorization");
   if (req.method === "OPTIONS") {
     res.sendStatus(200);
     return
