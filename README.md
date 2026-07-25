@@ -220,6 +220,14 @@ Clockaburra represents my approach to software development: understanding the pr
 
 ---
 
+## Related Projects
+
+- **[Clockaburra REST API](https://github.com/FacundoVillarroel/Clockaburra-RESTful-API)** → Backend REST API powering the platform.
+
+- **[Clockaburra Web](https://github.com/FacundoVillarroel/Clockaburra-Web)** → Web application for administrators and managers.
+
+- **[Clockaburra Mobile](https://github.com/FacundoVillarroel/Clockaburra-App)** → Native mobile application for employees.
+
 ## Author
 
 **Facundo Villarroel**
