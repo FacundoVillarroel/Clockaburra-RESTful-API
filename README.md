@@ -1,7 +1,7 @@
 # Clockaburra REST API
 
 <p align="center">
-  <img src=".src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
+  <img src="src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
 </p>
 
 Backend API for the Clockaburra employee management platform.
