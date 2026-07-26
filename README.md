@@ -1,14 +1,14 @@
 # Clockaburra REST API
 
-<p align="center">
-  <img src="src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
-</p>
-
 Backend API for the Clockaburra employee management platform.
 
 Clockaburra is a Full Stack SaaS project created to simulate a real-world employee management system, with a strong focus on software architecture, maintainability and scalability. This repository contains the REST API consumed by both the web and mobile applications.
 
 Built with **Node.js**, **Express**, **TypeScript**, **Firebase Authentication**, **JWT** and fully documented using **Swagger**.
+
+<p align="center">
+  <img src="src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
+</p>
 
 ## Features
 
@@ -232,7 +232,7 @@ Clockaburra represents my approach to software development: understanding the pr
 
 **Facundo Villarroel**
 
-Full Stack Software Development with a strong interest in software architecture and scalable backend systems.
+Full Stack Software Developer with a strong interest in software architecture and scalable backend systems.
 - GitHub: https://github.com/FacundoVillarroel
 - LinkedIn: https://www.linkedin.com/in/villarroelfacundo/
 
