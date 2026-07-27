@@ -6,6 +6,12 @@ Clockaburra is a Full Stack SaaS project created to simulate a real-world employ
 
 Built with **Node.js**, **Express**, **TypeScript**, **Firebase Authentication**, **JWT** and fully documented using **Swagger**.
 
+## Product Demo
+
+Explore the complete Clockaburra ecosystem in this short product walkthrough.
+
+🎥 [Product Walkthrough](https://www.youtube.com/watch?v=IoPG2P4DQTI)
+
 <p align="center">
   <img src="src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
 </p>
