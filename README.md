@@ -10,7 +10,7 @@ Built with **Node.js**, **Express**, **TypeScript**, **Firebase Authentication**
 
 Explore the complete Clockaburra ecosystem in this short product walkthrough.
 
-🎥 [Product Walkthrough](https://www.youtube.com/watch?v=IoPG2P4DQTI)
+🎥 [Product Demo](https://youtu.be/x4V3FZvUkHM)
 
 <p align="center">
   <img src="src/assets/swagger-preview.png" width="900" alt="Clockaburra Swagger"/>
